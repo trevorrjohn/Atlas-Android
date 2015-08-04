@@ -143,7 +143,7 @@ The <a href="layer-atlas/src/main/java/com/layer/atlas/AtlasMessageComposer.java
 AtlasMessageComposer messageComposer = (AtlasMessageComposer) findViewById(R.id.message_composer);
 messageComposer.init(layerClient, conversation);
 messageComposer.setListener(new AtlasMessageComposer.Listener() {
-	public boolean beforeSend(Message message) {
+	public boolean onBeforeSend(Message message) {
 		if (conversation == null) {
 			// create new one
 			conversation = layerClient.newConversation(participantsPicker.getSelectedUserIds());

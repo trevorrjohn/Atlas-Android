@@ -6,12 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas;
 import com.layer.atlas.AtlasMessagesList;
 import com.layer.atlas.R;
+import com.layer.atlas.Utils;
 import com.layer.sdk.messaging.MessagePart;
 
 public class TextCell extends Cell {
+    public static final boolean CLUSTERED_BUBBLES = false;
 
     protected String text;
     AtlasMessagesList messagesList;
@@ -30,13 +31,13 @@ public class TextCell extends Cell {
         MessagePart part = messagePart;
         Cell cell = this;
 
-        View cellText = Atlas.Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_text);
+        View cellText = Utils.Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_text);
         if (cellText == null) {
             cellText = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_text, cellContainer, false);
         }
 
         if (text == null) {
-            if (Atlas.MIME_TYPE_TEXT.equals(part.getMimeType())) {
+            if (Utils.MIME_TYPE_TEXT.equals(part.getMimeType())) {
                 text = new String(part.getData());
             } else {
                 text = "attach, type: " + part.getMimeType() + ", size: " + part.getSize();
@@ -53,7 +54,7 @@ public class TextCell extends Cell {
 
             textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue);
 
-            if (AtlasMessagesList.CLUSTERED_BUBBLES) {
+            if (CLUSTERED_BUBBLES) {
                 if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
                     textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_bottom_right);
                 } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
@@ -72,7 +73,7 @@ public class TextCell extends Cell {
             textMy.setVisibility(View.GONE);
 
             textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray);
-            if (AtlasMessagesList.CLUSTERED_BUBBLES) {
+            if (CLUSTERED_BUBBLES) {
                 if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
                     textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_bottom_left);
                 } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {

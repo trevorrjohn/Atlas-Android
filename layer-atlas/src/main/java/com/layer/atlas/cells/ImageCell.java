@@ -24,11 +24,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.ImageLoader;
-import com.layer.atlas.Atlas.ImageLoader.ImageSpec;
-import com.layer.atlas.Atlas.MessagePartStreamProvider;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils;
+import com.layer.atlas.Utils.ImageLoader;
+import com.layer.atlas.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.Utils.MessagePartStreamProvider;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasImageView;
 import com.layer.atlas.AtlasMessagesList;
 import com.layer.atlas.AtlasProgressView;
@@ -194,7 +194,7 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
         ShapedFrameLayout cellCustom = (ShapedFrameLayout) (myMessage ? imageContainerMy : imageContainerTheir);
         // clustering
         cellCustom.setCornerRadiusDp(16, 16, 16, 16);
-        if (!AtlasMessagesList.CLUSTERED_BUBBLES) return rootView;
+        if (!TextCell.CLUSTERED_BUBBLES) return rootView;
         if (myMessage) {
             if (this.clusterHeadItemId == this.clusterItemId && !this.clusterTail) {
                 cellCustom.setCornerRadiusDp(16, 16, 2, 16);
@@ -227,7 +227,7 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
         int requiredWidth  = messagesList.getWidth();
         int requiredHeight = messagesList.getHeight();
         
-        Bitmap bmp = (Bitmap) Atlas.imageLoader.getImageFromCache(workingPart.getId());
+        Bitmap bmp = (Bitmap) Utils.imageLoader.getImageFromCache(workingPart.getId());
         if (bmp != null) {
             if (debug) Log.i(TAG, "img.onBind() returned from cache! " + bmp.getWidth() + "x" + bmp.getHeight() 
                     + " " + bmp.getByteCount() + " bytes, req: " + requiredWidth + "x" + requiredHeight + " for " + workingPart.getId());
@@ -235,7 +235,7 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
         } else if (workingPart.isContentReady()){
             final Uri id = workingPart.getId();
             final MessagePartStreamProvider streamProvider = new MessagePartStreamProvider(workingPart);
-            imageSpec = Atlas.imageLoader.requestImage(id, streamProvider, requiredWidth, requiredHeight, false, this);
+            imageSpec = Utils.imageLoader.requestImage(id, streamProvider, requiredWidth, requiredHeight, false, this);
         }
         return null;
     }

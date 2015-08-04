@@ -34,7 +34,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 
 /**
  * @author Oleg Orlov

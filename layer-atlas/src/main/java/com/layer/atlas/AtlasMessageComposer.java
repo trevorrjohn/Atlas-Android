@@ -92,20 +92,15 @@ public class AtlasMessageComposer extends FrameLayout {
     }
     
     /**
-     * Initialization is required to engage MessageComposer with LayerClient and Conversation 
-     * to send messages. 
-     * <p>
-     * If Conversation is not defined, "Send" action will not be able to send messages 
+     * Initialization is required to engage MessageComposer with LayerClient. 
      * 
      * @param client - must be not null
-     * @param conversation - could be null. Conversation could be provided later using {@link #setConversation(Conversation)}
      */
-    public void init(LayerClient client, Conversation conversation) {
+    public AtlasMessageComposer init(LayerClient client) {
         if (client == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (messageText != null) throw new IllegalStateException("AtlasMessageComposer is already initialized!");
         
         this.layerClient = client;
-        this.conv = conversation;
         
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_message_composer, this);
         
@@ -184,7 +179,7 @@ public class AtlasMessageComposer extends FrameLayout {
                     Message msg = layerClient.newMessage(parts);
                     
                     if (listener != null) {
-                        boolean proceed = listener.beforeSend(msg);
+                        boolean proceed = listener.onBeforeSend(msg);
                         if (!proceed) return;
                     } else if (conv == null) {
                         Log.e(TAG, "Cannot send message. Conversation is not set");
@@ -197,6 +192,7 @@ public class AtlasMessageComposer extends FrameLayout {
             }
         });
         applyStyle();
+        return this;
     }
     
     private void applyStyle() {
@@ -205,29 +201,32 @@ public class AtlasMessageComposer extends FrameLayout {
         messageText.setTextColor(textColor);
     }
 
-    public void registerMenuItem(String title, OnClickListener clickListener) {
+    public AtlasMessageComposer registerMenuItem(String title, OnClickListener clickListener) {
         if (title == null) throw new NullPointerException("Item title must not be null");
         MenuItem item = new MenuItem();
         item.title = title;
         item.clickListener = clickListener;
         menuItems.add(item);
         btnUpload.setVisibility(View.VISIBLE);
+        return this;
     }
     
-    public void setListener(Listener listener) {
+    public AtlasMessageComposer setListener(Listener listener) {
         this.listener = listener;
+        return this;
     }
     
     public Conversation getConversation() {
         return conv;
     }
 
-    public void setConversation(Conversation conv) {
+    public AtlasMessageComposer setConversation(Conversation conv) {
         this.conv = conv;
+        return this;
     }
 
     public interface Listener {
-        boolean beforeSend(Message message);
+        boolean onBeforeSend(Message message);
     }
     
     private static class MenuItem {

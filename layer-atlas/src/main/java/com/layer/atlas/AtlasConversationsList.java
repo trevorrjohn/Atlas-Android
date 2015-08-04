@@ -51,8 +51,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas.Participant;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChangeEvent;
@@ -69,7 +68,7 @@ import com.layer.sdk.query.Query;
  * @author Oleg Orlov
  * @since 14 May 2015
  */
-public class AtlasConversationsList extends FrameLayout implements LayerChangeEventListener.MainThread {
+public class AtlasConversationsList extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
     
     private static final String TAG = AtlasConversationsList.class.getSimpleName();
     private static final boolean debug = false;
@@ -125,7 +124,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
     }
 
-    public void init(final LayerClient layerClient, final Atlas.ParticipantProvider participantProvider) {
+    public AtlasConversationsList init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
         if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (conversationsList != null) throw new IllegalStateException("AtlasConversationList is already initialized!");
@@ -195,7 +194,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                 allButMe.remove(layerClient.getAuthenticatedUserId());
                 
                 TextView textTitle = (TextView) convertView.findViewById(R.id.atlas_conversation_view_convert_participant);
-                String conversationTitle = Atlas.getTitle(conv, participantProvider, layerClient.getAuthenticatedUserId());
+                String conversationTitle = Utils.getTitle(conv, participantProvider, layerClient.getAuthenticatedUserId());
                 textTitle.setText(conversationTitle);
                 
                 // avatar icons... 
@@ -215,9 +214,9 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                 canvas.drawColor(avatarBackgroundColor);
                 if (allButMe.size() < 2) {
                     String conterpartyUserId = allButMe.get(0);
-                    Atlas.Participant participant = participantProvider.getParticipant(conterpartyUserId);
+                    Participant participant = participantProvider.getParticipant(conterpartyUserId);
                     if (participant == null || participant.getAvatarDrawable() == null) {
-                        textInitials.setText(participant == null ? "?" : Atlas.getInitials(participant));
+                        textInitials.setText(participant == null ? "?" : Utils.getInitials(participant));
                         textInitials.setTextColor(avatarTextColor);
                         avatarSingle.setVisibility(View.VISIBLE);
                     } else {
@@ -248,7 +247,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                     TextView textInitialsRight = (TextView) convertView.findViewById(R.id.atlas_view_conversations_list_convert_avatar_multi_right);
                     Canvas tmpCanvas = new Canvas(tmpBmp);
                     if (leftParticipant == null || leftParticipant.getAvatarDrawable() == null) {
-                        textInitialsLeft.setText(leftParticipant == null ? "?" : Atlas.getInitials(leftParticipant));
+                        textInitialsLeft.setText(leftParticipant == null ? "?" : Utils.getInitials(leftParticipant));
                         textInitialsLeft.setTextColor(avatarTextColor);
                         textInitialsLeft.setVisibility(View.VISIBLE);
                     } else {
@@ -261,7 +260,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                         textInitialsLeft.setVisibility(View.GONE);
                     }
                     if (rightParticipant == null || rightParticipant.getAvatarDrawable() == null) {
-                        textInitialsRight.setText(rightParticipant == null ? "?" : Atlas.getInitials(rightParticipant));
+                        textInitialsRight.setText(rightParticipant == null ? "?" : Utils.getInitials(rightParticipant));
                         textInitialsRight.setTextColor(avatarTextColor);
                         textInitialsRight.setVisibility(View.VISIBLE);
                     } else {
@@ -283,7 +282,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                 TextView timeView = (TextView) convertView.findViewById(R.id.atlas_conversation_view_convert_time);
                 if (conv.getLastMessage() != null ) {
                     Message last = conv.getLastMessage();
-                    String lastMessageText = Atlas.Tools.toString(last);
+                    String lastMessageText = Utils.Tools.toString(last);
                     
                     textLastMessage.setText(lastMessageText);
                     
@@ -342,24 +341,11 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                 return true;
             }
         });
-        
-        // clean everything if deathenticated (client will explode on .getConversation())
-        // and rebuilt everything back after successful authentication  
-        layerClient.registerAuthenticationListener(new LayerAuthenticationListener() {
-            public void onDeauthenticated(LayerClient client) {
-                if (debug) Log.w(TAG, "onDeauthenticated() ");
-                updateValues();
-            }
-            public void onAuthenticated(LayerClient client, String userId) {
-                updateValues();
-            }
-            public void onAuthenticationError(LayerClient client, LayerException exception) {}
-            public void onAuthenticationChallenge(LayerClient client, String nonce) {}
-        });
-        
         applyStyle();
+        layerClient.registerEventListener(this);
 
         updateValues();
+        return this;
     }
     
     public void updateValues() {
@@ -410,7 +396,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         }
     }
     
-    public void setQuery(Query<Conversation> query) {
+    public AtlasConversationsList setQuery(Query<Conversation> query) {
         if (debug) Log.w(TAG, "setQuery() query: " + query);
         // check
         if ( query != null && ! Conversation.class.equals(query.getQueryClass())) {
@@ -419,6 +405,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         // 
         this.query = query;
         updateValues();
+        return this;
     }
 
     private void parseStyle(Context context, AttributeSet attrs, int defStyle) {
@@ -457,34 +444,41 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
     
     public String formatTime(Date sentAt) {
         if (sentAt == null) sentAt = new Date();
-        return Atlas.formatTimeShort(sentAt, timeFormat, dateFormat);
+        return Utils.formatTimeShort(sentAt, timeFormat, dateFormat);
     }
 
     @Override
     public void onEventMainThread(LayerChangeEvent event) {
+        boolean isUpdate = false;
         for (LayerChange change : event.getChanges()) {
-            if (change.getObjectType() == LayerObject.Type.CONVERSATION
-                    || change.getObjectType() == LayerObject.Type.MESSAGE) {
-                updateValues();
-                return;
+            switch (change.getObjectType()) {
+                case CONVERSATION:
+                case ANNOUNCEMENT:
+                case MESSAGE:
+                    isUpdate = true;
+                    break;
             }
+            if (isUpdate) break;
         }
+        if (isUpdate) updateValues();
     }
     
     public ConversationClickListener getClickListener() {
         return clickListener;
     }
 
-    public void setClickListener(ConversationClickListener clickListener) {
+    public AtlasConversationsList setClickListener(ConversationClickListener clickListener) {
         this.clickListener = clickListener;
+        return this;
     }
 
     public ConversationLongClickListener getLongClickListener() {
         return longClickListener;
     }
 
-    public void setLongClickListener(ConversationLongClickListener conversationLongClickListener) {
+    public AtlasConversationsList setLongClickListener(ConversationLongClickListener conversationLongClickListener) {
         this.longClickListener = conversationLongClickListener;
+        return this;
     }
 
     public interface ConversationClickListener {

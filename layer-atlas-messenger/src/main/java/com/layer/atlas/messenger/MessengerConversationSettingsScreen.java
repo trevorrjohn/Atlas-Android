@@ -41,9 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.Participant;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Participant;
+import com.layer.atlas.Utils;
 import com.layer.sdk.messaging.Conversation;
 
 /**
@@ -92,7 +91,7 @@ public class MessengerConversationSettingsScreen extends Activity {
     }
     
     private void setupPaints() {
-        maskSingleBmp = Bitmap.createBitmap((int)Tools.getPxFromDp(32, this), (int)Tools.getPxFromDp(32, this), Config.ARGB_8888);
+        maskSingleBmp = Bitmap.createBitmap((int) Utils.Tools.getPxFromDp(32, this), (int) Utils.Tools.getPxFromDp(32, this), Config.ARGB_8888);
         
         avatarPaint.setAntiAlias(true);
         avatarPaint.setDither(true);
@@ -115,7 +114,7 @@ public class MessengerConversationSettingsScreen extends Activity {
         
         MessengerApp app101 = (MessengerApp) getApplication();
         
-        String conversationTitle = Atlas.getTitle(conv);
+        String conversationTitle = Utils.getTitle(conv);
         if (conversationTitle != null && conversationTitle.length() > 0) {
             textGroupName.setText(conversationTitle.trim());
         } else {
@@ -156,13 +155,13 @@ public class MessengerConversationSettingsScreen extends Activity {
                 avatarDrawable.draw(avatarCanvas);
                 avaText.setVisibility(View.GONE);
             } else {
-                avaText.setText(Atlas.getInitials(participant));
+                avaText.setText(Utils.getInitials(participant));
             }
             avatarCanvas.drawBitmap(maskSingleBmp, 0, 0, maskPaint);
             avatarImgView.setImageBitmap(avatarBmp);
             
             TextView nameText = (TextView) convert.findViewById(R.id.atlas_screen_conversation_settings_convert_name);
-            nameText.setText(Atlas.getFullName(participant));
+            nameText.setText(participant.getName());
             
             convert.setTag(entries.get(iContact));
             convert.setOnLongClickListener(contactLongClickListener);
@@ -192,7 +191,7 @@ public class MessengerConversationSettingsScreen extends Activity {
         public boolean onLongClick(View v) {
             ParticipantEntry entry = (ParticipantEntry) v.getTag();
             conv.removeParticipants(entry.userId);
-            Toast.makeText(v.getContext(), "Removing " + Atlas.getFullName(entry.participant), Toast.LENGTH_LONG).show();
+            Toast.makeText(v.getContext(), "Removing " + entry.participant.getName(), Toast.LENGTH_LONG).show();
             updateValues();
             return true;
         }
@@ -215,7 +214,7 @@ public class MessengerConversationSettingsScreen extends Activity {
     
     protected void onPause() {
         super.onPause();
-        Atlas.setTitle(conv, textGroupName.getText().toString().trim());
+        Utils.setTitle(conv, textGroupName.getText().toString().trim());
     }
     
     private void prepareActionBar() {
@@ -229,7 +228,7 @@ public class MessengerConversationSettingsScreen extends Activity {
         });
         
         ((TextView)findViewById(R.id.atlas_actionbar_title_text)).setText("Details");
-        Tools.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
+        Utils.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
     }
 
 }

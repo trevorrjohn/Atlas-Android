@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.Participant;
+import com.layer.atlas.Participant;
 import com.layer.atlas.Atlas.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;

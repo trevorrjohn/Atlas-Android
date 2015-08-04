@@ -15,11 +15,6 @@
  */
 package com.layer.atlas;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -28,10 +23,14 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas.ParticipantProvider;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.listeners.LayerTypingIndicatorListener;
 import com.layer.sdk.messaging.Conversation;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * AtlasTypingIndicator provides feedback about typists within a Conversation.  When initialized
@@ -39,12 +38,13 @@ import com.layer.sdk.messaging.Conversation;
  * maintains a set of typists for the given Conversation, providing callbacks when UI updates are
  * needed.  AtlasTypingIndicator can provide a default UI updater if desired.
  */
-public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndicatorListener {
-    
+public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndicatorListener.Weak {
+
+    private LayerClient mLayerClient;
     private volatile Conversation mConversation;
     private final Set<String> mTypists = new HashSet<String>();
     private TextView mTextView;
-    private Callback mCallback;
+    private volatile Listener mListener;
 
     // styles
     private int mTextColor;
@@ -66,45 +66,35 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
     }
 
     /**
-     * Initializes this AtlasTypingIndicator.  Pass in a Conversation to listen for typing on that
-     * Conversation.  Pass in a Callback to handle styling externally.
+     * Initializes this AtlasTypingIndicator.
      *
-     * @param conversation Conversation in which to listen for typing.
-     * @param callback     Callback for responding to typing.
      * @return This AtlasTypingIndicator for chaining.
      */
-    public AtlasTypingIndicator init(Conversation conversation, Callback callback) {
-        if (callback == null) throw new IllegalArgumentException("Callback cannot be null");
+    public AtlasTypingIndicator init(LayerClient layerClient) {
+        if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (mTextView != null) throw new IllegalStateException("AtlasTypingIndicator is already initialized!");
-        mConversation = conversation;
-        this.mCallback = callback;
-        this.mTextView = new TextView(getContext());
+        mLayerClient = layerClient;
+        mTextView = new TextView(getContext());
         addView(mTextView);
         applyStyle();
+        mLayerClient.registerTypingIndicator(this);
         return this;
     }
 
     /**
-     * Initializes this AtlasTypingIndicator.  Pass in a Conversation to listen for typing on that
-     * Conversation.  Pass in a ParticipantProvider use the default handler.
-     *
-     * @param conversation        Conversation in which to listen for typing.
-     * @param participantProvider Typing indicator will resolve participant names using provider
-     * @return This AtlasTypingIndicator for chaining.
-     */
-    public AtlasTypingIndicator init(Conversation conversation, ParticipantProvider participantProvider) {
-        if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
-        return init(conversation, new DefaultTypingIndicatorCallback(participantProvider));
-    }
-
-    /**
      * Sets the Conversation to listen for typing on.  If `null`, no typing will be listened to.
-     * 
+     *
      * @param conversation Conversation to listen for typing on
      * @return This AtlasTypingIndicator for chaining.
      */
     public AtlasTypingIndicator setConversation(Conversation conversation) {
         mConversation = conversation;
+        return this;
+    }
+
+    public AtlasTypingIndicator setListener(Listener listener) {
+        if (listener == null) throw new IllegalArgumentException("Callback cannot be null");
+        mListener = listener;
         return this;
     }
 
@@ -144,7 +134,7 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
      */
     private AtlasTypingIndicator refresh() {
         synchronized (mTypists) {
-            mCallback.onTypingUpdate(this, mTypists);
+            if (mListener != null) mListener.onTypingUpdate(this, mTypists);
         }
         return this;
     }
@@ -173,7 +163,7 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
      * AtlasTypingIndicator.Callback allows an external class to set indicator text, visibility,
      * etc. based on the current typists.
      */
-    public interface Callback {
+    public interface Listener {
         /**
          * Notifies the callback to typist updates.
          *
@@ -186,19 +176,19 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
     /**
      * Default Callback handler implementation.
      */
-    public static class DefaultTypingIndicatorCallback implements Callback {
-        private final Atlas.ParticipantProvider mParticipantProvider;
+    public static class DefaultListener implements Listener {
+        private final ParticipantProvider mParticipantProvider;
 
-        public DefaultTypingIndicatorCallback(Atlas.ParticipantProvider participantProvider) {
+        public DefaultListener(ParticipantProvider participantProvider) {
             if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
             mParticipantProvider = participantProvider;
         }
 
         @Override
         public void onTypingUpdate(AtlasTypingIndicator indicator, Set<String> typingUserIds) {
-            List<Atlas.Participant> typists = new ArrayList<Atlas.Participant>(typingUserIds.size());
+            List<Participant> typists = new ArrayList<Participant>(typingUserIds.size());
             for (String userId : typingUserIds) {
-                Atlas.Participant participant = mParticipantProvider.getParticipant(userId);
+                Participant participant = mParticipantProvider.getParticipant(userId);
                 if (participant != null) typists.add(participant);
             }
 
@@ -212,8 +202,8 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
             String string = strings[Math.min(strings.length - 1, typingUserIds.size())];
             String[] names = new String[typists.size()];
             int i = 0;
-            for (Atlas.Participant typist : typists) {
-                names[i++] = Atlas.getFullName(typist);
+            for (Participant typist : typists) {
+                names[i++] = typist.getName();
             }
             indicator.setText(String.format(string, names));
             indicator.setVisibility(VISIBLE);

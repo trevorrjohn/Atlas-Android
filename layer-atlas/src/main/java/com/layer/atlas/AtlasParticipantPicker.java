@@ -55,9 +55,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas.Participant;
-import com.layer.atlas.Atlas.ParticipantProvider;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 
 /**
  * @author Oleg Orlov
@@ -210,7 +208,7 @@ public class AtlasParticipantPicker extends FrameLayout {
                 ParticipantEntry entry = participantsForAdapter.get(position);
 
                 if (entry != null) {
-                    name.setText(Atlas.getFullName(entry.participant));
+                    name.setText(entry.participant.getName());
                     Drawable avatarDrawable = entry.participant.getAvatarDrawable();
                     if (entry.participant != null && avatarDrawable != null) {
                         avatarDrawable.setBounds(0, 0, avatarBmp.getWidth(), avatarBmp.getHeight());
@@ -218,7 +216,7 @@ public class AtlasParticipantPicker extends FrameLayout {
                         avatarText.setVisibility(View.INVISIBLE);
                     } else {
                         avatarText.setVisibility(View.VISIBLE);
-                        avatarText.setText(Atlas.getInitials(entry.participant));
+                        avatarText.setText(Utils.getInitials(entry.participant));
                     }
                 } else {
                     name.setText("Unknown user");
@@ -323,13 +321,13 @@ public class AtlasParticipantPicker extends FrameLayout {
 //                participant.getAvatarDrawable().draw(avatarCanvas);
 //                avaText.setVisibility(View.INVISIBLE);
 //            } else {
-                avaText.setText(Atlas.getInitials(participant));
+                avaText.setText(Utils.getInitials(participant));
 //            }
 //            avatarCanvas.drawBitmap(maskSmallBmp, 0, 0, maskPaint);
 //            avatarImgView.setImageBitmap(avatarBmp);
             
             TextView nameText = (TextView) participantView.findViewById(R.id.atlas_view_participants_picker_name_convert_name);
-            nameText.setText(Atlas.getFullName(participant));
+            nameText.setText(participant.getName());
             participantView.setTag(participant);
 
             selectedParticipantsContainer.addView(participantView, selectedParticipantsContainer.getChildCount() - 1);
@@ -441,9 +439,7 @@ public class AtlasParticipantPicker extends FrameLayout {
 
         @Override
         public int compare(Participant lhs, Participant rhs) {
-            int result = subCompareCaseInsensitive(lhs.getFirstName(), rhs.getFirstName());
-            if (result != 0) return result;
-            return subCompareCaseInsensitive(lhs.getLastName(), rhs.getLastName());
+            return subCompareCaseInsensitive(lhs.getName(), rhs.getName());
         }
 
         private int subCompareCaseInsensitive(String lhs, String rhs) {

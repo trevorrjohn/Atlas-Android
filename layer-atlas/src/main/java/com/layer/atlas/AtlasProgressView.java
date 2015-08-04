@@ -25,7 +25,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 
 /**
  * @author Oleg Orlov

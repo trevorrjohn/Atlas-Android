@@ -28,10 +28,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.ImageLoader;
-import com.layer.atlas.Atlas.ImageLoader.ImageSpec;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils;
+import com.layer.atlas.Utils.ImageLoader;
+import com.layer.atlas.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasMessagesList;
 import com.layer.atlas.R;
 import com.layer.atlas.ShapedFrameLayout;
@@ -41,7 +41,7 @@ import com.layer.sdk.messaging.MessagePart;
  * @author Oleg Orlov
  * @since  13 May 2015
  */
-public class GeoCell extends Cell implements Atlas.DownloadQueue.CompleteListener, ImageLoader.ImageLoadListener {
+public class GeoCell extends Cell implements Utils.DownloadQueue.CompleteListener, ImageLoader.ImageLoadListener {
     private static final String TAG = GeoCell.class.getSimpleName();
     private static final boolean debug = false;
     
@@ -92,7 +92,7 @@ public class GeoCell extends Cell implements Atlas.DownloadQueue.CompleteListene
         ShapedFrameLayout cellCustom = (ShapedFrameLayout) (myMessage ? containerMy : containerTheir);
         
         Object imageId = messagePart.getId();
-        Bitmap bmp = (Bitmap) Atlas.imageLoader.getImageFromCache(imageId);
+        Bitmap bmp = (Bitmap) Utils.imageLoader.getImageFromCache(imageId);
         if (bmp != null) {
             if (debug) Log.d(TAG, "geo.onBind() bitmap: " + bmp.getWidth() + "x" + bmp.getHeight());
             geoImage.setImageBitmap(bmp);
@@ -104,8 +104,8 @@ public class GeoCell extends Cell implements Atlas.DownloadQueue.CompleteListene
             if (tileFile.exists()) {
                 if (debug) Log.d(TAG, "geo.onBind() decodeImage: " + tileFile);
                 // request decoding
-                spec = Atlas.imageLoader.requestImage(imageId
-                        , new Atlas.FileStreamProvider(tileFile)
+                spec = Utils.imageLoader.requestImage(imageId
+                        , new Utils.FileStreamProvider(tileFile)
                         , (int)Tools.getPxFromDp(150, cellContainer.getContext())
                         , (int)Tools.getPxFromDp(150, cellContainer.getContext()), false, this);
             } else {
@@ -122,7 +122,7 @@ public class GeoCell extends Cell implements Atlas.DownloadQueue.CompleteListene
                         .append("markers=color:red%7C").append(lat).append(",").append(lon)
                         .toString();
                 
-                Atlas.downloadQueue.schedule(url, tileFile, this);
+                Utils.downloadQueue.schedule(url, tileFile, this);
                 
                 if (debug) Log.d(TAG, "geo.onBind() show stub and download image: " + tileFile);
             }
@@ -130,7 +130,7 @@ public class GeoCell extends Cell implements Atlas.DownloadQueue.CompleteListene
         
         // clustering
         cellCustom.setCornerRadiusDp(16, 16, 16, 16);
-        if (AtlasMessagesList.CLUSTERED_BUBBLES) {
+        if (TextCell.CLUSTERED_BUBBLES) {
             if (myMessage) {
                 if (this.clusterHeadItemId == this.clusterItemId && !this.clusterTail) {
                     cellCustom.setCornerRadiusDp(16, 16, 2, 16);

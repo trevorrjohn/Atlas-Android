@@ -53,8 +53,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas.DefaultCellFactory;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.DefaultCellFactory;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.cells.Cell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
@@ -72,11 +72,9 @@ import com.layer.sdk.query.Query;
  * @author Oleg Orlov
  * @since 13 May 2015
  */
-public class AtlasMessagesList extends FrameLayout implements LayerChangeEventListener.MainThread {
+public class AtlasMessagesList extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
     private static final String TAG = AtlasMessagesList.class.getSimpleName();
     private static final boolean debug = false;
-    
-    public static final boolean CLUSTERED_BUBBLES = false;
     
     private static final int MESSAGE_TYPE_UPDATE_VALUES = 0;
     private static final int MESSAGE_REFRESH_UPDATE_ALL = 0;
@@ -163,13 +161,14 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         setupPaints();
     }
 
-    /** Setup with {@link Atlas.DefaultCellFactory}  */
-    public void init(final LayerClient layerClient, final Atlas.ParticipantProvider participantProvider) {
-        init(layerClient, participantProvider, new Atlas.DefaultCellFactory(this));
+    /** Setup with {@link Utils.DefaultCellFactory}  */
+    public AtlasMessagesList init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
+        init(layerClient, participantProvider, new Utils.DefaultCellFactory(this));
+        return this;
     }
     
     /** @param cellFactory - use or extend {@link DefaultCellFactory} to get basic cells support */
-    public void init(final LayerClient layerClient, final Atlas.ParticipantProvider participantProvider, CellFactory cellFactory) {
+    public AtlasMessagesList init(final LayerClient layerClient, final ParticipantProvider participantProvider, CellFactory cellFactory) {
         if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (messagesList != null) throw new IllegalStateException("AtlasMessagesList is already initialized!");
@@ -208,7 +207,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                     Date sentAt = message.getSentAt();
                     if (sentAt == null) sentAt = new Date();
 
-                    String timeBarDayText = Atlas.formatTimeDay(sentAt);
+                    String timeBarDayText = Utils.formatTimeDay(sentAt);
                     timeBarDay.setText(timeBarDayText);
                     String timeBarTimeText = timeFormat.format(sentAt.getTime());
                     timeBarTime.setText(timeBarTimeText);
@@ -240,10 +239,10 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                         userNameHeader.setVisibility(View.GONE);
                     } else {
                         spacerRight.setVisibility(View.VISIBLE);
-                        Atlas.Participant participant = participantProvider.getParticipant(senderId);
+                        Participant participant = participantProvider.getParticipant(senderId);
                         if (cell.firstUserMsg && showTheirDecor) {
                             userNameHeader.setVisibility(View.VISIBLE);
-                            String fullName = (participant != null) ? Atlas.getFullName(participant) : 
+                            String fullName = (participant != null) ? participant.getName() : 
                                     (message.getSender().getName() != null) ? message.getSender().getName():
                                     "Unknown User";
                             userNameHeader.setText(fullName);
@@ -264,7 +263,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                                 avatarDrawable.draw(avatarCanvas);
                             } else {
                                 textAvatar.setVisibility(View.VISIBLE);
-                                textAvatar.setText(Atlas.getInitials(participant));
+                                textAvatar.setText(Utils.getInitials(participant));
                             }
                         }
                         avatarCanvas.drawBitmap(maskSingleBmp, 0, 0, maskPaint);
@@ -344,9 +343,11 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                 }
             }
         });
+        layerClient.registerEventListener(this);
         // --- end of messageView
         
         updateValues();
+        return this;
     }
     
     private void setupPaints() {
@@ -614,7 +615,6 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     public void onEventMainThread(LayerChangeEvent event) {
         boolean updateValues = false;
         boolean jumpToBottom = false;
-        boolean updateDeliveryStatus = false;
         
         for (LayerChange change : event.getChanges()) {
             
@@ -628,25 +628,17 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             
             if (query != null) {
                 updateValues = true;
-                
             } else if (conv != null) {
                 if (change.getObjectType() == LayerObject.Type.MESSAGE) {
                     Message msg = (Message) change.getObject();
-                    if ( ! msg.getConversation().getId().equals(conv.getId())) continue;
-                    
-                    if (change.getChangeType() == Type.UPDATE && "recipientStatus".equals(change.getAttributeName())) {
-                        updateDeliveryStatus = true;
-                    }
-                    
-                    if (change.getChangeType() == Type.DELETE || change.getChangeType() == Type.INSERT) {
-                        updateValues = true;
-                        jumpToBottom = true;
-                    }
+                    if (msg.getConversation() != conv) continue;
+                    updateValues = true;
+                    if (change.getChangeType() != Type.UPDATE) jumpToBottom = true;
                 }
             }  
         }
         
-        if (updateValues || updateDeliveryStatus) {
+        if (updateValues) {
             requestRefreshValues(updateValues, jumpToBottom);
         }
     }
@@ -689,14 +681,15 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         return conv;
     }
 
-    public void setConversation(Conversation conv) {
+    public AtlasMessagesList setConversation(Conversation conv) {
         this.conv = conv;
         this.query = null;
         updateValues();
         jumpToLastMessage();
+        return this;
     }
     
-    public void setQuery(Query<Message> query) {
+    public AtlasMessagesList setQuery(Query<Message> query) {
         // check
         if ( ! Message.class.equals(query.getQueryClass())) {
             throw new IllegalArgumentException("Query must return Message object. Actual class: " + query.getQueryClass());
@@ -706,6 +699,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         this.conv = null;
         updateValues();
         jumpToLastMessage();
+        return this;
     }
     
     public LayerClient getLayerClient() {
@@ -713,8 +707,9 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         return client;
     }
     
-    public void setItemClickListener(ItemClickListener clickListener) {
+    public AtlasMessagesList setItemClickListener(ItemClickListener clickListener) {
         this.clickListener = clickListener;
+        return this;
     }
     
     /** Cells per message container */
@@ -727,7 +722,6 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             this.cells = new ArrayList<Cell>();
         }
     }
-
 
     public interface ItemClickListener {
         void onItemClick(Cell item);

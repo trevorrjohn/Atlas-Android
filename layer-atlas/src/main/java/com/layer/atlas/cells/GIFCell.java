@@ -20,8 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.ImageLoader.InputStreamProvider;
+import com.layer.atlas.Utils;
+import com.layer.atlas.Utils.ImageLoader.InputStreamProvider;
 import com.layer.atlas.AtlasMessagesList;
 import com.layer.atlas.GIFDrawable;
 import com.layer.sdk.messaging.MessagePart;
@@ -44,7 +44,7 @@ public class GIFCell extends ImageCell {
 
     @Override
     protected Drawable getDrawable(MessagePart workingPart) {
-        Movie mov  = (Movie) Atlas.imageLoader.getImageFromCache(workingPart.getId());
+        Movie mov  = (Movie) Utils.imageLoader.getImageFromCache(workingPart.getId());
         
         // TODO: calculate properly with rotation
         int requiredWidth  = messagesList.getWidth();
@@ -56,8 +56,8 @@ public class GIFCell extends ImageCell {
             return new GIFDrawable(mov);
         } else if (workingPart.isContentReady()){
             final Uri id = workingPart.getId();
-            InputStreamProvider streamProvider = new Atlas.MessagePartBufferedStreamProvider(workingPart); 
-            imageSpec = Atlas.imageLoader.requestImage(id, streamProvider, requiredWidth, requiredHeight, true, this);
+            InputStreamProvider streamProvider = new Utils.MessagePartBufferedStreamProvider(workingPart); 
+            imageSpec = Utils.imageLoader.requestImage(id, streamProvider, requiredWidth, requiredHeight, true, this);
         }
         return null;
     }

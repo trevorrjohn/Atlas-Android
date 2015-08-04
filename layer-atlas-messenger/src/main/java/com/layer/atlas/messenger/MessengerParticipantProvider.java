@@ -37,14 +37,14 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-import com.layer.atlas.Atlas;
+import com.layer.atlas.ParticipantProvider;
 
 /**
  * @author Oleg Orlov
  * @since  17 Jul 2015
  */
-public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
-    private final static String TAG = MessengerIdentityProvider.class.getSimpleName();
+public class MessengerParticipantProvider implements ParticipantProvider {
+    private final static String TAG = MessengerParticipantProvider.class.getSimpleName();
     private static final boolean debug = false;
 
     private static final int REFRESH_TIMEOUT_MILLIS = 60 * 1000;
@@ -59,7 +59,7 @@ public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
     private final Object refreshLock = new Object();
     private long lastRefreshMs = System.currentTimeMillis();
     
-    public MessengerIdentityProvider(Context context) {
+    public MessengerParticipantProvider(Context context) {
         this.context = context;
         load();
         
@@ -89,9 +89,9 @@ public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
     }
     
     @Override
-    public Map<String, Atlas.Participant> getParticipants(String filter, Map<String, Atlas.Participant> result) {
+    public Map<String, com.layer.atlas.Participant> getParticipants(String filter, Map<String, com.layer.atlas.Participant> result) {
         if (result == null) {
-            result = new HashMap<String, Atlas.Participant>();
+            result = new HashMap<String, com.layer.atlas.Participant>();
         }
 
         // With no filter, return all Participants
@@ -115,7 +115,7 @@ public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
     }
 
     @Override
-    public Atlas.Participant getParticipant(String userId) {
+    public com.layer.atlas.Participant getParticipant(String userId) {
         Participant participant = participantsMap.get(userId);
         if (participant == null && appId != null) {
             requestRefresh();
@@ -276,7 +276,7 @@ public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
         return true;
     }
     
-    public class Participant implements Atlas.Participant {
+    public class Participant implements com.layer.atlas.Participant {
         public String userId;
         public String firstName;
         public String lastName;

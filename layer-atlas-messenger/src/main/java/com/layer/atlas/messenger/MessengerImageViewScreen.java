@@ -27,9 +27,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.ImageLoader.ImageSpec;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils;
+import com.layer.atlas.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasLightboxView;
 import com.layer.atlas.AtlasProgressView;
 import com.layer.atlas.GIFDrawable;
@@ -41,7 +41,7 @@ import com.layer.sdk.messaging.MessagePart;
  * @author Oleg Orlov
  * @since  17 Jun 2015
  */
-public class MessengerImageViewScreen extends Activity implements Atlas.ImageLoader.ImageLoadListener, LayerProgressListener {
+public class MessengerImageViewScreen extends Activity implements Utils.ImageLoader.ImageLoadListener, LayerProgressListener {
     private static final String TAG = MessengerImageViewScreen.class.getSimpleName();
     private static final boolean debug = false;
     private static final boolean debugControls = false;
@@ -127,9 +127,9 @@ public class MessengerImageViewScreen extends Activity implements Atlas.ImageLoa
         // prepare drawables
         if (fullDrawable == null) {
             // build fullDrawable
-            Object image = Atlas.imageLoader.getImageFromCache(cell.fullPart.getId());
+            Object image = Utils.imageLoader.getImageFromCache(cell.fullPart.getId());
             if (image != null) {
-                if (Atlas.MIME_TYPE_IMAGE_GIF.equals(cell.messagePart.getMimeType())) {
+                if (Utils.MIME_TYPE_IMAGE_GIF.equals(cell.messagePart.getMimeType())) {
                     fullDrawable = new GIFDrawable((Movie)image);
                 } else {
                     Bitmap fullBmp = (Bitmap) image;
@@ -146,22 +146,22 @@ public class MessengerImageViewScreen extends Activity implements Atlas.ImageLoa
                 final int requiredWidth  = imageViewer.getWidth()  != 0 ? imageViewer.getWidth()  : dm.widthPixels;
                 final int requiredHeight = imageViewer.getHeight() != 0 ? imageViewer.getHeight() : dm.heightPixels;
 
-                if (Atlas.MIME_TYPE_IMAGE_GIF.equals(cell.messagePart.getMimeType())) {
-                    Atlas.imageLoader.requestImage(cell.fullPart.getId(), new Atlas.MessagePartBufferedStreamProvider(cell.fullPart)
+                if (Utils.MIME_TYPE_IMAGE_GIF.equals(cell.messagePart.getMimeType())) {
+                    Utils.imageLoader.requestImage(cell.fullPart.getId(), new Utils.MessagePartBufferedStreamProvider(cell.fullPart)
                         , requiredWidth, requiredHeight, true, this);
                 } else {
-                    Atlas.imageLoader.requestImage(cell.fullPart.getId(), new Atlas.MessagePartStreamProvider(cell.fullPart)
+                    Utils.imageLoader.requestImage(cell.fullPart.getId(), new Utils.MessagePartStreamProvider(cell.fullPart)
                         , requiredWidth, requiredHeight, false, this);
                 }
             }
         }
         
         if (previewDrawable == null && cell.previewPart != null) {
-            Bitmap previewBmp = (Bitmap) Atlas.imageLoader.getImageFromCache(cell.previewPart.getId());
+            Bitmap previewBmp = (Bitmap) Utils.imageLoader.getImageFromCache(cell.previewPart.getId());
             if (previewBmp != null) {
                 previewDrawable = new BitmapDrawable(previewBmp);
             } else { 
-                Atlas.imageLoader.requestImage(cell.previewPart.getId(), new Atlas.MessagePartStreamProvider(cell.previewPart), this);
+                Utils.imageLoader.requestImage(cell.previewPart.getId(), new Utils.MessagePartStreamProvider(cell.previewPart), this);
             }
         }
         

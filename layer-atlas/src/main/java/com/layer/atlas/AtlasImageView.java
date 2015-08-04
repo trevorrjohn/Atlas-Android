@@ -25,7 +25,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.cells.ImageCell;
 
 /**

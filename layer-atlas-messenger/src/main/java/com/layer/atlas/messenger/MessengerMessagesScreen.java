@@ -47,9 +47,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.layer.atlas.Atlas;
-import com.layer.atlas.Atlas.Participant;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils;
+import com.layer.atlas.Participant;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasMessageComposer;
 import com.layer.atlas.AtlasMessagesList;
 import com.layer.atlas.cells.Cell;
@@ -85,7 +85,7 @@ public class MessengerMessagesScreen extends Activity {
     public static final int REQUEST_CODE_GALLERY  = 111;
     public static final int REQUEST_CODE_CAMERA   = 112;
     
-    /** Switch it to <code>true</code> to see {@link #AtlasMessagesScreen()} Query support in action */
+    /** Switch it to <code>true</code> to see {@link AtlasMessagesList} Query support in action */
     private static final boolean USE_QUERY = false;
         
     private volatile Conversation conv;
@@ -124,9 +124,9 @@ public class MessengerMessagesScreen extends Activity {
         }
         
         messageComposer = (AtlasMessageComposer) findViewById(R.id.atlas_screen_messages_message_composer);
-        messageComposer.init(app.getLayerClient(), conv);
+        messageComposer.init(app.getLayerClient()).setConversation(conv);
         messageComposer.setListener(new AtlasMessageComposer.Listener() {
-            public boolean beforeSend(Message message) {
+            public boolean onBeforeSend(Message message) {
                 boolean conversationReady = ensureConversationReady();
                 if (!conversationReady) return false;
 
@@ -172,7 +172,7 @@ public class MessengerMessagesScreen extends Activity {
                     return;
                 }
                 String locationString = "{\"lat\":" + lastKnownLocation.getLatitude() + ", \"lon\":" + lastKnownLocation.getLongitude() + "}";
-                MessagePart part = app.getLayerClient().newMessagePart(Atlas.MIME_TYPE_ATLAS_LOCATION, locationString.getBytes());
+                MessagePart part = app.getLayerClient().newMessagePart(Utils.MIME_TYPE_ATLAS_LOCATION, locationString.getBytes());
                 Message message = app.getLayerClient().newMessage(Arrays.asList(part));
                 
                 preparePushMetadata(message);
@@ -196,7 +196,7 @@ public class MessengerMessagesScreen extends Activity {
         
         messagesList.setItemClickListener(new ItemClickListener() {
             public void onItemClick(Cell cell) {
-                if (Atlas.MIME_TYPE_ATLAS_LOCATION.equals(cell.messagePart.getMimeType())) {
+                if (Utils.MIME_TYPE_ATLAS_LOCATION.equals(cell.messagePart.getMimeType())) {
                     String jsonLonLat = new String(cell.messagePart.getData());
                     JSONObject json;
                     try {
@@ -224,7 +224,9 @@ public class MessengerMessagesScreen extends Activity {
         });
         
         typingIndicator = (AtlasTypingIndicator)findViewById(R.id.atlas_screen_messages_typing_indicator);
-        typingIndicator.init(conv, new AtlasTypingIndicator.DefaultTypingIndicatorCallback(app.getParticipantProvider()));
+        typingIndicator.init(app.getLayerClient())
+                .setConversation(conv)
+                .setListener(new AtlasTypingIndicator.DefaultListener(app.getParticipantProvider()));
         
         // location manager for inserting locations:
         this.locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -239,7 +241,7 @@ public class MessengerMessagesScreen extends Activity {
         }
 
         TextView titleText = (TextView) findViewById(R.id.atlas_actionbar_title_text);
-        titleText.setText(Atlas.getTitle(conv, app.getParticipantProvider(), app.getLayerClient().getAuthenticatedUserId()));
+        titleText.setText(Utils.getTitle(conv, app.getParticipantProvider(), app.getLayerClient().getAuthenticatedUserId()));
     }
     
     private boolean ensureConversationReady() {
@@ -265,8 +267,8 @@ public class MessengerMessagesScreen extends Activity {
     
     private void preparePushMetadata(Message message) {
         Participant me = app.getParticipantProvider().getParticipant(app.getLayerClient().getAuthenticatedUserId());
-        String senderName = Atlas.getFullName(me);
-        String text = Atlas.Tools.toString(message);
+        String senderName = me.getName();
+        String text = Utils.Tools.toString(message);
         if (!text.isEmpty()) {
             if (senderName != null && !senderName.isEmpty()) {
                 message.getOptions().pushNotificationMessage(senderName + ": " + text);
@@ -318,10 +320,10 @@ public class MessengerMessagesScreen extends Activity {
                             photoFile = null;
                         }
                     };
-                    final MessagePart originalPart = layerClient.newMessagePart(Atlas.MIME_TYPE_IMAGE_JPEG, fisOriginal, originalFile.length());
+                    final MessagePart originalPart = layerClient.newMessagePart(Utils.MIME_TYPE_IMAGE_JPEG, fisOriginal, originalFile.length());
                     File tempDir = getCacheDir();
                     
-                    MessagePart[] previewAndSize = Atlas.buildPreviewAndSize(originalFile, layerClient, tempDir);
+                    MessagePart[] previewAndSize = Utils.buildPreviewAndSize(originalFile, layerClient, tempDir);
                     if (previewAndSize == null) {
                         Log.e(TAG, "onActivityResult() cannot build preview, cancel send...");
                         return;
@@ -352,9 +354,9 @@ public class MessengerMessagesScreen extends Activity {
                 }
                 
                 if (resultFileName != null) {
-                    String mimeType = Atlas.MIME_TYPE_IMAGE_JPEG;
-                    if (resultFileName.endsWith(".png")) mimeType = Atlas.MIME_TYPE_IMAGE_PNG;
-                    if (resultFileName.endsWith(".gif")) mimeType = Atlas.MIME_TYPE_IMAGE_GIF;
+                    String mimeType = Utils.MIME_TYPE_IMAGE_JPEG;
+                    if (resultFileName.endsWith(".png")) mimeType = Utils.MIME_TYPE_IMAGE_PNG;
+                    if (resultFileName.endsWith(".gif")) mimeType = Utils.MIME_TYPE_IMAGE_GIF;
                     
                     // test file copy locally
                     try {
@@ -389,7 +391,7 @@ public class MessengerMessagesScreen extends Activity {
                         final MessagePart originalPart = layerClient.newMessagePart(mimeType, fisOriginal, originalFile.length());
                         File tempDir = getCacheDir();
                         
-                        MessagePart[] previewAndSize = Atlas.buildPreviewAndSize(originalFile, layerClient, tempDir);
+                        MessagePart[] previewAndSize = Utils.buildPreviewAndSize(originalFile, layerClient, tempDir);
                         if (previewAndSize == null) {
                             Log.e(TAG, "onActivityResult() cannot build preview, cancel send...");
                             return;

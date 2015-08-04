@@ -87,7 +87,7 @@ public class MessengerLoginScreen extends Activity {
     private void login() {
         final MessengerApp app = (MessengerApp)getApplication();
         final LayerClient layerClient = app.getLayerClient();
-        final MessengerIdentityProvider identityProvider = app.getIdentityProvider();
+        final MessengerParticipantProvider identityProvider = app.getIdentityProvider();
         
         final String userName = loginText.getText().toString().trim();
         

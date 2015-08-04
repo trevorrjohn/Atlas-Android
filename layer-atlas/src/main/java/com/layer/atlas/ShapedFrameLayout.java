@@ -28,7 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 
 
 /**
@@ -95,7 +95,7 @@ public class ShapedFrameLayout extends FrameLayout {
         if (refreshShape || true) {
             shaper.reset();
             pathRect.set(0, 0, width, height);
-            float[] roundRectRadii = Atlas.Tools.getRoundRectRadii(corners, getResources().getDisplayMetrics());
+            float[] roundRectRadii = Utils.Tools.getRoundRectRadii(corners, getResources().getDisplayMetrics());
             shaper.addRoundRect(pathRect, roundRectRadii,  Direction.CW);
             
             refreshShape = false;

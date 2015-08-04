@@ -24,7 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.layer.atlas.Atlas;
+import com.layer.atlas.ParticipantProvider;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.LayerClient.Options;
 
@@ -50,7 +50,7 @@ public class MessengerApp extends Application {
     private static final boolean debug = false;
 
     private LayerClient layerClient;
-    private MessengerIdentityProvider identityProvider;
+    private MessengerParticipantProvider identityProvider;
     private String appId = LAYER_APP_ID;
 
     public interface keys {
@@ -65,7 +65,7 @@ public class MessengerApp extends Application {
         if (this.appId == null) {
             this.appId = loadAppId(); 
         }
-        this.identityProvider = new MessengerIdentityProvider(this);
+        this.identityProvider = new MessengerParticipantProvider(this);
     }
 
     public LayerClient getLayerClient() {
@@ -106,11 +106,11 @@ public class MessengerApp extends Application {
         return layerClient;
     }
 
-    public Atlas.ParticipantProvider getParticipantProvider() {
+    public ParticipantProvider getParticipantProvider() {
         return identityProvider;
     }
 
-    public MessengerIdentityProvider getIdentityProvider() {
+    public MessengerParticipantProvider getIdentityProvider() {
         return identityProvider;
     }
 
