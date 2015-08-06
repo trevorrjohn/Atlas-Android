@@ -11,6 +11,7 @@ android {
         versionCode 10
         versionName "0.9.10"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -24,6 +25,7 @@ android {
 
 dependencies {
     compile project(':layer-atlas')
+
     compile 'com.android.support:support-v4:22.2.1'
     compile files('src/main/libs/zxing-core-3.2.0.jar')
     compile files('src/main/libs/zxing-android-embedded-3.0.0.jar')

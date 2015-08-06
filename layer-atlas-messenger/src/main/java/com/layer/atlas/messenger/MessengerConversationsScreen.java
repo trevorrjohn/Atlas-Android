@@ -42,8 +42,8 @@ import com.layer.sdk.query.SortDescriptor;
  * @author Oleg Orlov
  * @since 14 Apr 2015
  */
-public class AtlasConversationsScreen extends Activity {
-    private static final String TAG = AtlasConversationsScreen.class.getSimpleName();
+public class MessengerConversationsScreen extends Activity {
+    private static final String TAG = MessengerConversationsScreen.class.getSimpleName();
     private static final boolean debug = false;
 
     private static final int REQUEST_CODE_LOGIN_SCREEN = 191;
@@ -101,8 +101,8 @@ public class AtlasConversationsScreen extends Activity {
             btnNewConversation = findViewById(R.id.atlas_conversation_screen_new_conversation);
             btnNewConversation.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), AtlasMessagesScreen.class);
-                    intent.putExtra(AtlasMessagesScreen.EXTRA_CONVERSATION_IS_NEW, true);
+                    Intent intent = new Intent(v.getContext(), MessengerMessagesScreen.class);
+                    intent.putExtra(MessengerMessagesScreen.EXTRA_CONVERSATION_IS_NEW, true);
                     startActivity(intent);
                     return;
                 }
@@ -127,7 +127,7 @@ public class AtlasConversationsScreen extends Activity {
             return;
         }
         if (requestCode == REQUEST_CODE_SETTINGS_SCREEN && resultCode == RESULT_OK) {
-            forceLogout = data.getBooleanExtra(AtlasSettingsScreen.EXTRA_FORCE_LOGOUT, false);  // user logged out
+            forceLogout = data.getBooleanExtra(MessengerSettingsScreen.EXTRA_FORCE_LOGOUT, false);  // user logged out
             return;
         }
         if (requestCode == IntentIntegrator.REQUEST_CODE && resultCode == RESULT_OK) {
@@ -150,7 +150,7 @@ public class AtlasConversationsScreen extends Activity {
         // Logging out?
         if (forceLogout) {
             forceLogout = false;
-            Intent intent = new Intent(this, AtlasLoginScreen.class);
+            Intent intent = new Intent(this, MessengerLoginScreen.class);
             startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
             return;
         }
@@ -187,7 +187,7 @@ public class AtlasConversationsScreen extends Activity {
         if (app.getAppId() == null) {
             // Launch QR code activity to capture App ID
             IntentIntegrator integrator = new IntentIntegrator(this)
-                    .setCaptureActivity(AtlasQRCaptureScreen.class)
+                    .setCaptureActivity(MessengerQRCaptureScreen.class)
                     .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getResources().getString(R.string.atlas_screen_qr_prompt))
                     .setOrientationLocked(true);
@@ -201,7 +201,7 @@ public class AtlasConversationsScreen extends Activity {
         // Optionally launch the login screen
         if ((app.getLayerClient() != null) && (!app.getLayerClient().isAuthenticated() || forceLogout)) {
             forceLogout = false;
-            Intent intent = new Intent(this, AtlasLoginScreen.class);
+            Intent intent = new Intent(this, MessengerLoginScreen.class);
             startActivityForResult(intent, REQUEST_CODE_LOGIN_SCREEN);
             return;
         }
@@ -219,8 +219,8 @@ public class AtlasConversationsScreen extends Activity {
 
     public void openChatScreen(Conversation conv, boolean newConversation) {
         Context context = this;
-        Intent intent = new Intent(context, AtlasMessagesScreen.class);
-        intent.putExtra(AtlasMessagesScreen.EXTRA_CONVERSATION_URI, conv.getId().toString());
+        Intent intent = new Intent(context, MessengerMessagesScreen.class);
+        intent.putExtra(MessengerMessagesScreen.EXTRA_CONVERSATION_URI, conv.getId().toString());
         startActivity(intent);
     }
 
@@ -231,7 +231,7 @@ public class AtlasConversationsScreen extends Activity {
         menuBtn.setVisibility(View.VISIBLE);
         menuBtn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), AtlasSettingsScreen.class);
+                Intent intent = new Intent(v.getContext(), MessengerSettingsScreen.class);
                 startActivityForResult(intent, REQUEST_CODE_SETTINGS_SCREEN);
             }
         });

@@ -31,7 +31,7 @@ import com.layer.atlas.AtlasParticipantPicker;
  * @author Oleg Orlov
  * @since 24 Apr 2015
  */
-public class AtlasParticipantPickersScreen extends Activity {
+public class MessengerParticipantPickersScreen extends Activity {
 
     /** String[] with selected participants to use as a result*/
     public static final String EXTRA_KEY_USERIDS_SELECTED = "userids.selected";

@@ -35,7 +35,7 @@ import com.layer.sdk.listeners.LayerConnectionListener;
  * @author Oleg Orlov
  * @since 17 Apr 2015
  */
-public class AtlasSettingsScreen extends Activity {
+public class MessengerSettingsScreen extends Activity {
 
     public static final String EXTRA_FORCE_LOGOUT = "settings.force.logout";
 

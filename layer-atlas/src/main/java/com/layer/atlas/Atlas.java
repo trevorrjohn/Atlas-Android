@@ -62,9 +62,11 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import com.layer.atlas.cells.Cell;
 import com.layer.atlas.cells.GIFCell;
 import com.layer.atlas.cells.GeoCell;
 import com.layer.atlas.cells.ImageCell;
+import com.layer.atlas.cells.TextCell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
@@ -1034,7 +1036,7 @@ public class Atlas {
          * @param msg           - message to build Cell(s) for
          * @param destination   - result list of Cells
          */
-        public void buildCellForMessage(Message msg, List<AtlasMessagesList.Cell> destination) {
+        public void buildCellForMessage(Message msg, List<Cell> destination) {
             final ArrayList<MessagePart> parts = new ArrayList<MessagePart>(msg.getMessageParts());
             
             for (int partNo = 0; partNo < parts.size(); partNo++ ) {
@@ -1058,7 +1060,7 @@ public class Atlas {
                                 width = jo.getInt("height");
                                 height = jo.getInt("width");
                             }
-                            AtlasMessagesList.Cell imageCell = mimeType.equals(MIME_TYPE_IMAGE_GIF)  
+                            Cell imageCell = mimeType.equals(MIME_TYPE_IMAGE_GIF)  
                                     ? new GIFCell(part, parts.get(partNo + 1), width, height, orientation, messagesList)
                                     : new ImageCell(part, parts.get(partNo + 1), width, height, orientation, messagesList);
                             destination.add(imageCell);
@@ -1070,7 +1072,7 @@ public class Atlas {
                         }
                     } else {
                         // regular image
-                        AtlasMessagesList.Cell cell = mimeType.equals(MIME_TYPE_IMAGE_GIF) 
+                        Cell cell = mimeType.equals(MIME_TYPE_IMAGE_GIF) 
                                 ? new GIFCell(part, messagesList)
                                 : new ImageCell(part, messagesList);
                         destination.add(cell);
@@ -1080,7 +1082,7 @@ public class Atlas {
                 } else if (MIME_TYPE_ATLAS_LOCATION.equals(part.getMimeType())){
                     destination.add(new GeoCell(part, messagesList));
                 } else {
-                    AtlasMessagesList.Cell cellData = new AtlasMessagesList.TextCell(part, messagesList);
+                    Cell cellData = new TextCell(part, messagesList);
                     destination.add(cellData);
                 }
             }

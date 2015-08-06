@@ -50,8 +50,8 @@ import com.layer.sdk.messaging.Conversation;
  * @author Oleg Orlov
  * @since 23 Apr 2015
  */
-public class AtlasConversationSettingsScreen extends Activity {
-    private static final String TAG = AtlasConversationSettingsScreen.class.getSimpleName();
+public class MessengerConversationSettingsScreen extends Activity {
+    private static final String TAG = MessengerConversationSettingsScreen.class.getSimpleName();
     private static final boolean debug = false;
 
     private static final int REQUEST_CODE_ADD_PARTICIPANT = 999;
@@ -79,9 +79,9 @@ public class AtlasConversationSettingsScreen extends Activity {
         View btnAddParticipant = findViewById(R.id.atlas_screen_conversation_settings_add_participant);
         btnAddParticipant.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(AtlasConversationSettingsScreen.this, AtlasParticipantPickersScreen.class);
+                Intent intent = new Intent(MessengerConversationSettingsScreen.this, MessengerParticipantPickersScreen.class);
                 final String[] skipUserIds = conv.getParticipants().toArray(new String[0]);
-                intent.putExtra(AtlasParticipantPickersScreen.EXTRA_KEY_USERIDS_SKIP, skipUserIds);
+                intent.putExtra(MessengerParticipantPickersScreen.EXTRA_KEY_USERIDS_SKIP, skipUserIds);
                 startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
             }
         });
@@ -201,7 +201,7 @@ public class AtlasConversationSettingsScreen extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT && resultCode == RESULT_OK) {
-            String[] addedParticipants = data.getStringArrayExtra(AtlasParticipantPickersScreen.EXTRA_KEY_USERIDS_SELECTED);
+            String[] addedParticipants = data.getStringArrayExtra(MessengerParticipantPickersScreen.EXTRA_KEY_USERIDS_SELECTED);
             conv.addParticipants(addedParticipants);
             updateValues();
         }

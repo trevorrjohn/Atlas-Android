@@ -18,7 +18,7 @@
     android:layout_height="match_parent"
     >
     
-    <com.layer.atlas.AtlasImageView2 
+    <com.layer.atlas.AtlasLightboxView 
         android:id="@+id/atlas_screen_image_view_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

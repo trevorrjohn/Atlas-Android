@@ -43,8 +43,8 @@ import com.layer.atlas.Atlas;
  * @author Oleg Orlov
  * @since  17 Jul 2015
  */
-public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
-    private final static String TAG = AtlasIdentityProvider.class.getSimpleName();
+public class MessengerIdentityProvider implements Atlas.ParticipantProvider {
+    private final static String TAG = MessengerIdentityProvider.class.getSimpleName();
     private static final boolean debug = false;
 
     private static final int REFRESH_TIMEOUT_MILLIS = 60 * 1000;
@@ -59,7 +59,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     private final Object refreshLock = new Object();
     private long lastRefreshMs = System.currentTimeMillis();
     
-    public AtlasIdentityProvider(Context context) {
+    public MessengerIdentityProvider(Context context) {
         this.context = context;
         load();
         

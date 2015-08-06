@@ -38,7 +38,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -56,6 +55,7 @@ import android.widget.TextView;
 
 import com.layer.atlas.Atlas.DefaultCellFactory;
 import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.cells.Cell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChange.Type;
@@ -112,7 +112,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     /** Where cells comes from */
     private CellFactory cellFactory;
     
-    private LayerClient client;
+    public LayerClient client;
     private Conversation conv;
     private Query<Message> query;
     /** if query is set instead of conversation - participants needs to be precalculated somewhere else */
@@ -126,17 +126,17 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     //styles
     private static final float CELL_CONTAINER_ALPHA_UNSENT  = 0.5f;
     private static final float CELL_CONTAINER_ALPHA_SENT    = 1.0f;
-    private int myBubbleColor;
-    private int myTextColor;
-    private int myTextStyle;
+    public int myBubbleColor;
+    public int myTextColor;
+    public int myTextStyle;
     private float myTextSize;
-    private Typeface myTextTypeface;
+    public Typeface myTextTypeface;
     
-    private int otherBubbleColor;
-    private int otherTextColor;
-    private int otherTextStyle;
+    public int otherBubbleColor;
+    public int otherTextColor;
+    public int otherTextStyle;
     private float otherTextSize;
-    private Typeface otherTextTypeface;
+    public Typeface otherTextTypeface;
 
     private int dateTextColor;
     private int avatarTextColor;
@@ -727,147 +727,8 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             this.cells = new ArrayList<Cell>();
         }
     }
-    
-    public static class TextCell extends Cell {
 
-        protected String text;
-        AtlasMessagesList messagesList;
-        
-        public TextCell(MessagePart messagePart, AtlasMessagesList messagesList) {
-            super(messagePart);
-            this.messagesList = messagesList;
-        }
-        
-        public TextCell(MessagePart messagePart, String text, AtlasMessagesList messagesList) {
-            super(messagePart);
-            this.text = text;
-        }
 
-        public View onBind(ViewGroup cellContainer) {
-            MessagePart part = messagePart;
-            Cell cell = this;
-            
-            View cellText = Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_text);
-            if (cellText == null) {
-                cellText = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_text, cellContainer, false);
-            }
-            
-            if (text == null) {
-                if (Atlas.MIME_TYPE_TEXT.equals(part.getMimeType())) {
-                    text = new String(part.getData());
-                } else {
-                    text = "attach, type: " + part.getMimeType() + ", size: " + part.getSize();
-                }
-            }
-            
-            boolean myMessage = messagesList.client.getAuthenticatedUserId().equals(cell.messagePart.getMessage().getSender().getUserId());
-            TextView textMy = (TextView) cellText.findViewById(R.id.atlas_view_messages_convert_text);
-            TextView textOther = (TextView) cellText.findViewById(R.id.atlas_view_messages_convert_text_counterparty);
-            if (myMessage) {
-                textMy.setVisibility(View.VISIBLE);
-                textMy.setText(text);
-                textOther.setVisibility(View.GONE);
-                
-                textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue);
-                
-                if (CLUSTERED_BUBBLES) {
-                    if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
-                        textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_bottom_right);
-                    } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
-                        textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_top_right);
-                    } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
-                        textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_right);
-                    }
-                }
-                ((GradientDrawable)textMy.getBackground()).setColor(messagesList.myBubbleColor);
-                textMy.setTextColor(messagesList.myTextColor);
-                //textMy.setTextSize(TypedValue.COMPLEX_UNIT_DIP, myTextSize);
-                textMy.setTypeface(messagesList.myTextTypeface, messagesList.myTextStyle);
-            } else {
-                textOther.setVisibility(View.VISIBLE);
-                textOther.setText(text);
-                textMy.setVisibility(View.GONE);
-                
-                textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray);
-                if (CLUSTERED_BUBBLES) {
-                    if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
-                        textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_bottom_left);
-                    } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
-                        textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_top_left);
-                    } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
-                        textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_left);
-                    }
-                }
-                ((GradientDrawable)textOther.getBackground()).setColor(messagesList.otherBubbleColor);
-                textOther.setTextColor(messagesList.otherTextColor);
-                //textOther.setTextSize(TypedValue.COMPLEX_UNIT_DIP, otherTextSize);
-                textOther.setTypeface(messagesList.otherTextTypeface, messagesList.otherTextStyle);
-            }
-            return cellText;
-        }
-    }
-    
-    public static abstract class Cell {
-        public final MessagePart messagePart;
-        protected int clusterHeadItemId;
-        protected int clusterItemId;
-        protected boolean clusterTail;
-        private boolean timeHeader;
-        
-        /** if true, than previous message was from different user*/
-        private boolean firstUserMsg;
-        /** if true, than next message is from different user */
-        private boolean lastUserMsg;
-        
-        /** don't move left and right */
-        private boolean noDecorations;
-        
-        public Cell(MessagePart messagePart) {
-            this.messagePart = messagePart;
-        }
-        
-        public Cell(MessagePart messagePart, boolean noDecorations) {
-            this.messagePart = messagePart;
-            this.noDecorations = noDecorations;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("[ ")
-                .append("messagePart: ").append(messagePart.getMimeType())
-                .append(": ").append(messagePart.getSize() < 2048 ? new String(messagePart.getData()) : messagePart.getSize() + " bytes" )
-                .append(", clusterId: ").append(clusterHeadItemId)
-                .append(", clusterItem: ").append(clusterItemId)
-                .append(", clusterTail: ").append(clusterTail)
-                .append(", timeHeader: ").append(timeHeader).append(" ]");
-            return builder.toString();
-        }
-        
-        private void reset() {
-            clusterHeadItemId = 0;
-            clusterItemId     = 0;
-            clusterTail       = false;
-            timeHeader        = false; 
-            firstUserMsg      = false;
-            lastUserMsg       = false; 
-        }
-
-        /** 
-         * Start with inflating your own cell.xml
-        <pre>
-            View rootView = Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_image);
-            if (rootView == null) {
-                rootView = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_image, cellContainer, false); 
-            }
-            // ...
-            return rootView;
-        </pre>
-         */
-        public abstract View onBind(ViewGroup cellContainer);
-    }
-    
-    
     public interface ItemClickListener {
         void onItemClick(Cell item);
     }

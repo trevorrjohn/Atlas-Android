@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import com.layer.atlas.Atlas;
 import com.layer.atlas.Atlas.ImageLoader.ImageSpec;
 import com.layer.atlas.Atlas.Tools;
-import com.layer.atlas.AtlasImageView2;
+import com.layer.atlas.AtlasLightboxView;
 import com.layer.atlas.AtlasProgressView;
 import com.layer.atlas.GIFDrawable;
 import com.layer.atlas.cells.ImageCell;
@@ -41,12 +41,12 @@ import com.layer.sdk.messaging.MessagePart;
  * @author Oleg Orlov
  * @since  17 Jun 2015
  */
-public class AtlasImageViewScreen extends Activity implements Atlas.ImageLoader.ImageLoadListener, LayerProgressListener {
-    private static final String TAG = AtlasImageViewScreen.class.getSimpleName();
+public class MessengerImageViewScreen extends Activity implements Atlas.ImageLoader.ImageLoadListener, LayerProgressListener {
+    private static final String TAG = MessengerImageViewScreen.class.getSimpleName();
     private static final boolean debug = false;
     private static final boolean debugControls = false;
     
-    private AtlasImageView2   imageViewer;
+    private AtlasLightboxView imageViewer;
     private AtlasProgressView progressView;
     private CheckBox hdCheck;
     private CheckBox decorCheck;
@@ -81,7 +81,7 @@ public class AtlasImageViewScreen extends Activity implements Atlas.ImageLoader.
             cell.fullPart.download(this);
         }
         
-        this.imageViewer = (AtlasImageView2) findViewById(R.id.atlas_screen_image_view_image);
+        this.imageViewer = (AtlasLightboxView) findViewById(R.id.atlas_screen_image_view_image);
         this.imageViewer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 getWindow().getDecorView().setSystemUiVisibility(defaultUIFlags);

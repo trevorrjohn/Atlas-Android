@@ -52,7 +52,7 @@ import com.layer.atlas.Atlas.Participant;
 import com.layer.atlas.Atlas.Tools;
 import com.layer.atlas.AtlasMessageComposer;
 import com.layer.atlas.AtlasMessagesList;
-import com.layer.atlas.AtlasMessagesList.Cell;
+import com.layer.atlas.cells.Cell;
 import com.layer.atlas.AtlasMessagesList.ItemClickListener;
 import com.layer.atlas.AtlasParticipantPicker;
 import com.layer.atlas.AtlasTypingIndicator;
@@ -73,9 +73,9 @@ import com.layer.sdk.query.SortDescriptor;
  * @author Oleg Orlov
  * @since 14 Apr 2015
  */
-public class AtlasMessagesScreen extends Activity {
+public class MessengerMessagesScreen extends Activity {
 
-    private static final String TAG = AtlasMessagesScreen.class.getSimpleName();
+    private static final String TAG = MessengerMessagesScreen.class.getSimpleName();
     private static final boolean debug = false;
     
     public static final String EXTRA_CONVERSATION_IS_NEW = "conversation.new";
@@ -216,7 +216,7 @@ public class AtlasMessagesScreen extends Activity {
                     } catch (JSONException ignored) {
                     }
                 } else if (cell instanceof ImageCell) {
-                    Intent intent = new Intent(AtlasMessagesScreen.this.getApplicationContext(), AtlasImageViewScreen.class);
+                    Intent intent = new Intent(MessengerMessagesScreen.this.getApplicationContext(), MessengerImageViewScreen.class);
                     app.setParam(intent, cell);
                     startActivity(intent);
                 }
@@ -521,8 +521,8 @@ public class AtlasMessagesScreen extends Activity {
         settingsBtn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (conv == null) return; 
-                AtlasConversationSettingsScreen.conv = conv;
-                Intent intent = new Intent(v.getContext(), AtlasConversationSettingsScreen.class);
+                MessengerConversationSettingsScreen.conv = conv;
+                Intent intent = new Intent(v.getContext(), MessengerConversationSettingsScreen.class);
                 startActivityForResult(intent, REQUEST_CODE_SETTINGS);
             }
         });

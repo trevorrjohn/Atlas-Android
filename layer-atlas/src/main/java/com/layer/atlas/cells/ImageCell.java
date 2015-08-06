@@ -31,7 +31,6 @@ import com.layer.atlas.Atlas.MessagePartStreamProvider;
 import com.layer.atlas.Atlas.Tools;
 import com.layer.atlas.AtlasImageView;
 import com.layer.atlas.AtlasMessagesList;
-import com.layer.atlas.AtlasMessagesList.Cell;
 import com.layer.atlas.AtlasProgressView;
 import com.layer.atlas.R;
 import com.layer.atlas.ShapedFrameLayout;

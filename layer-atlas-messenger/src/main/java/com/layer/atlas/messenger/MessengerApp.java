@@ -50,7 +50,7 @@ public class MessengerApp extends Application {
     private static final boolean debug = false;
 
     private LayerClient layerClient;
-    private AtlasIdentityProvider identityProvider;
+    private MessengerIdentityProvider identityProvider;
     private String appId = LAYER_APP_ID;
 
     public interface keys {
@@ -65,7 +65,7 @@ public class MessengerApp extends Application {
         if (this.appId == null) {
             this.appId = loadAppId(); 
         }
-        this.identityProvider = new AtlasIdentityProvider(this);
+        this.identityProvider = new MessengerIdentityProvider(this);
     }
 
     public LayerClient getLayerClient() {
@@ -110,7 +110,7 @@ public class MessengerApp extends Application {
         return identityProvider;
     }
 
-    public AtlasIdentityProvider getIdentityProvider() {
+    public MessengerIdentityProvider getIdentityProvider() {
         return identityProvider;
     }
 

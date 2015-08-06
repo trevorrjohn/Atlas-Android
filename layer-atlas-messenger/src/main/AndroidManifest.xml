@@ -60,7 +60,7 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name=".AtlasConversationsScreen"
+            android:name=".MessengerConversationsScreen"
             android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
@@ -70,14 +70,14 @@
         </activity>
 
         <activity
-            android:name=".AtlasMessagesScreen"
+            android:name=".MessengerMessagesScreen"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:label="@string/atlas_screen_messages_title" >
         </activity>
 
         <activity
-            android:name=".AtlasConversationSettingsScreen"
+            android:name=".MessengerConversationSettingsScreen"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
@@ -85,32 +85,32 @@
         </activity>
 
         <activity
-            android:name=".AtlasSettingsScreen"
+            android:name=".MessengerSettingsScreen"
             android:screenOrientation="portrait"
             android:label="@string/atlas_screen_settings_title" >
         </activity>
 
         <activity
-            android:name=".AtlasLoginScreen"
+            android:name=".MessengerLoginScreen"
             android:windowSoftInputMode="stateAlwaysVisible"
             android:screenOrientation="portrait"
             android:label="@string/atlas_screen_settings_title" >
         </activity>
 
         <activity
-            android:name=".AtlasParticipantPickersScreen"
+            android:name=".MessengerParticipantPickersScreen"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:label="ScreenTest: remove me from manifest" >
         </activity>
         
         <activity
-            android:name=".AtlasImageViewScreen"
+            android:name=".MessengerImageViewScreen"
             android:configChanges="orientation|keyboardHidden"
             >
         </activity>
 
-        <activity android:name=".AtlasQRCaptureScreen"
+        <activity android:name=".MessengerQRCaptureScreen"
                   android:clearTaskOnLaunch="true"
                   android:screenOrientation="portrait"
                   android:stateNotNeeded="true"

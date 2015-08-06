@@ -27,7 +27,7 @@ import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 
-public class AtlasQRCaptureScreen extends Activity {
+public class MessengerQRCaptureScreen extends Activity {
     private CaptureManager capture;
     private CompoundBarcodeView qrView;
 

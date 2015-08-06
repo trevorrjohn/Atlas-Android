@@ -63,7 +63,7 @@ public class MessengerPushReceiver extends BroadcastReceiver {
             .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
             ;
         
-        Intent chatIntent = new Intent(context, AtlasMessagesScreen.class);
+        Intent chatIntent = new Intent(context, MessengerMessagesScreen.class);
         chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         chatIntent.putExtra(keys.CONVERSATION_URI, conversationId.toString());
 

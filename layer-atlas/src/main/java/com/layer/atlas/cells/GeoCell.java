@@ -33,7 +33,6 @@ import com.layer.atlas.Atlas.ImageLoader;
 import com.layer.atlas.Atlas.ImageLoader.ImageSpec;
 import com.layer.atlas.Atlas.Tools;
 import com.layer.atlas.AtlasMessagesList;
-import com.layer.atlas.AtlasMessagesList.Cell;
 import com.layer.atlas.R;
 import com.layer.atlas.ShapedFrameLayout;
 import com.layer.sdk.messaging.MessagePart;

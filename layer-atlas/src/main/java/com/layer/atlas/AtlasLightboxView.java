@@ -40,8 +40,8 @@ import com.layer.atlas.Atlas.Tools;
  * @author Oleg Orlov
  * @since  15 Jun 2015
  */
-public class AtlasImageView2 extends View {
-    private static final String TAG = AtlasImageView2.class.getSimpleName();
+public class AtlasLightboxView extends View {
+    private static final String TAG = AtlasLightboxView.class.getSimpleName();
     private static final boolean debug = false;
     private static final boolean debugOutline = false;
     
@@ -67,17 +67,17 @@ public class AtlasImageView2 extends View {
     // - support boundaries + drawable instead of contentDimensions + drawable 
     
     //----------------------------------------------------------------------------
-    public AtlasImageView2(Context context, AttributeSet attrs, int defStyle) {
+    public AtlasLightboxView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setupPaints();
     }
 
-    public AtlasImageView2(Context context, AttributeSet attrs) {
+    public AtlasLightboxView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setupPaints();
     }
 
-    public AtlasImageView2(Context context) {
+    public AtlasLightboxView(Context context) {
         super(context);
         setupPaints();
     }

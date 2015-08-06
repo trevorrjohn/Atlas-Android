@@ -34,8 +34,8 @@ import com.layer.sdk.listeners.LayerAuthenticationListener;
  * @author Oleg Orlov
  * @since 24 Apr 2015
  */
-public class AtlasLoginScreen extends Activity {
-    private static final String TAG = AtlasLoginScreen.class.getSimpleName();
+public class MessengerLoginScreen extends Activity {
+    private static final String TAG = MessengerLoginScreen.class.getSimpleName();
     private static final boolean debug = false;
     
     private volatile boolean inProgress = false;
@@ -87,7 +87,7 @@ public class AtlasLoginScreen extends Activity {
     private void login() {
         final MessengerApp app = (MessengerApp)getApplication();
         final LayerClient layerClient = app.getLayerClient();
-        final AtlasIdentityProvider identityProvider = app.getIdentityProvider();
+        final MessengerIdentityProvider identityProvider = app.getIdentityProvider();
         
         final String userName = loginText.getText().toString().trim();
         
@@ -113,7 +113,7 @@ public class AtlasLoginScreen extends Activity {
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     updateValues();
-                                    Toast.makeText(AtlasLoginScreen.this, error, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(MessengerLoginScreen.this, error, Toast.LENGTH_LONG).show();
                                 }
                             });
                             return;
@@ -143,7 +143,7 @@ public class AtlasLoginScreen extends Activity {
                 client.unregisterAuthenticationListener(this);
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(AtlasLoginScreen.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MessengerLoginScreen.this, exception.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
