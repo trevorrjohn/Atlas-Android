@@ -23,9 +23,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas;
 import com.layer.atlas.Participant;
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
 import com.layer.sdk.listeners.LayerAuthenticationListener;
@@ -113,7 +112,7 @@ public class MessengerSettingsScreen extends Activity {
         String userId = (client == null)? null : client.getAuthenticatedUserId();
         Participant participant = (userId == null)? null : app.getParticipantProvider().getParticipant(userId);
 
-        usernameTextView.setText(participant == null ? null : Atlas.getFullName(participant)); 
+        usernameTextView.setText(participant == null ? null : participant.getName()); 
         statusTextView.setText((client != null && client.isConnected())? "Connected" : "Disconnected");
     }
 

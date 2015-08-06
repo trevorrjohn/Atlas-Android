@@ -228,7 +228,7 @@ public class MessengerConversationSettingsScreen extends Activity {
         });
         
         ((TextView)findViewById(R.id.atlas_actionbar_title_text)).setText("Details");
-        Utils.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
+        Utils.Tools.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
     }
 
 }

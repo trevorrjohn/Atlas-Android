@@ -26,7 +26,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.layer.atlas.Atlas;
+import com.layer.atlas.Utils;
 import com.layer.atlas.messenger.MessengerApp.keys;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
@@ -92,7 +92,7 @@ public class MessengerPushReceiver extends BroadcastReceiver {
         if (client == null || !client.isAuthenticated()) return null;
         
         Conversation conversation = client.getConversation(conversationId);
-        if (conversation != null) return Atlas.getTitle(conversation, app.getParticipantProvider(), client.getAuthenticatedUserId());
+        if (conversation != null) return Utils.getTitle(conversation, app.getParticipantProvider(), client.getAuthenticatedUserId());
         
         return null;
     }

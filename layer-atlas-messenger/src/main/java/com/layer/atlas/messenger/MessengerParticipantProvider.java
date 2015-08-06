@@ -103,8 +103,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
         // Filter participants by substring matching first- and last- names
         for (Participant p : participantsMap.values()) {
             boolean matches = false;
-            if (p.firstName != null && p.firstName.toLowerCase().contains(filter)) matches = true;
-            if (!matches && p.lastName != null && p.lastName.toLowerCase().contains(filter)) matches = true;
+            if (p.name != null && p.name.toLowerCase().contains(filter)) matches = true;
             if (matches) {
                 result.put(p.getId(), p);
             } else {
@@ -186,7 +185,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
             for (int i = 0; i < atlasIdentities.length(); i++) {
                 JSONObject identity = atlasIdentities.getJSONObject(i);
                 Participant participant = new Participant();
-                participant.firstName = identity.getString("name");
+                participant.name = identity.getString("name");
                 participant.userId = identity.getString("id");
                 participants.add(participant);
             }
@@ -234,8 +233,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
                 JSONObject contactJson = contactsJson.getJSONObject(i);
                 Participant participant = new Participant();
                 participant.userId = contactJson.optString("id");
-                participant.firstName = contactJson.optString("first_name");
-                participant.lastName = contactJson.optString("last_name");
+                participant.name = contactJson.optString("name");
                 participants.add(participant);
             }
         } catch (JSONException e) {
@@ -260,8 +258,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
             for (Participant participant : participants) {
                 JSONObject contactJson = new JSONObject();
                 contactJson.put("id", participant.userId);
-                contactJson.put("first_name", participant.firstName);
-                contactJson.put("last_name", participant.lastName);
+                contactJson.put("name", participant.name);
                 contactsJson.put(contactJson);
             }
         } catch (JSONException e) {
@@ -278,21 +275,15 @@ public class MessengerParticipantProvider implements ParticipantProvider {
     
     public class Participant implements com.layer.atlas.Participant {
         public String userId;
-        public String firstName;
-        public String lastName;
+        public String name;
         
         public String getId() {
             return userId;
         }
 
         @Override
-        public String getFirstName() {
-            return firstName;
-        }
-
-        @Override
-        public String getLastName() {
-            return lastName;
+        public String getName() {
+            return name;
         }
         
         @Override
@@ -302,7 +293,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
         
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            builder.append("Contact [userId: ").append(userId).append(", firstName: ").append(firstName).append(", lastName: ").append(lastName).append("]");
+            builder.append("Contact [userId: ").append(userId).append(", name: ").append(name).append("]");
             return builder.toString();
         }
     }

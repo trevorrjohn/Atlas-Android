@@ -29,10 +29,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.layer.atlas.Atlas.Tools;
 import com.layer.atlas.AtlasConversationsList;
 import com.layer.atlas.AtlasConversationsList.ConversationClickListener;
 import com.layer.atlas.AtlasConversationsList.ConversationLongClickListener;
+import com.layer.atlas.Utils;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
@@ -49,7 +49,7 @@ public class MessengerConversationsScreen extends Activity {
     private static final int REQUEST_CODE_LOGIN_SCREEN = 191;
     private static final int REQUEST_CODE_SETTINGS_SCREEN = 192;
     
-    /** Switch it to <code>true</code> to see {@link #AtlasConversationsScreen} Query support in action */
+    /** Switch it to <code>true</code> to see {@link MessengerConversationsScreen} Query support in action */
     private static final boolean USE_QUERY = false;
 
     private MessengerApp app;
@@ -244,6 +244,6 @@ public class MessengerConversationsScreen extends Activity {
                 Toast.makeText(v.getContext(), "Title should be replaced by edit text here...", Toast.LENGTH_LONG).show();
             }
         });
-        Tools.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
+        Utils.Tools.setStatusBarColor(getWindow(), getResources().getColor(R.color.atlas_background_blue_dark));
     }
 }

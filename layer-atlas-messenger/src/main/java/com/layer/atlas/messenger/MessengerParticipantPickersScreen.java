@@ -23,7 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas.Tools;
+import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasParticipantPicker;
 
 
