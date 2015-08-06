@@ -15,7 +15,7 @@ public interface ParticipantProvider {
      * @param result The Map to operate on
      * @return A Map of all matching Participants keyed by ID.
      */
-    Map<String, Participant> getParticipants(String filter, Map<String, Participant> result);
+    Map<String, Participant> getMatchingParticipants(String filter, Map<String, Participant> result);
 
     /**
      * Returns the Participant with the given ID, or `null` if the participant is not yet

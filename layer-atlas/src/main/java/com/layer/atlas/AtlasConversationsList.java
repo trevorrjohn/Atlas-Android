@@ -352,9 +352,11 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         if (conversationsAdapter == null) return; // never initialized
 
         conversations.clear(); // always clean, rebuild if authenticated 
-        conversationsAdapter.notifyDataSetChanged();
 
-        if (!layerClient.isAuthenticated()) return;
+        if (!layerClient.isAuthenticated()) {
+            conversationsAdapter.notifyDataSetChanged();
+            return;
+        }
 
         List<Conversation> convs = null;
         if (query != null) {
@@ -394,6 +396,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
                 }
             });
         }
+        conversationsAdapter.notifyDataSetChanged();
     }
     
     public AtlasConversationsList setQuery(Query<Conversation> query) {

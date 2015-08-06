@@ -89,7 +89,7 @@ public class MessengerParticipantProvider implements ParticipantProvider {
     }
     
     @Override
-    public Map<String, com.layer.atlas.Participant> getParticipants(String filter, Map<String, com.layer.atlas.Participant> result) {
+    public Map<String, com.layer.atlas.Participant> getMatchingParticipants(String filter, Map<String, com.layer.atlas.Participant> result) {
         if (result == null) {
             result = new HashMap<String, com.layer.atlas.Participant>();
         }

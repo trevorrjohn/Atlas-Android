@@ -114,14 +114,18 @@ public class AtlasParticipantPicker extends FrameLayout {
         setupPaints();
     }
 
-    public void init(String[] userIdToSkip, ParticipantProvider participantProvider) {
+    public AtlasParticipantPicker init(ParticipantProvider participantProvider, String... userIdToSkip) {
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (participantsList != null) throw new IllegalStateException("AtlasParticipantPicker is already initialized!");
         
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_participants_picker, this);
 
         this.participantProvider = participantProvider;
-        if (userIdToSkip != null) skipUserIds.addAll(Arrays.asList(userIdToSkip));
+        if (userIdToSkip != null) {
+            for (String userId : userIdToSkip){
+                if (userId != null) skipUserIds.add(userId);
+            }
+        }
         
         // START OF -------------------- Participant Picker ----------------------------------------
         this.rootView = this;
@@ -295,6 +299,7 @@ public class AtlasParticipantPicker extends FrameLayout {
         filterParticipants("");
 
         applyStyle();
+        return this;
     }
 
     private void refreshParticipants(final ArrayList<String> selectedParticipantIds) {
@@ -352,7 +357,7 @@ public class AtlasParticipantPicker extends FrameLayout {
     
     private void filterParticipants(final String filter) {
         filteredParticipants.clear();
-        participantProvider.getParticipants(filter, filteredParticipants);
+        participantProvider.getMatchingParticipants(filter, filteredParticipants);
         if (debug) Log.w(TAG, "filterParticipants() filtered: " + filteredParticipants.size() + ", filter: " + filter);
         participantsForAdapter.clear();
         for (Map.Entry<String, Participant> entry : filteredParticipants.entrySet()) {
