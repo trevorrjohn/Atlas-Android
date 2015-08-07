@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 14
+        targetSdkVersion 22
     }
 
     lintOptions {
@@ -19,4 +19,5 @@ dependencies {
         exclude group: "com.android.support"
     }
     compile 'org.slf4j:slf4j-nop:1.5.8'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
 }
