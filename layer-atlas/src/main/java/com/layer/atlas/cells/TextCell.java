@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.layer.atlas.AtlasMessagesList;
+import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.R;
 import com.layer.atlas.Utils;
 import com.layer.sdk.messaging.MessagePart;
@@ -15,14 +15,14 @@ public class TextCell extends Cell {
     public static final boolean CLUSTERED_BUBBLES = false;
 
     protected String text;
-    AtlasMessagesList messagesList;
+    AtlasMessageListOld messagesList;
 
-    public TextCell(MessagePart messagePart, AtlasMessagesList messagesList) {
+    public TextCell(MessagePart messagePart, AtlasMessageListOld messagesList) {
         super(messagePart);
         this.messagesList = messagesList;
     }
 
-    public TextCell(MessagePart messagePart, String text, AtlasMessagesList messagesList) {
+    public TextCell(MessagePart messagePart, String text, AtlasMessageListOld messagesList) {
         super(messagePart);
         this.text = text;
     }

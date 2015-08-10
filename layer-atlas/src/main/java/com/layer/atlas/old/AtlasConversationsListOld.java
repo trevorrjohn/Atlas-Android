@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -51,15 +51,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.layer.atlas.Participant;
+import com.layer.atlas.ParticipantProvider;
+import com.layer.atlas.R;
+import com.layer.atlas.Utils;
 import com.layer.atlas.Utils.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChangeEvent;
-import com.layer.sdk.exceptions.LayerException;
-import com.layer.sdk.listeners.LayerAuthenticationListener;
 import com.layer.sdk.listeners.LayerChangeEventListener;
 import com.layer.sdk.messaging.Conversation;
-import com.layer.sdk.messaging.LayerObject;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.messaging.Message.RecipientStatus;
 import com.layer.sdk.query.Query;
@@ -68,9 +69,9 @@ import com.layer.sdk.query.Query;
  * @author Oleg Orlov
  * @since 14 May 2015
  */
-public class AtlasConversationsList extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
+public class AtlasConversationsListOld extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
     
-    private static final String TAG = AtlasConversationsList.class.getSimpleName();
+    private static final String TAG = AtlasConversationsListOld.class.getSimpleName();
     private static final boolean debug = false;
 
     private ListView conversationsList;
@@ -107,24 +108,24 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
     private final DateFormat dateFormat;
     private final DateFormat timeFormat;
 
-    public AtlasConversationsList(Context context, AttributeSet attrs, int defStyle) {
+    public AtlasConversationsListOld(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         parseStyle(context, attrs, defStyle);
         this.dateFormat = android.text.format.DateFormat.getDateFormat(context);
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
     }
 
-    public AtlasConversationsList(Context context, AttributeSet attrs) {
+    public AtlasConversationsListOld(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AtlasConversationsList(Context context) {
+    public AtlasConversationsListOld(Context context) {
         super(context);
         this.dateFormat = android.text.format.DateFormat.getDateFormat(context);
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
     }
 
-    public AtlasConversationsList init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
+    public AtlasConversationsListOld init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
         if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (conversationsList != null) throw new IllegalStateException("AtlasConversationList is already initialized!");
@@ -399,7 +400,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         conversationsAdapter.notifyDataSetChanged();
     }
     
-    public AtlasConversationsList setQuery(Query<Conversation> query) {
+    public AtlasConversationsListOld setQuery(Query<Conversation> query) {
         if (debug) Log.w(TAG, "setQuery() query: " + query);
         // check
         if ( query != null && ! Conversation.class.equals(query.getQueryClass())) {
@@ -470,7 +471,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         return clickListener;
     }
 
-    public AtlasConversationsList setClickListener(ConversationClickListener clickListener) {
+    public AtlasConversationsListOld setClickListener(ConversationClickListener clickListener) {
         this.clickListener = clickListener;
         return this;
     }
@@ -479,7 +480,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         return longClickListener;
     }
 
-    public AtlasConversationsList setLongClickListener(ConversationLongClickListener conversationLongClickListener) {
+    public AtlasConversationsListOld setLongClickListener(ConversationLongClickListener conversationLongClickListener) {
         this.longClickListener = conversationLongClickListener;
         return this;
     }

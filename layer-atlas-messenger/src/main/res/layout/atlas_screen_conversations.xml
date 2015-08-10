@@ -29,7 +29,7 @@
 
         <include layout="@layout/atlas_actionbar_stub"/>
         
-        <com.layer.atlas.AtlasConversationsList
+        <com.layer.atlas.old.AtlasConversationsListOld
             android:id="@+id/atlas_screen_conversations_conversations_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

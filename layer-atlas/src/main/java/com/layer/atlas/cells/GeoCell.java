@@ -32,7 +32,7 @@ import com.layer.atlas.Utils;
 import com.layer.atlas.Utils.ImageLoader;
 import com.layer.atlas.Utils.ImageLoader.ImageSpec;
 import com.layer.atlas.Utils.Tools;
-import com.layer.atlas.AtlasMessagesList;
+import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.R;
 import com.layer.atlas.ShapedFrameLayout;
 import com.layer.sdk.messaging.MessagePart;
@@ -50,9 +50,9 @@ public class GeoCell extends Cell implements Utils.DownloadQueue.CompleteListene
     
     ImageSpec spec;
     
-    final AtlasMessagesList messagesList;
+    final AtlasMessageListOld messagesList;
 
-    public GeoCell(MessagePart messagePart, AtlasMessagesList messagesList) {
+    public GeoCell(MessagePart messagePart, AtlasMessageListOld messagesList) {
         super(messagePart);
         this.messagesList = messagesList;
         

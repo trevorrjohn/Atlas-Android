@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'git-repo'
 
 android {
     compileSdkVersion 22
@@ -14,8 +15,13 @@ android {
     }
 }
 
+repositories {
+    maven { url "${System.env.HOME}/.m2/repository" }
+    github("layerhq", "maven-private", "master", "releases")
+}
+
 dependencies {
-    compile(group: 'com.layer.sdk', name: 'layer-sdk', version: "0.16.0") {
+    compile(group: 'com.layer.sdk', name: 'layer-sdk', version: "0.16.1") {
         exclude group: "com.android.support"
     }
     compile 'org.slf4j:slf4j-nop:1.5.8'

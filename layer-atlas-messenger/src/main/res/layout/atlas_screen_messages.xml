@@ -34,7 +34,7 @@
             android:layout_weight="1"
             >
             
-            <com.layer.atlas.AtlasMessagesList 
+            <com.layer.atlas.old.AtlasMessageListOld 
                 android:id="@+id/atlas_screen_messages_messages_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

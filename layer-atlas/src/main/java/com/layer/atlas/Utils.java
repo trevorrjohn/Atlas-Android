@@ -34,11 +34,6 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.layer.atlas.cells.Cell;
-import com.layer.atlas.cells.GIFCell;
-import com.layer.atlas.cells.GeoCell;
-import com.layer.atlas.cells.ImageCell;
-import com.layer.atlas.cells.TextCell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
@@ -68,7 +63,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -1011,83 +1005,6 @@ public class Utils {
             if (ImageLoader.debug)
                 Log.w(ImageLoader.TAG, "ready() FileStreamProvider, file ready: " + file.getAbsolutePath());
             return true;
-        }
-    }
-
-    /**
-     * Basic {@link AtlasMessagesList.CellFactory} supports mime-types
-     * <li> {@link Utils#MIME_TYPE_TEXT}
-     * <li> {@link Utils#MIME_TYPE_ATLAS_LOCATION}
-     * <li> {@link Utils#MIME_TYPE_IMAGE_JPEG}
-     * <li> {@link Utils#MIME_TYPE_IMAGE_GIF}
-     * <li> {@link Utils#MIME_TYPE_IMAGE_PNG}
-     * ... including 3-part images with preview and dimensions
-     */
-    public static class DefaultCellFactory extends AtlasMessagesList.CellFactory {
-        public final AtlasMessagesList messagesList;
-
-        public DefaultCellFactory(AtlasMessagesList messagesList) {
-            this.messagesList = messagesList;
-        }
-
-        /**
-         * Scan message and messageParts and build corresponding Cell(s). Put them into result list
-         *
-         * @param msg         - message to build Cell(s) for
-         * @param destination - result list of Cells
-         */
-        public void buildCellForMessage(Message msg, List<Cell> destination) {
-            final ArrayList<MessagePart> parts = new ArrayList<MessagePart>(msg.getMessageParts());
-
-            for (int partNo = 0; partNo < parts.size(); partNo++) {
-                final MessagePart part = parts.get(partNo);
-                final String mimeType = part.getMimeType();
-
-                if (MIME_TYPE_IMAGE_PNG.equals(mimeType)
-                        || MIME_TYPE_IMAGE_JPEG.equals(mimeType)
-                        || MIME_TYPE_IMAGE_GIF.equals(mimeType)
-                        ) {
-
-                    // 3 parts image support
-                    if ((partNo + 2 < parts.size()) && MIME_TYPE_IMAGE_DIMENSIONS.equals(parts.get(partNo + 2).getMimeType())) {
-                        String jsonDimensions = new String(parts.get(partNo + 2).getData());
-                        try {
-                            JSONObject jo = new JSONObject(jsonDimensions);
-                            int orientation = jo.getInt("orientation");
-                            int width = jo.getInt("width");
-                            int height = jo.getInt("height");
-                            if (orientation == 1 || orientation == 3) {
-                                width = jo.getInt("height");
-                                height = jo.getInt("width");
-                            }
-                            Cell imageCell = mimeType.equals(MIME_TYPE_IMAGE_GIF)  
-                                    ? new GIFCell(part, parts.get(partNo + 1), width, height, orientation, messagesList)
-                                    : new ImageCell(part, parts.get(partNo + 1), width, height, orientation, messagesList);
-                            destination.add(imageCell);
-                            if (debug)
-                                Log.w(TAG, "cellForMessage() 3-image part found at partNo: " + partNo + ", " + width + "x" + height + "@" + orientation);
-                            partNo++; // skip preview
-                            partNo++; // skip dimensions part
-                        } catch (JSONException e) {
-                            Log.e(TAG, "cellForMessage() cannot parse 3-part image", e);
-                        }
-                    } else {
-                        // regular image
-                        Cell cell = mimeType.equals(MIME_TYPE_IMAGE_GIF) 
-                                ? new GIFCell(part, messagesList)
-                                : new ImageCell(part, messagesList);
-                        destination.add(cell);
-                        if (debug)
-                            Log.w(TAG, "cellForMessage() single-image part found at partNo: " + partNo);
-                    }
-
-                } else if (MIME_TYPE_ATLAS_LOCATION.equals(part.getMimeType())) {
-                    destination.add(new GeoCell(part, messagesList));
-                } else {
-                    Cell cellData = new TextCell(part, messagesList);
-                    destination.add(cellData);
-                }
-            }
         }
     }
 

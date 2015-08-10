@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -53,9 +53,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.layer.atlas.Utils.DefaultCellFactory;
+import com.layer.atlas.Participant;
+import com.layer.atlas.ParticipantProvider;
+import com.layer.atlas.R;
+import com.layer.atlas.Utils;
 import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.cells.Cell;
+import com.layer.atlas.cells.GIFCell;
+import com.layer.atlas.cells.GeoCell;
+import com.layer.atlas.cells.ImageCell;
+import com.layer.atlas.cells.TextCell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChange.Type;
@@ -68,12 +75,15 @@ import com.layer.sdk.messaging.Message.RecipientStatus;
 import com.layer.sdk.messaging.MessagePart;
 import com.layer.sdk.query.Query;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * @author Oleg Orlov
  * @since 13 May 2015
  */
-public class AtlasMessagesList extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
-    private static final String TAG = AtlasMessagesList.class.getSimpleName();
+public class AtlasMessageListOld extends FrameLayout implements LayerChangeEventListener.MainThread.Weak {
+    private static final String TAG = AtlasMessageListOld.class.getSimpleName();
     private static final boolean debug = false;
     
     private static final int MESSAGE_TYPE_UPDATE_VALUES = 0;
@@ -94,7 +104,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     /** 
      * Ordered list of messages from Query/Conversation (used to calculate delivery status) 
      */
-    private ArrayList<MessageData> messagesOrder = new ArrayList<AtlasMessagesList.MessageData>();
+    private ArrayList<MessageData> messagesOrder = new ArrayList<AtlasMessageListOld.MessageData>();
     
     /** 
      *  Collects ids of messages that was changed to rebuild cells at next {@link #updateValues()} <p>
@@ -144,31 +154,31 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     private Paint avatarPaint = new Paint();
     private Paint maskPaint = new Paint();
     
-    public AtlasMessagesList(Context context, AttributeSet attrs, int defStyle) {
+    public AtlasMessageListOld(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         parseStyle(context, attrs, defStyle);
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         setupPaints();
     }
 
-    public AtlasMessagesList(Context context, AttributeSet attrs) {
+    public AtlasMessageListOld(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AtlasMessagesList(Context context) {
+    public AtlasMessageListOld(Context context) {
         super(context);
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         setupPaints();
     }
 
-    /** Setup with {@link Utils.DefaultCellFactory}  */
-    public AtlasMessagesList init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
-        init(layerClient, participantProvider, new Utils.DefaultCellFactory(this));
+    /** Setup with {@link DefaultCellFactory}  */
+    public AtlasMessageListOld init(final LayerClient layerClient, final ParticipantProvider participantProvider) {
+        init(layerClient, participantProvider, new DefaultCellFactory(this));
         return this;
     }
     
     /** @param cellFactory - use or extend {@link DefaultCellFactory} to get basic cells support */
-    public AtlasMessagesList init(final LayerClient layerClient, final ParticipantProvider participantProvider, CellFactory cellFactory) {
+    public AtlasMessageListOld init(final LayerClient layerClient, final ParticipantProvider participantProvider, CellFactory cellFactory) {
         if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (messagesList != null) throw new IllegalStateException("AtlasMessagesList is already initialized!");
@@ -368,25 +378,25 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     }
 
     public void parseStyle(Context context, AttributeSet attrs, int defStyle) {
-        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasMessageList, R.attr.AtlasMessageList, defStyle);
-        this.myTextColor = ta.getColor(R.styleable.AtlasMessageList_myTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.myTextStyle = ta.getInt(R.styleable.AtlasMessageList_myTextStyle, Typeface.NORMAL);
-        String myTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_myTextTypeface); 
+        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasMessageListOld, R.attr.AtlasMessageList, defStyle);
+        this.myTextColor = ta.getColor(R.styleable.AtlasMessageListOld_myTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.myTextStyle = ta.getInt(R.styleable.AtlasMessageListOld_myTextStyle, Typeface.NORMAL);
+        String myTextTypefaceName = ta.getString(R.styleable.AtlasMessageListOld_myTextTypeface); 
         this.myTextTypeface  = myTextTypefaceName != null ? Typeface.create(myTextTypefaceName, myTextStyle) : null;
         //this.myTextSize = ta.getDimension(R.styleable.AtlasMessageList_myTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
 
-        this.otherTextColor = ta.getColor(R.styleable.AtlasMessageList_theirTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.otherTextStyle = ta.getInt(R.styleable.AtlasMessageList_theirTextStyle, Typeface.NORMAL);
-        String otherTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_theirTextTypeface); 
+        this.otherTextColor = ta.getColor(R.styleable.AtlasMessageListOld_theirTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.otherTextStyle = ta.getInt(R.styleable.AtlasMessageListOld_theirTextStyle, Typeface.NORMAL);
+        String otherTextTypefaceName = ta.getString(R.styleable.AtlasMessageListOld_theirTextTypeface); 
         this.otherTextTypeface  = otherTextTypefaceName != null ? Typeface.create(otherTextTypefaceName, otherTextStyle) : null;
         //this.otherTextSize = ta.getDimension(R.styleable.AtlasMessageList_theirTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
         
-        this.myBubbleColor  = ta.getColor(R.styleable.AtlasMessageList_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
-        this.otherBubbleColor = ta.getColor(R.styleable.AtlasMessageList_theirBubbleColor, context.getResources().getColor(R.color.atlas_background_gray));
+        this.myBubbleColor  = ta.getColor(R.styleable.AtlasMessageListOld_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
+        this.otherBubbleColor = ta.getColor(R.styleable.AtlasMessageListOld_theirBubbleColor, context.getResources().getColor(R.color.atlas_background_gray));
 
-        this.dateTextColor = ta.getColor(R.styleable.AtlasMessageList_dateTextColor, context.getResources().getColor(R.color.atlas_text_gray)); 
-        this.avatarTextColor = ta.getColor(R.styleable.AtlasMessageList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black)); 
-        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasMessageList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
+        this.dateTextColor = ta.getColor(R.styleable.AtlasMessageListOld_dateTextColor, context.getResources().getColor(R.color.atlas_text_gray)); 
+        this.avatarTextColor = ta.getColor(R.styleable.AtlasMessageListOld_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black)); 
+        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasMessageListOld_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
         ta.recycle();
     }
     
@@ -681,7 +691,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         return conv;
     }
 
-    public AtlasMessagesList setConversation(Conversation conv) {
+    public AtlasMessageListOld setConversation(Conversation conv) {
         this.conv = conv;
         this.query = null;
         updateValues();
@@ -689,7 +699,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         return this;
     }
     
-    public AtlasMessagesList setQuery(Query<Message> query) {
+    public AtlasMessageListOld setQuery(Query<Message> query) {
         // check
         if ( ! Message.class.equals(query.getQueryClass())) {
             throw new IllegalArgumentException("Query must return Message object. Actual class: " + query.getQueryClass());
@@ -707,7 +717,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         return client;
     }
     
-    public AtlasMessagesList setItemClickListener(ItemClickListener clickListener) {
+    public AtlasMessageListOld setItemClickListener(ItemClickListener clickListener) {
         this.clickListener = clickListener;
         return this;
     }
@@ -727,4 +737,80 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         void onItemClick(Cell item);
     }
 
+    /**
+     * Basic {@link CellFactory} supports mime-types
+     * <li> {@link Utils#MIME_TYPE_TEXT}
+     * <li> {@link Utils#MIME_TYPE_ATLAS_LOCATION}
+     * <li> {@link Utils#MIME_TYPE_IMAGE_JPEG}
+     * <li> {@link Utils#MIME_TYPE_IMAGE_GIF}
+     * <li> {@link Utils#MIME_TYPE_IMAGE_PNG}
+     * ... including 3-part images with preview and dimensions
+     */
+    public static class DefaultCellFactory extends CellFactory {
+        public final AtlasMessageListOld messagesList;
+
+        public DefaultCellFactory(AtlasMessageListOld messagesList) {
+            this.messagesList = messagesList;
+        }
+
+        /**
+         * Scan message and messageParts and build corresponding Cell(s). Put them into result list
+         *
+         * @param msg         - message to build Cell(s) for
+         * @param destination - result list of Cells
+         */
+        public void buildCellForMessage(Message msg, List<Cell> destination) {
+            final ArrayList<MessagePart> parts = new ArrayList<MessagePart>(msg.getMessageParts());
+
+            for (int partNo = 0; partNo < parts.size(); partNo++) {
+                final MessagePart part = parts.get(partNo);
+                final String mimeType = part.getMimeType();
+
+                if (Utils.MIME_TYPE_IMAGE_PNG.equals(mimeType)
+                        || Utils.MIME_TYPE_IMAGE_JPEG.equals(mimeType)
+                        || Utils.MIME_TYPE_IMAGE_GIF.equals(mimeType)
+                        ) {
+
+                    // 3 parts image support
+                    if ((partNo + 2 < parts.size()) && Utils.MIME_TYPE_IMAGE_DIMENSIONS.equals(parts.get(partNo + 2).getMimeType())) {
+                        String jsonDimensions = new String(parts.get(partNo + 2).getData());
+                        try {
+                            JSONObject jo = new JSONObject(jsonDimensions);
+                            int orientation = jo.getInt("orientation");
+                            int width = jo.getInt("width");
+                            int height = jo.getInt("height");
+                            if (orientation == 1 || orientation == 3) {
+                                width = jo.getInt("height");
+                                height = jo.getInt("width");
+                            }
+                            Cell imageCell = mimeType.equals(Utils.MIME_TYPE_IMAGE_GIF)  
+                                    ? new GIFCell(part, parts.get(partNo + 1), width, height, orientation, messagesList)
+                                    : new ImageCell(part, parts.get(partNo + 1), width, height, orientation, messagesList);
+                            destination.add(imageCell);
+                            if (debug)
+                                Log.w(TAG, "cellForMessage() 3-image part found at partNo: " + partNo + ", " + width + "x" + height + "@" + orientation);
+                            partNo++; // skip preview
+                            partNo++; // skip dimensions part
+                        } catch (JSONException e) {
+                            Log.e(TAG, "cellForMessage() cannot parse 3-part image", e);
+                        }
+                    } else {
+                        // regular image
+                        Cell cell = mimeType.equals(Utils.MIME_TYPE_IMAGE_GIF) 
+                                ? new GIFCell(part, messagesList)
+                                : new ImageCell(part, messagesList);
+                        destination.add(cell);
+                        if (debug)
+                            Log.w(TAG, "cellForMessage() single-image part found at partNo: " + partNo);
+                    }
+
+                } else if (Utils.MIME_TYPE_ATLAS_LOCATION.equals(part.getMimeType())) {
+                    destination.add(new GeoCell(part, messagesList));
+                } else {
+                    Cell cellData = new TextCell(part, messagesList);
+                    destination.add(cellData);
+                }
+            }
+        }
+    }
 }

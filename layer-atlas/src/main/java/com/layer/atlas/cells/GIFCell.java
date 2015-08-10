@@ -22,7 +22,7 @@ import android.util.Log;
 
 import com.layer.atlas.Utils;
 import com.layer.atlas.Utils.ImageLoader.InputStreamProvider;
-import com.layer.atlas.AtlasMessagesList;
+import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.GIFDrawable;
 import com.layer.sdk.messaging.MessagePart;
 
@@ -34,11 +34,11 @@ public class GIFCell extends ImageCell {
     private static final String TAG = GIFCell.class.getSimpleName();
     private static final boolean debug = false;
     
-    public GIFCell(MessagePart fullImagePart, MessagePart previewImagePart, int width, int height, int orientation, AtlasMessagesList messagesList) {
+    public GIFCell(MessagePart fullImagePart, MessagePart previewImagePart, int width, int height, int orientation, AtlasMessageListOld messagesList) {
         super(fullImagePart, previewImagePart, width, height, orientation, messagesList);
     }
     
-    public GIFCell(MessagePart fullImagePart, AtlasMessagesList messagesList) {
+    public GIFCell(MessagePart fullImagePart, AtlasMessageListOld messagesList) {
         super(fullImagePart, messagesList);
     }
 

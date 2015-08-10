@@ -96,7 +96,7 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
     public void onQueryItemInserted(RecyclerViewController controller, int position) {
         notifyItemInserted(position);
         if ((position + 1) == getItemCount()) {
-            mCallback.onItemInserted();
+            mCallback.onItemInserted(this);
         }
     }
 
@@ -104,7 +104,7 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
     public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
         notifyItemRangeInserted(positionStart, itemCount);
         if ((positionStart + itemCount + 1) == getItemCount()) {
-            mCallback.onItemInserted();
+            mCallback.onItemInserted(this);
         }
     }
 
@@ -124,7 +124,6 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
     }
 
     public interface Callback {
-        void onItemInserted();
+        void onItemInserted(AtlasQueryAdapter queryAdapter);
     }
-
 }

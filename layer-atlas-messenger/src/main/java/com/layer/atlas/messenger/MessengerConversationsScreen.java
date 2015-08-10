@@ -29,9 +29,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.layer.atlas.AtlasConversationsList;
-import com.layer.atlas.AtlasConversationsList.ConversationClickListener;
-import com.layer.atlas.AtlasConversationsList.ConversationLongClickListener;
+import com.layer.atlas.old.AtlasConversationsListOld;
+import com.layer.atlas.old.AtlasConversationsListOld.ConversationClickListener;
+import com.layer.atlas.old.AtlasConversationsListOld.ConversationLongClickListener;
 import com.layer.atlas.Utils;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
@@ -55,7 +55,7 @@ public class MessengerConversationsScreen extends Activity {
     private MessengerApp app;
 
     private View btnNewConversation;
-    private AtlasConversationsList conversationsList;
+    private AtlasConversationsListOld conversationsList;
     private boolean isInitialized = false;
     private boolean forceLogout = false;
     private boolean showSplash = true;
@@ -73,7 +73,7 @@ public class MessengerConversationsScreen extends Activity {
         }
 
         if (!isInitialized) {
-            this.conversationsList = (AtlasConversationsList) findViewById(R.id.atlas_screen_conversations_conversations_list);
+            this.conversationsList = (AtlasConversationsListOld) findViewById(R.id.atlas_screen_conversations_conversations_list);
             this.conversationsList.init(app.getLayerClient(), app.getParticipantProvider());
             conversationsList.setClickListener(new ConversationClickListener() {
                 public void onItemClick(Conversation conversation) {
@@ -194,7 +194,7 @@ public class MessengerConversationsScreen extends Activity {
             integrator.initiateScan();
             return;
         } else if (app.getLayerClient() == null) {
-            // Use provided App ID to initialize new client
+            // Use provided App ID to initialize new mLayerClient
             app.initLayerClient(app.getAppId());
         }
         

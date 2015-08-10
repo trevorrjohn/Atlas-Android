@@ -51,9 +51,9 @@ import com.layer.atlas.Utils;
 import com.layer.atlas.Participant;
 import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasMessageComposer;
-import com.layer.atlas.AtlasMessagesList;
+import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.cells.Cell;
-import com.layer.atlas.AtlasMessagesList.ItemClickListener;
+import com.layer.atlas.old.AtlasMessageListOld.ItemClickListener;
 import com.layer.atlas.AtlasParticipantPicker;
 import com.layer.atlas.AtlasTypingIndicator;
 import com.layer.atlas.cells.ImageCell;
@@ -85,7 +85,7 @@ public class MessengerMessagesScreen extends Activity {
     public static final int REQUEST_CODE_GALLERY  = 111;
     public static final int REQUEST_CODE_CAMERA   = 112;
     
-    /** Switch it to <code>true</code> to see {@link AtlasMessagesList} Query support in action */
+    /** Switch it to <code>true</code> to see {@link AtlasMessageListOld} Query support in action */
     private static final boolean USE_QUERY = false;
         
     private volatile Conversation conv;
@@ -94,7 +94,7 @@ public class MessengerMessagesScreen extends Activity {
     private Location lastKnownLocation;
     private Handler uiHandler;
     
-    private AtlasMessagesList messagesList;
+    private AtlasMessageListOld messagesList;
     private AtlasMessageComposer messageComposer;
     private AtlasParticipantPicker participantsPicker;
     private AtlasTypingIndicator typingIndicator;
@@ -118,7 +118,7 @@ public class MessengerMessagesScreen extends Activity {
         }
 
         participantsPicker = (AtlasParticipantPicker) findViewById(R.id.atlas_screen_messages_participants_picker);
-        participantsPicker.init(new String[]{app.getLayerClient().getAuthenticatedUserId()}, app.getParticipantProvider());
+        participantsPicker.init(app.getParticipantProvider(), app.getLayerClient().getAuthenticatedUserId());
         if (convIsNew) {
             participantsPicker.setVisibility(View.VISIBLE);
         }
@@ -182,7 +182,7 @@ public class MessengerMessagesScreen extends Activity {
             }
         });
         
-        messagesList = (AtlasMessagesList) findViewById(R.id.atlas_screen_messages_messages_list);
+        messagesList = (AtlasMessageListOld) findViewById(R.id.atlas_screen_messages_messages_list);
         messagesList.init(app.getLayerClient(), app.getParticipantProvider());
         if (USE_QUERY) {
             Query<Message> query = Query.builder(Message.class)

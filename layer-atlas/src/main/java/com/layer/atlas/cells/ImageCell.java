@@ -30,7 +30,7 @@ import com.layer.atlas.Utils.ImageLoader.ImageSpec;
 import com.layer.atlas.Utils.MessagePartStreamProvider;
 import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasImageView;
-import com.layer.atlas.AtlasMessagesList;
+import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.AtlasProgressView;
 import com.layer.atlas.R;
 import com.layer.atlas.ShapedFrameLayout;
@@ -56,7 +56,7 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
     /** if more than 0 - download is in progress */
     volatile long downloadProgressBytes = -1;
     
-    final AtlasMessagesList messagesList;
+    final AtlasMessageListOld messagesList;
     
     /** Raw bitmap: as needed (0deg). Dimensions: respect bitmap: cell: 3264x2448@0, bitmap: 1632x1224 */
     public static final int ORIENTATION_NORMAL = 0;
@@ -67,11 +67,11 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
     /** Raw bitmap: rotated (90 Counter-clockwise). Dimensions: respect. cell: 3264x2448@3, bitmap: 1632x1224 */
     public static final int ORIENTATION_3_CCW_90 = 3;
     
-    public ImageCell(MessagePart fullImagePart, AtlasMessagesList messagesList) {
+    public ImageCell(MessagePart fullImagePart, AtlasMessageListOld messagesList) {
         this(fullImagePart, null, 0, 0, 0, messagesList);
     }
     
-    public ImageCell(MessagePart fullImagePart, MessagePart previewImagePart, int width, int height, int orientation, AtlasMessagesList messagesList) {
+    public ImageCell(MessagePart fullImagePart, MessagePart previewImagePart, int width, int height, int orientation, AtlasMessageListOld messagesList) {
         super(fullImagePart);
         this.fullPart = fullImagePart;
         this.previewPart = previewImagePart;
