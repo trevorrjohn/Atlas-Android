@@ -107,7 +107,7 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
      * @param listener The OnItemClickListener to notify about item clicks.
      * @return This AtlasQueryAdapter.
      */
-    public AtlasQueryAdapter<Tquery, Tview> setOnClickListener(OnItemClickListener<Tquery> listener) {
+    public AtlasQueryAdapter<Tquery, Tview> setOnItemClickListener(OnItemClickListener<Tquery> listener) {
         mClickListener = listener;
         return this;
     }

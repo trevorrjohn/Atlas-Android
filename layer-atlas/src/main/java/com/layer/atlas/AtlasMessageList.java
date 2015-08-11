@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.layer.sdk.messaging.Message;
+import com.layer.sdk.query.Query;
 
 /**
  * @author Oleg Orlov
@@ -61,14 +62,10 @@ public class AtlasMessageList extends RecyclerView {
         super(context);
     }
 
-    public AtlasMessageList init() {
+    public AtlasMessageList init(AtlasQueryAdapter<Message, ? extends ViewHolder> adapter) {
         LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         manager.setStackFromEnd(true);
         setLayoutManager(manager);
-        return this;
-    }
-
-    public AtlasMessageList setAdapter(AtlasQueryAdapter<Message, ? extends ViewHolder> adapter) {
         super.setAdapter(adapter);
         return this;
     }
@@ -100,5 +97,38 @@ public class AtlasMessageList extends RecyclerView {
         mAvatarTextColor = ta.getColor(R.styleable.AtlasMessageList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
         mAvatarBackgroundColor = ta.getColor(R.styleable.AtlasMessageList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
         ta.recycle();
+    }
+
+    /**
+     * Convenience pass-through to this list's AtlasQueryAdapter.setOnItemClickListener().
+     *
+     * @see AtlasQueryAdapter#setOnItemClickListener(AtlasQueryAdapter.OnItemClickListener)
+     */
+    @SuppressWarnings("unchecked")
+    public AtlasMessageList setOnItemClickListener(AtlasQueryAdapter.OnItemClickListener<Message> listener) {
+        ((AtlasQueryAdapter<Message, ? extends ViewHolder>) getAdapter()).setOnItemClickListener(listener);
+        return this;
+    }
+
+    /**
+     * Convenience pass-through to this list's AtlasQueryAdapter.setOnAppendListener().
+     *
+     * @see AtlasQueryAdapter#setOnAppendListener(AtlasQueryAdapter.OnAppendListener)
+     */
+    @SuppressWarnings("unchecked")
+    public AtlasMessageList setOnAppendListener(AtlasQueryAdapter.OnAppendListener<Message> listener) {
+        ((AtlasQueryAdapter<Message, ? extends ViewHolder>) getAdapter()).setOnAppendListener(listener);
+        return this;
+    }
+
+    /**
+     * Convenience pass-through to this list's AtlasQueryAdapter.setQuery().
+     *
+     * @see AtlasQueryAdapter#setQuery(Query)
+     */
+    @SuppressWarnings("unchecked")
+    public AtlasMessageList setQuery(Query<Message> query) {
+        ((AtlasQueryAdapter<Message, ? extends ViewHolder>) getAdapter()).setQuery(query);
+        return this;
     }
 }
