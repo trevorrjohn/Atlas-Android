@@ -15,11 +15,12 @@ import com.layer.sdk.query.RecyclerViewController;
 public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<Tview> implements RecyclerViewController.Callback {
     private final RecyclerViewController<Tquery> mQueryController;
-    private final Callback mCallback;
+    protected OnAppendListener<Tquery> mAppendListener;
+    protected OnItemClickListener<Tquery> mClickListener;
 
-    public AtlasQueryAdapter(LayerClient client, Query<Tquery> query, Callback callback) {
-        mQueryController = client.newRecyclerViewController(query, null, this);
-        mCallback = callback;
+    public AtlasQueryAdapter(LayerClient client) {
+        // Setting Query to `null` means we must call setQuery() later.
+        mQueryController = client.newRecyclerViewController(null, null, this);
         setHasStableIds(false);
     }
 
@@ -51,6 +52,11 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
         return 1;
     }
 
+    public AtlasQueryAdapter<Tquery, Tview> setQuery(Query<Tquery> query) {
+        mQueryController.setQuery(query);
+        return this;
+    }
+
     /**
      * Refreshes this adapter by re-running the underlying Query.
      */
@@ -62,20 +68,54 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
         return mQueryController.getPosition(queryable);
     }
 
+    public Tquery getItem(int position) {
+        return mQueryController.getItem(position);
+    }
+
     @Override
     public void onBindViewHolder(Tview viewHolder, int position) {
-        onBindViewHolder(viewHolder, mQueryController.getItem(position));
+        onBindViewHolder(viewHolder, getItem(position));
     }
 
     @Override
     public int getItemViewType(int position) {
-        return getItemViewType(mQueryController.getItem(position));
+        return getItemViewType(getItem(position));
     }
 
     @Override
     public int getItemCount() {
         return mQueryController.getItemCount();
     }
+
+    /**
+     * Sets the OnAppendListener for this AtlasQueryAdapter.  The listener will be called when items
+     * are appended to the end of this adapter.  This is useful for implementing a scroll-to-bottom
+     * feature.
+     *
+     * @param listener The OnAppendListener to notify about appended items.
+     * @return This AtlasQueryAdapter.
+     */
+    public AtlasQueryAdapter<Tquery, Tview> setOnAppendListener(OnAppendListener<Tquery> listener) {
+        mAppendListener = listener;
+        return this;
+    }
+
+    /**
+     * Sets the OnItemClickListener for this AtlasQueryAdapter.  The listener will be called when
+     * items are clicked.
+     *
+     * @param listener The OnItemClickListener to notify about item clicks.
+     * @return This AtlasQueryAdapter.
+     */
+    public AtlasQueryAdapter<Tquery, Tview> setOnClickListener(OnItemClickListener<Tquery> listener) {
+        mClickListener = listener;
+        return this;
+    }
+
+
+    //==============================================================================================
+    // UI update callbacks
+    //==============================================================================================
 
     @Override
     public void onQueryDataSetChanged(RecyclerViewController controller) {
@@ -95,16 +135,17 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
     @Override
     public void onQueryItemInserted(RecyclerViewController controller, int position) {
         notifyItemInserted(position);
-        if ((position + 1) == getItemCount()) {
-            mCallback.onItemInserted(this);
+        if (mAppendListener != null && (position + 1) == getItemCount()) {
+            mAppendListener.onItemAppended(this, getItem(position));
         }
     }
 
     @Override
     public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
         notifyItemRangeInserted(positionStart, itemCount);
-        if ((positionStart + itemCount + 1) == getItemCount()) {
-            mCallback.onItemInserted(this);
+        int positionEnd = positionStart + itemCount;
+        if (mAppendListener != null && (positionEnd + 1) == getItemCount()) {
+            mAppendListener.onItemAppended(this, getItem(positionEnd));
         }
     }
 
@@ -123,7 +164,48 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public interface Callback {
-        void onItemInserted(AtlasQueryAdapter queryAdapter);
+
+    //==============================================================================================
+    // Inner classes
+    //==============================================================================================
+
+    /**
+     * Listens inserts to the end of an AtlasQueryAdapter.
+     *
+     * @param <Tquery> Type of item the AtlasQueryAdapter contains.
+     */
+    public interface OnAppendListener<Tquery extends Queryable> {
+        /**
+         * Alerts the listener to inserts at the end of an AtlasQueryAdapter.  If a batch of items
+         * were appended, only the last one will be alerted here.
+         *
+         * @param adapter The AtlasQueryAdapter which had an item appended.
+         * @param item    The item appended to the AtlasQueryAdapter.
+         */
+        void onItemAppended(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
+    }
+
+    /**
+     * Listens for item clicks on an AtlasQueryAdapter.
+     *
+     * @param <Tquery> The type of item the AtlasQueryAdapter contains.
+     */
+    public interface OnItemClickListener<Tquery extends Queryable> {
+        /**
+         * Alerts the listener to item clicks.
+         *
+         * @param adapter The AtlasQueryAdapter which had an item clicked.
+         * @param item    The item clicked.
+         */
+        void onItemClicked(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
+
+        /**
+         * Alerts the listener to long item clicks.
+         *
+         * @param adapter The AtlasQueryAdapter which had an item long-clicked.
+         * @param item    The item long-clicked.
+         * @return true if the long-click was handled, false otherwise.
+         */
+        boolean onItemLongClicked(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
     }
 }
