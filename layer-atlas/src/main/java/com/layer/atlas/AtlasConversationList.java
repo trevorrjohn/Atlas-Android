@@ -69,6 +69,11 @@ public class AtlasConversationList extends RecyclerView {
         LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         manager.setStackFromEnd(false);
         setLayoutManager(manager);
+        setAdapter(adapter);
+        return this;
+    }
+
+    public AtlasConversationList setAdapter(AtlasQueryAdapter<Conversation, ? extends ViewHolder> adapter) {
         super.setAdapter(adapter);
         return this;
     }

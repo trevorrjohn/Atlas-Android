@@ -1,5 +1,7 @@
 package com.layer.atlas;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -15,17 +17,20 @@ import com.layer.sdk.query.RecyclerViewController;
 public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<Tview> implements RecyclerViewController.Callback {
     private final RecyclerViewController<Tquery> mQueryController;
+    protected final Handler mUiThreadHandler;
+
     protected OnAppendListener<Tquery> mAppendListener;
-    protected OnItemClickListener<Tquery> mClickListener;
+    protected OnItemClickListener<Tquery> mItemClickListener;
 
     public AtlasQueryAdapter(LayerClient client) {
         // Setting Query to `null` means we must call setQuery() later.
         mQueryController = client.newRecyclerViewController(null, null, this);
+        mUiThreadHandler = new Handler(Looper.getMainLooper());
         setHasStableIds(false);
     }
 
     /**
-     * Returns a ViewHolder for the given view type, to be bound with data later in {@link #onBindViewHolder(RecyclerView.ViewHolder, Queryable)}.
+     * Returns a ViewHolder for the given view type, to be bound with data later in {@link #onBindViewHolder(RecyclerView.ViewHolder, Queryable, int)}.
      *
      * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
      * @param viewType The view type of the new View.
@@ -39,8 +44,9 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
      *
      * @param viewHolder ViewHolder to bind with data from the given Queryable.
      * @param queryable  Queryable whose data to bind with the given ViewHolder.
+     * @param position   Position of the Queryable within the Adapter.
      */
-    public abstract void onBindViewHolder(Tview viewHolder, Tquery queryable);
+    public abstract void onBindViewHolder(Tview viewHolder, Tquery queryable, int position);
 
     /**
      * Override this method if more than one view type is used.
@@ -68,13 +74,17 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
         return mQueryController.getPosition(queryable);
     }
 
+    public Integer getPosition(Tquery queryable, int lastPosition) {
+        return mQueryController.getPosition(queryable, lastPosition);
+    }
+
     public Tquery getItem(int position) {
         return mQueryController.getItem(position);
     }
 
     @Override
     public void onBindViewHolder(Tview viewHolder, int position) {
-        onBindViewHolder(viewHolder, getItem(position));
+        onBindViewHolder(viewHolder, getItem(position), position);
     }
 
     @Override
@@ -108,7 +118,7 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
      * @return This AtlasQueryAdapter.
      */
     public AtlasQueryAdapter<Tquery, Tview> setOnItemClickListener(OnItemClickListener<Tquery> listener) {
-        mClickListener = listener;
+        mItemClickListener = listener;
         return this;
     }
 

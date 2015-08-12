@@ -66,6 +66,11 @@ public class AtlasMessageList extends RecyclerView {
         LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         manager.setStackFromEnd(true);
         setLayoutManager(manager);
+        setAdapter(adapter);
+        return this;
+    }
+
+    public AtlasMessageList setAdapter(AtlasQueryAdapter<Message, ? extends ViewHolder> adapter) {
         super.setAdapter(adapter);
         return this;
     }

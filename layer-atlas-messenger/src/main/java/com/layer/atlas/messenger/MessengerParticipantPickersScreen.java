@@ -26,7 +26,6 @@ import android.widget.TextView;
 import com.layer.atlas.Utils.Tools;
 import com.layer.atlas.AtlasParticipantPicker;
 
-
 /**
  * @author Oleg Orlov
  * @since 24 Apr 2015
@@ -49,7 +48,7 @@ public class MessengerParticipantPickersScreen extends Activity {
         View cancelBtn = findViewById(R.id.atlas_screen_participants_picker_cancel);
         
         final AtlasParticipantPicker participantsPicker = (AtlasParticipantPicker) findViewById(R.id.atlas_screen_participants_picker_picker);
-        participantsPicker.init(skipUserIds, ((MessengerApp) getApplication()).getParticipantProvider());
+        participantsPicker.init(((MessengerApp) getApplication()).getParticipantProvider(), skipUserIds);
         
         addBtn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
