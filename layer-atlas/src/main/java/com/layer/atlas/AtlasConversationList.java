@@ -26,10 +26,6 @@ import android.util.AttributeSet;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Query;
 
-/**
- * @author Oleg Orlov
- * @since 14 May 2015
- */
 public class AtlasConversationList extends RecyclerView {
     private static final String TAG = AtlasConversationList.class.getSimpleName();
 
@@ -112,17 +108,6 @@ public class AtlasConversationList extends RecyclerView {
         mAvatarTextColor = ta.getColor(R.styleable.AtlasConversationList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
         mAvatarBackgroundColor = ta.getColor(R.styleable.AtlasConversationList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_shape_avatar_gray));
         ta.recycle();
-    }
-
-    /**
-     * Convenience pass-through to this list's AtlasQueryAdapter.setOnItemClickListener().
-     *
-     * @see AtlasQueryAdapter#setOnItemClickListener(AtlasQueryAdapter.OnItemClickListener)
-     */
-    @SuppressWarnings("unchecked")
-    public AtlasConversationList setOnItemClickListener(AtlasQueryAdapter.OnItemClickListener<Conversation> listener) {
-        ((AtlasQueryAdapter<Conversation, ? extends ViewHolder>) getAdapter()).setOnItemClickListener(listener);
-        return this;
     }
 
     /**

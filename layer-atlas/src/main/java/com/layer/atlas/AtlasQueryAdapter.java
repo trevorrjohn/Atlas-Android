@@ -20,7 +20,6 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
     protected final Handler mUiThreadHandler;
 
     protected OnAppendListener<Tquery> mAppendListener;
-    protected OnItemClickListener<Tquery> mItemClickListener;
 
     public AtlasQueryAdapter(LayerClient client) {
         // Setting Query to `null` means we must call setQuery() later.
@@ -110,18 +109,6 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
         return this;
     }
 
-    /**
-     * Sets the OnItemClickListener for this AtlasQueryAdapter.  The listener will be called when
-     * items are clicked.
-     *
-     * @param listener The OnItemClickListener to notify about item clicks.
-     * @return This AtlasQueryAdapter.
-     */
-    public AtlasQueryAdapter<Tquery, Tview> setOnItemClickListener(OnItemClickListener<Tquery> listener) {
-        mItemClickListener = listener;
-        return this;
-    }
-
 
     //==============================================================================================
     // UI update callbacks
@@ -193,29 +180,5 @@ public abstract class AtlasQueryAdapter<Tquery extends Queryable, Tview extends 
          * @param item    The item appended to the AtlasQueryAdapter.
          */
         void onItemAppended(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
-    }
-
-    /**
-     * Listens for item clicks on an AtlasQueryAdapter.
-     *
-     * @param <Tquery> The type of item the AtlasQueryAdapter contains.
-     */
-    public interface OnItemClickListener<Tquery extends Queryable> {
-        /**
-         * Alerts the listener to item clicks.
-         *
-         * @param adapter The AtlasQueryAdapter which had an item clicked.
-         * @param item    The item clicked.
-         */
-        void onItemClicked(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
-
-        /**
-         * Alerts the listener to long item clicks.
-         *
-         * @param adapter The AtlasQueryAdapter which had an item long-clicked.
-         * @param item    The item long-clicked.
-         * @return true if the long-click was handled, false otherwise.
-         */
-        boolean onItemLongClicked(AtlasQueryAdapter<Tquery, ?> adapter, Tquery item);
     }
 }
