@@ -6,15 +6,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.layer.atlas.Participant;
 import com.layer.atlas.ParticipantProvider;
 import com.layer.atlas.R;
+import com.layer.atlas.Utils;
 import com.layer.sdk.LayerClient;
+import com.layer.sdk.messaging.Actor;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.query.Query;
 import com.layer.sdk.query.RecyclerViewController;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +36,15 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     protected final Handler mUiThreadHandler;
     protected OnAppendListener mAppendListener;
 
+    // CellType
     protected int mViewTypeCount = 0;
     protected final Map<Integer, CellType> mCellTypesByViewType = new HashMap<Integer, CellType>();
     protected final Map<CellType, Integer> mViewTypesByCellType = new HashMap<CellType, Integer>();
+
+    // Dates and Clustering
+    private final Map<Uri, Cluster> mClusterCache = new HashMap<Uri, Cluster>();
+    private final DateFormat mDateFormat;
+    private final DateFormat mTimeFormat;
 
 
     public AtlasMessagesAdapter(Context context, LayerClient client, ParticipantProvider participantProvider) {
@@ -43,6 +54,9 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         mLayoutInflater = LayoutInflater.from(context);
         mUiThreadHandler = new Handler(Looper.getMainLooper());
         setHasStableIds(false);
+
+        mDateFormat = android.text.format.DateFormat.getDateFormat(context);
+        mTimeFormat = android.text.format.DateFormat.getTimeFormat(context);
     }
 
     /**
@@ -55,7 +69,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
      */
     public abstract Object onCreateCellHolder(ViewGroup cellView, LayoutInflater layoutInflater, int cellType);
 
-    public abstract void onBindCellHolder(Object cellHolder, int cellType, Message message, int position);
+    public abstract void onBindCellHolder(Object cellHolder, int cellType, boolean isMe, Message message, int position);
 
     /**
      * Returns the cell type (previously registered with registerCellTypes) for this Message.
@@ -115,8 +129,61 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
 
     @Override
     public void onBindViewHolder(MessageViewHolder viewHolder, int position) {
-        int cellType = mCellTypesByViewType.get(viewHolder.getItemViewType()).mType;
-        onBindCellHolder(viewHolder.mCellHolder, cellType, getItem(position), position);
+        Message message = getItem(position);
+        CellType cellType = mCellTypesByViewType.get(viewHolder.getItemViewType());
+
+        // Name
+        Actor sender = message.getSender();
+        if (sender.getName() != null) {
+            viewHolder.mUserNameHeader.setText(sender.getName());
+        } else {
+            Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
+            viewHolder.mUserNameHeader.setText(participant != null ? participant.getName() : "...");
+        }
+
+        // Clustering and Dates
+        Cluster cluster = getClustering(message, position);
+        if (cluster.mDateBoundaryWithPrevious) {
+            Date sentAt = message.getSentAt();
+            if (sentAt == null) sentAt = new Date();
+            String timeBarDayText = Utils.formatTimeDay(sentAt);
+            viewHolder.mTimeBarDay.setText(timeBarDayText);
+            String timeBarTimeText = mTimeFormat.format(sentAt.getTime());
+            viewHolder.mTimeBarTime.setText(timeBarTimeText);
+
+            viewHolder.mTimeBar.setVisibility(View.VISIBLE);
+            viewHolder.mSpaceMinute.setVisibility(View.GONE);
+            viewHolder.mSpaceHour.setVisibility(View.GONE);
+        } else {
+            viewHolder.mTimeBar.setVisibility(View.GONE);
+            if (cluster.mClusterWithPrevious != null) {
+                switch (cluster.mClusterWithPrevious) {
+                    case MINUTE:
+                        viewHolder.mSpaceMinute.setVisibility(View.GONE);
+                        viewHolder.mSpaceHour.setVisibility(View.GONE);
+                        break;
+                    case HOUR:
+                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
+                        viewHolder.mSpaceHour.setVisibility(View.GONE);
+                        break;
+                    case MORE_THAN_HOUR:
+                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
+                        viewHolder.mSpaceHour.setVisibility(View.VISIBLE);
+                        break;
+                    case NEW_SENDER:
+                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
+                        viewHolder.mSpaceHour.setVisibility(View.VISIBLE);
+                        break;
+                }
+            } else {
+                // No previous message
+                viewHolder.mSpaceMinute.setVisibility(View.GONE);
+                viewHolder.mSpaceHour.setVisibility(View.GONE);
+            }
+        }
+
+        // Cell
+        onBindCellHolder(viewHolder.mCellHolder, cellType.mType, cellType.mMe, message, position);
     }
 
     @Override
@@ -147,80 +214,8 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
 
 
     //==============================================================================================
-    // TODO
+    // Clustering
     //==============================================================================================
-//    private final DateFormat mDateFormat;
-//    private final DateFormat mTimeFormat;
-
-//    mDateFormat = android.text.format.DateFormat.getDateFormat(context);
-//    mTimeFormat = android.text.format.DateFormat.getTimeFormat(context);
-
-
-//    @Override
-//    public void onBindViewHolder(ViewHolder v, Message message, int messagePosition) {
-//        LayerClient client = App.getLayerClient();
-//
-//        v.mMessage = message;
-//
-//        // Turn stuff off
-//        v.mSpacerRight.setVisibility(View.GONE);
-//        v.mReceiptView.setVisibility(View.GONE);
-//
-//        // Name
-//        Actor sender = message.getSender();
-//        if (sender.getName() != null) {
-//            v.mUserNameHeader.setText(sender.getName());
-//        } else {
-//            Participant participant = mProvider.getParticipant(sender.getUserId());
-//            v.mUserNameHeader.setText(participant != null ? participant.getName() : "...");
-//        }
-//
-//        // Clustering
-//        Cluster cluster = getClustering(message, messagePosition);
-//        if (cluster.mDateBoundaryWithPrevious) {
-//            Date sentAt = message.getSentAt();
-//            if (sentAt == null) sentAt = new Date();
-//            String timeBarDayText = Utils.formatTimeDay(sentAt);
-//            v.mTimeBarDay.setText(timeBarDayText);
-//            String timeBarTimeText = mTimeFormat.format(sentAt.getTime());
-//            v.mTimeBarTime.setText(timeBarTimeText);
-//
-//            v.mTimeBar.setVisibility(View.VISIBLE);
-//            v.mSpacerTop1.setVisibility(View.GONE);
-//            v.mSpacerTop2.setVisibility(View.GONE);
-//        } else {
-//            v.mTimeBar.setVisibility(View.GONE);
-//            if (cluster.mClusterWithPrevious != null) {
-//                switch (cluster.mClusterWithPrevious) {
-//                    case MINUTE:
-//                        v.mSpacerTop1.setVisibility(View.GONE);
-//                        v.mSpacerTop2.setVisibility(View.GONE);
-//                        break;
-//                    case HOUR:
-//                        v.mSpacerTop1.setVisibility(View.VISIBLE);
-//                        v.mSpacerTop2.setVisibility(View.GONE);
-//                        break;
-//                    case MORE_THAN_HOUR:
-//                        v.mSpacerTop1.setVisibility(View.VISIBLE);
-//                        v.mSpacerTop2.setVisibility(View.VISIBLE);
-//                        break;
-//                    case NEW_SENDER:
-//                        v.mSpacerTop1.setVisibility(View.VISIBLE);
-//                        v.mSpacerTop2.setVisibility(View.VISIBLE);
-//                        break;
-//                }
-//            } else {
-//                // No previous message
-//                v.mSpacerTop1.setVisibility(View.GONE);
-//                v.mSpacerTop2.setVisibility(View.GONE);
-//            }
-//        }
-//
-//        // Cell content
-//        mCellBinder.onBindMessageCell(client, message, v.mCellContainer);
-//    }
-
-    private final Map<Uri, Cluster> mClusterCache = new HashMap<Uri, Cluster>();
 
     private Cluster getClustering(Message message, int position) {
         Cluster result = mClusterCache.get(message.getId());
