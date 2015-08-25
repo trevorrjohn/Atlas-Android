@@ -28,20 +28,26 @@ import java.util.Set;
 
 /**
  * AtlasMessagesAdapter drives an AtlasMessagesList.  The AtlasMessagesAdapter itself handles
- * rendering sender names, avatars, dates, left/right alignment, and message clustering, leaving the
- * message content up to its registered MessageCells.  Different MessageCells should be registered
- * for every unique Message type -- one for each of text, maps, images, etc.  MessageCells are
- * typically segregated by MessagePart MIME types, like "text/plain", "image/jpeg", and
- * "application/vnd.geo+json".
+ * rendering sender names, avatars, dates, left/right alignment, and message clustering, and leaves
+ * rendering message content up to registered MessageCells.  Each MessageCell knows which Messages
+ * it can render, can create new View hierarchies for its Message types, and can render (bind)
+ * Message data with its created View hierarchies.  Typically, MessageCells are segregated by
+ * MessagePart MIME types (e.g. "text/plain", "image/jpeg", and "application/vnd.geo+json").
  *
- * Prior to rendering each Message, the AtlasMessagesAdapter determines which cell type to render
- * the Message with by calling MessageCell.isCellType() on each registered MessageCell.  The cell
- * that returns `true` becomes the MessageCell for that Message.  If no existing CellHolders are
- * available for that cell type, the adapter asks that MessageCell to create a new CellHolder via
- * MessageCell.onCreateCellHolder().  Once created, the adapter renders the Message via
- * MessageCell.onBindCellHolder().  Previously-created CellHolders are automatically recycled by the
- * adapter, and may be supplied in a future call to MessageCell.onBindCellHolder() for rendering a
- * different Message.
+ * Under the hood, the AtlasMessagesAdapter is a RecyclerView.Adapter, which automatically recycles
+ * its list items within view-type "buckets".  Each registered MessageCell actually creates two such
+ * view-types: one for cells sent by the authenticated user, and another for cells sent by remote
+ * actors.  This allows the AtlasMessagesAdapter to efficiently render images sent by the current
+ * user aligned on the left, and images sent by others aligned on the right, for example.  In case
+ * this sent-by distinction is of value when rendering cells, it provided as the `isMe` argument.
+ *
+ * When rendering Messages, the AtlasMessagesAdapter first determines which MessageCell to handle
+ * the Message with by iterating over its registered MessageCells, calling MessageCell.isCellType().
+ * The first MessageCell to return `true` becomes the MessageCell for that Message.  Then, the
+ * adapter checks for existing, recyclable CellHolders of that type.  If none are found, a new
+ * View hierarchy and CellHolder are created via MessageCell.onCreateCellHolder().  If an existing
+ * recyclable CellHolder of that type is found, or after creating a new one, the recycled- or
+ * created- CellHolder is bound with Message data via MessageCell.onBindCellHolder().
  */
 public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback {
     protected final LayerClient mLayerClient;
