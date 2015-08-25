@@ -42,12 +42,11 @@ import java.util.Set;
  * this sent-by distinction is of value when rendering cells, it provided as the `isMe` argument.
  *
  * When rendering Messages, the AtlasMessagesAdapter first determines which MessageCell to handle
- * the Message with by iterating over its registered MessageCells, calling MessageCell.isBindable().
- * The first MessageCell to return `true` becomes the MessageCell for that Message.  Then, the
- * adapter checks for existing, recyclable CellHolders of that type.  If none are found, a new
- * View hierarchy and CellHolder are created via MessageCell.onCreateCellHolder().  If an existing
- * recyclable CellHolder of that type is found, or after creating a new one, the recycled- or
- * created- CellHolder is bound with Message data via MessageCell.onBindCellHolder().
+ * the Message with calling MessageCell.isBindable() on each of its registered MessageCells. The
+ * first MessageCell to return `true` is used for that Message.  Then, the adapter checks for
+ * available CellHolders of that type.  If none are found, a new one is created with a call to
+ * MessageCell.onCreateCellHolder().  After creating a new CellHolder (or reusing an available one),
+ * the CellHolder is rendered in the UI with Message data via MessageCell.onBindCellHolder().
  */
 public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback {
     protected final LayerClient mLayerClient;
