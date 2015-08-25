@@ -47,6 +47,8 @@ import java.util.Set;
  * available CellHolders of that type.  If none are found, a new one is created with a call to
  * MessageCell.onCreateCellHolder().  After creating a new CellHolder (or reusing an available one),
  * the CellHolder is rendered in the UI with Message data via MessageCell.onBindCellHolder().
+ * 
+ * @see MessageCell
  */
 public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback {
     protected final LayerClient mLayerClient;
