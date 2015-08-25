@@ -42,7 +42,7 @@ import java.util.Set;
  * this sent-by distinction is of value when rendering cells, it provided as the `isMe` argument.
  *
  * When rendering Messages, the AtlasMessagesAdapter first determines which MessageCell to handle
- * the Message with by iterating over its registered MessageCells, calling MessageCell.isCellType().
+ * the Message with by iterating over its registered MessageCells, calling MessageCell.isBindable().
  * The first MessageCell to return `true` becomes the MessageCell for that Message.  Then, the
  * adapter checks for existing, recyclable CellHolders of that type.  If none are found, a new
  * View hierarchy and CellHolder are created via MessageCell.onCreateCellHolder().  If an existing
@@ -210,7 +210,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         Message message = getItem(position);
         boolean isMe = mLayerClient.getAuthenticatedUserId().equals(message.getSender().getUserId());
         for (MessageCell messageCell : mMessageCells) {
-            if (messageCell.isCellType(message)) {
+            if (messageCell.isBindable(message)) {
                 if (isMe) {
                     return mMyViewTypesByCell.get(messageCell);
                 } else {

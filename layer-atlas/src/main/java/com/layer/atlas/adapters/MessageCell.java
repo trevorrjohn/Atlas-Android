@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import com.layer.sdk.messaging.Message;
 
 public interface MessageCell {
-    boolean isCellType(Message message);
+    boolean isBindable(Message message);
 
     Object onCreateCellHolder(ViewGroup cellView, LayoutInflater layoutInflater);
 
