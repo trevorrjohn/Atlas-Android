@@ -97,17 +97,27 @@ public class AtlasMessageList extends RecyclerView {
     }
 
     /**
-     * Convenience pass-through to this list's AtlasMessagesAdapter.setOnAppendListener().
+     * Convenience pass-through to this list's AtlasMessagesAdapter.
      *
-     * @see AtlasMessagesAdapter#setOnAppendListener(AtlasMessagesAdapter.OnAppendListener)
+     * @see AtlasMessagesAdapter#setOnItemAppendListener(AtlasMessagesAdapter.OnItemAppendListener)
      */
-    public AtlasMessageList setOnAppendListener(AtlasMessagesAdapter.OnAppendListener listener) {
-        ((AtlasMessagesAdapter) getAdapter()).setOnAppendListener(listener);
+    public AtlasMessageList setOnItemAppendListener(AtlasMessagesAdapter.OnItemAppendListener listener) {
+        ((AtlasMessagesAdapter) getAdapter()).setOnItemAppendListener(listener);
         return this;
     }
 
     /**
-     * Convenience pass-through to this list's AtlasMessagesAdapter.setQuery().
+     * Convenience pass-through to this list's AtlasMessagesAdapter.
+     *
+     * @see AtlasMessagesAdapter#setOnItemClickListener(AtlasMessagesAdapter.OnItemClickListener)
+     */
+    public AtlasMessageList setOnItemClickListener(AtlasMessagesAdapter.OnItemClickListener listener) {
+        ((AtlasMessagesAdapter) getAdapter()).setOnItemClickListener(listener);
+        return this;
+    }
+
+    /**
+     * Convenience pass-through to this list's AtlasMessagesAdapter.
      *
      * @see AtlasMessagesAdapter#setQuery(Query)
      */

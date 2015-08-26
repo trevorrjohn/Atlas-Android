@@ -29,41 +29,42 @@ import java.util.Set;
 /**
  * AtlasMessagesAdapter drives an AtlasMessagesList.  The AtlasMessagesAdapter itself handles
  * rendering sender names, avatars, dates, left/right alignment, and message clustering, and leaves
- * rendering message content up to registered MessageCells.  Each MessageCell knows which Messages
+ * rendering message content up to registered CellFactories.  Each CellFactory knows which Messages
  * it can render, can create new View hierarchies for its Message types, and can render (bind)
- * Message data with its created View hierarchies.  Typically, MessageCells are segregated by
+ * Message data with its created View hierarchies.  Typically, CellFactories are segregated by
  * MessagePart MIME types (e.g. "text/plain", "image/jpeg", and "application/vnd.geo+json").
  *
  * Under the hood, the AtlasMessagesAdapter is a RecyclerView.Adapter, which automatically recycles
- * its list items within view-type "buckets".  Each registered MessageCell actually creates two such
+ * its list items within view-type "buckets".  Each registered CellFactory actually creates two such
  * view-types: one for cells sent by the authenticated user, and another for cells sent by remote
  * actors.  This allows the AtlasMessagesAdapter to efficiently render images sent by the current
  * user aligned on the left, and images sent by others aligned on the right, for example.  In case
  * this sent-by distinction is of value when rendering cells, it provided as the `isMe` argument.
  *
- * When rendering Messages, the AtlasMessagesAdapter first determines which MessageCell to handle
- * the Message with calling MessageCell.isBindable() on each of its registered MessageCells. The
- * first MessageCell to return `true` is used for that Message.  Then, the adapter checks for
+ * When rendering Messages, the AtlasMessagesAdapter first determines which CellFactory to handle
+ * the Message with calling CellFactory.isBindable() on each of its registered CellFactories. The
+ * first CellFactory to return `true` is used for that Message.  Then, the adapter checks for
  * available CellHolders of that type.  If none are found, a new one is created with a call to
- * MessageCell.onCreateCellHolder().  After creating a new CellHolder (or reusing an available one),
- * the CellHolder is rendered in the UI with Message data via MessageCell.onBindCellHolder().
- * 
- * @see MessageCell
+ * CellFactory.onCreateCellHolder().  After creating a new CellHolder (or reusing an available one),
+ * the CellHolder is rendered in the UI with Message data via CellFactory.onBindCellHolder().
+ *
+ * @see CellFactory
  */
-public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback {
+public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback, CellHolder.OnClickListener {
     protected final LayerClient mLayerClient;
     protected final ParticipantProvider mParticipantProvider;
     private final RecyclerViewController<Message> mQueryController;
     protected final LayoutInflater mLayoutInflater;
     protected final Handler mUiThreadHandler;
-    protected OnAppendListener mAppendListener;
+    protected OnItemAppendListener mAppendListener;
+    protected OnItemClickListener mClickListener;
 
     // Cells
     protected int mViewTypeCount = 0;
-    protected final Set<MessageCell> mMessageCells = new LinkedHashSet<MessageCell>();
+    protected final Set<CellFactory> mCellFactories = new LinkedHashSet<CellFactory>();
     protected final Map<Integer, CellType> mCellTypesByViewType = new HashMap<Integer, CellType>();
-    protected final Map<MessageCell, Integer> mMyViewTypesByCell = new HashMap<MessageCell, Integer>();
-    protected final Map<MessageCell, Integer> mTheirViewTypesByCell = new HashMap<MessageCell, Integer>();
+    protected final Map<CellFactory, Integer> mMyViewTypesByCell = new HashMap<CellFactory, Integer>();
+    protected final Map<CellFactory, Integer> mTheirViewTypesByCell = new HashMap<CellFactory, Integer>();
 
     // Dates and Clustering
     private final Map<Uri, Cluster> mClusterCache = new HashMap<Uri, Cluster>();
@@ -84,26 +85,25 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     }
 
     /**
-     * Registers one or more MessageCells for the AtlasMessagesAdapter to manage.  MessageCells know
-     * which Messages they can render, and handle View caching, creation, and binding via the
-     * MessageCell callbacks.
+     * Registers one or more CellFactories for the AtlasMessagesAdapter to manage.  CellFactories
+     * know which Messages they can render, and handle View caching, creation, and binding.
      *
-     * @param messageCells Cells to register.
+     * @param CellFactorys Cells to register.
      * @return This AtlasMessagesAdapter.
      */
-    public AtlasMessagesAdapter registerCells(MessageCell... messageCells) {
-        for (MessageCell messageCell : messageCells) {
-            mMessageCells.add(messageCell);
+    public AtlasMessagesAdapter registerCellFactories(CellFactory... CellFactorys) {
+        for (CellFactory CellFactory : CellFactorys) {
+            mCellFactories.add(CellFactory);
 
             mViewTypeCount++;
-            CellType me = new CellType(true, messageCell);
+            CellType me = new CellType(true, CellFactory);
             mCellTypesByViewType.put(mViewTypeCount, me);
-            mMyViewTypesByCell.put(messageCell, mViewTypeCount);
+            mMyViewTypesByCell.put(CellFactory, mViewTypeCount);
 
             mViewTypeCount++;
-            CellType notMe = new CellType(false, messageCell);
+            CellType notMe = new CellType(false, CellFactory);
             mCellTypesByViewType.put(mViewTypeCount, notMe);
-            mTheirViewTypesByCell.put(messageCell, mViewTypeCount);
+            mTheirViewTypesByCell.put(CellFactory, mViewTypeCount);
         }
         return this;
     }
@@ -142,8 +142,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CellType cellType = mCellTypesByViewType.get(viewType);
         int rootResId = cellType.mMe ? R.layout.atlas_message_item_me : R.layout.atlas_message_item_them;
-        MessageViewHolder rootViewHolder = new MessageViewHolder(mLayoutInflater.inflate(rootResId, null));
-        rootViewHolder.mCellHolder = cellType.mMessageCell.onCreateCellHolder(rootViewHolder.mCellView, mLayoutInflater);
+        MessageViewHolder rootViewHolder = new MessageViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
+        CellHolder cellHolder = cellType.mCellFactory.onCreateCellHolder(rootViewHolder.mCellView, mLayoutInflater);
+        cellHolder.setClickableView(rootViewHolder.itemView);
+        cellHolder.setClickListener(this);
+        rootViewHolder.mCellHolder = cellHolder;
         return rootViewHolder;
     }
 
@@ -202,20 +205,22 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
             }
         }
 
-        // Cell
-        cellType.mMessageCell.onBindCellHolder(viewHolder.mCellHolder, cellType.mMe, message, position);
+        // CellHolder
+        CellHolder cellHolder = viewHolder.mCellHolder;
+        cellHolder.setMessage(message);
+        cellType.mCellFactory.onBindCellHolder(cellHolder, cellType.mMe, position);
     }
 
     @Override
     public int getItemViewType(int position) {
         Message message = getItem(position);
         boolean isMe = mLayerClient.getAuthenticatedUserId().equals(message.getSender().getUserId());
-        for (MessageCell messageCell : mMessageCells) {
-            if (messageCell.isBindable(message)) {
+        for (CellFactory CellFactory : mCellFactories) {
+            if (CellFactory.isBindable(message)) {
                 if (isMe) {
-                    return mMyViewTypesByCell.get(messageCell);
+                    return mMyViewTypesByCell.get(CellFactory);
                 } else {
-                    return mTheirViewTypesByCell.get(messageCell);
+                    return mTheirViewTypesByCell.get(CellFactory);
                 }
             }
         }
@@ -235,11 +240,15 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
      * @param listener The OnAppendListener to notify about appended items.
      * @return This AtlasQueryAdapter.
      */
-    public AtlasMessagesAdapter setOnAppendListener(OnAppendListener listener) {
+    public AtlasMessagesAdapter setOnItemAppendListener(OnItemAppendListener listener) {
         mAppendListener = listener;
         return this;
     }
 
+    public AtlasMessagesAdapter setOnItemClickListener(OnItemClickListener listener) {
+        mClickListener = listener;
+        return this;
+    }
 
     //==============================================================================================
     // Clustering
@@ -345,6 +354,23 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
 
 
     //==============================================================================================
+    // Click listener
+    //==============================================================================================
+
+    @Override
+    public void onClick(CellHolder cellHolder) {
+        if (mClickListener == null) return;
+        mClickListener.onItemClick(this, cellHolder.getMessage());
+    }
+
+    @Override
+    public boolean onLongClick(CellHolder cellHolder) {
+        if (mClickListener == null) return false;
+        return mClickListener.onItemLongClick(this, cellHolder.getMessage());
+    }
+
+
+    //==============================================================================================
     // UI update callbacks
     //==============================================================================================
 
@@ -402,11 +428,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
 
     private static class CellType {
         protected final boolean mMe;
-        protected final MessageCell mMessageCell;
+        protected final CellFactory mCellFactory;
 
-        public CellType(boolean me, MessageCell messageCell) {
+        public CellType(boolean me, CellFactory CellFactory) {
             mMe = me;
-            mMessageCell = messageCell;
+            mCellFactory = CellFactory;
         }
 
         @Override
@@ -417,14 +443,14 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
             CellType cellType = (CellType) o;
 
             if (mMe != cellType.mMe) return false;
-            return mMessageCell.equals(cellType.mMessageCell);
+            return mCellFactory.equals(cellType.mCellFactory);
 
         }
 
         @Override
         public int hashCode() {
             int result = (mMe ? 1 : 0);
-            result = 31 * result + mMessageCell.hashCode();
+            result = 31 * result + mCellFactory.hashCode();
             return result;
         }
     }
@@ -432,7 +458,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     /**
      * Listens inserts to the end of an AtlasQueryAdapter.
      */
-    public interface OnAppendListener {
+    public interface OnItemAppendListener {
         /**
          * Alerts the listener to inserts at the end of an AtlasQueryAdapter.  If a batch of items
          * were appended, only the last one will be alerted here.
@@ -442,4 +468,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
          */
         void onItemAppended(AtlasMessagesAdapter adapter, Message message);
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(AtlasMessagesAdapter adapter, Message message);
+
+        boolean onItemLongClick(AtlasMessagesAdapter adapter, Message message);
+    }
+
 }

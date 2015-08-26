@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.layer.atlas.R;
 
-public class MessageViewHolder extends RecyclerView.ViewHolder {
+class MessageViewHolder extends RecyclerView.ViewHolder {
     // View cache
     protected TextView mUserNameHeader;
     protected View mTimeBar;
@@ -19,7 +19,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     protected ViewGroup mCellView;
 
     // Cell
-    protected Object mCellHolder;
+    protected CellHolder mCellHolder;
 
     public MessageViewHolder(View itemView) {
         super(itemView);
