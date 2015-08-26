@@ -45,8 +45,8 @@ import java.util.Set;
  * the Message with calling CellFactory.isBindable() on each of its registered CellFactories. The
  * first CellFactory to return `true` is used for that Message.  Then, the adapter checks for
  * available CellHolders of that type.  If none are found, a new one is created with a call to
- * CellFactory.onCreateCellHolder().  After creating a new CellHolder (or reusing an available one),
- * the CellHolder is rendered in the UI with Message data via CellFactory.onBindCellHolder().
+ * CellFactory.createCellHolder().  After creating a new CellHolder (or reusing an available one),
+ * the CellHolder is rendered in the UI with Message data via CellFactory.bindCellHolder().
  *
  * @see CellFactory
  */
@@ -88,11 +88,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
      * Registers one or more CellFactories for the AtlasMessagesAdapter to manage.  CellFactories
      * know which Messages they can render, and handle View caching, creation, and binding.
      *
-     * @param CellFactorys Cells to register.
+     * @param cellFactories Cells to register.
      * @return This AtlasMessagesAdapter.
      */
-    public AtlasMessagesAdapter registerCellFactories(CellFactory... CellFactorys) {
-        for (CellFactory CellFactory : CellFactorys) {
+    public AtlasMessagesAdapter registerCellFactories(CellFactory... cellFactories) {
+        for (CellFactory CellFactory : cellFactories) {
             mCellFactories.add(CellFactory);
 
             mViewTypeCount++;
@@ -143,7 +143,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         CellType cellType = mCellTypesByViewType.get(viewType);
         int rootResId = cellType.mMe ? R.layout.atlas_message_item_me : R.layout.atlas_message_item_them;
         MessageViewHolder rootViewHolder = new MessageViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
-        CellHolder cellHolder = cellType.mCellFactory.onCreateCellHolder(rootViewHolder.mCellView, mLayoutInflater);
+        CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCellView, mLayoutInflater);
         cellHolder.setClickableView(rootViewHolder.itemView);
         cellHolder.setClickListener(this);
         rootViewHolder.mCellHolder = cellHolder;
@@ -208,7 +208,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         // CellHolder
         CellHolder cellHolder = viewHolder.mCellHolder;
         cellHolder.setMessage(message);
-        cellType.mCellFactory.onBindCellHolder(cellHolder, cellType.mMe, position);
+        cellType.mCellFactory.bindCellHolder(cellHolder, message, cellType.mMe, position);
     }
 
     @Override

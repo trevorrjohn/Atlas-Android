@@ -4,6 +4,12 @@ import android.view.View;
 
 import com.layer.sdk.messaging.Message;
 
+/**
+ * CellHolders maintain a reference to their Message, and allow the capture of user interactions
+ * with their messages (e.g. clicks).  CellHolders can be extended to act as View caches, where
+ * CellFactory.createCellHolder() might populate a CellHolder with references to Views for use in
+ * future calls to CellFactory.bindCellHolder().
+ */
 public abstract class CellHolder implements View.OnClickListener, View.OnLongClickListener {
     private OnClickListener mClickListener;
     private Message mMessage;
@@ -14,7 +20,7 @@ public abstract class CellHolder implements View.OnClickListener, View.OnLongCli
         return this;
     }
 
-    public CellHolder setMessage(Message message) {
+    protected CellHolder setMessage(Message message) {
         mMessage = message;
         return this;
     }
@@ -23,7 +29,7 @@ public abstract class CellHolder implements View.OnClickListener, View.OnLongCli
         return mMessage;
     }
 
-    public CellHolder setClickListener(OnClickListener clickListener) {
+    protected CellHolder setClickListener(OnClickListener clickListener) {
         mClickListener = clickListener;
         return this;
     }
@@ -40,7 +46,7 @@ public abstract class CellHolder implements View.OnClickListener, View.OnLongCli
         return mClickListener.onLongClick(this);
     }
 
-    public interface OnClickListener {
+    interface OnClickListener {
         void onClick(CellHolder cellHolder);
 
         boolean onLongClick(CellHolder cellHolder);
