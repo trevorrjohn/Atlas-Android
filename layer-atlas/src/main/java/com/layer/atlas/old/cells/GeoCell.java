@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas.cells;
+package com.layer.atlas.old.cells;
 
 import java.io.File;
 
@@ -28,13 +28,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.ImageLoader;
-import com.layer.atlas.Utils.ImageLoader.ImageSpec;
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.old.Utils;
+import com.layer.atlas.old.Utils.ImageLoader;
+import com.layer.atlas.old.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.old.Utils.Tools;
 import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.R;
-import com.layer.atlas.ShapedFrameLayout;
+import com.layer.atlas.old.ShapedFrameLayout;
 import com.layer.sdk.messaging.MessagePart;
 
 /**
@@ -71,7 +71,7 @@ public class GeoCell extends Cell implements Utils.DownloadQueue.CompleteListene
         
         ViewGroup cellRoot = (ViewGroup) Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_geo);
         if (cellRoot == null) {
-            cellRoot = (ViewGroup) LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_geo, cellContainer, false);
+            cellRoot = (ViewGroup) LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.old_atlas_view_messages_cell_geo, cellContainer, false);
             if (debug) Log.w(TAG, "geo.onBind() inflated geo cell");
         }
 

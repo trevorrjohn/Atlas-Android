@@ -41,7 +41,7 @@
     <!-- #################################### -->
     <!-- Styleable Atlas Component Attributes -->
     <!-- #################################### -->
-    <declare-styleable name="AtlasConversationList">
+    <declare-styleable name="AtlasConversationsList">
         <attr name="cellTitleTextColor"/>
         <attr name="cellTitleTextTypeface"/>
         <attr name="cellTitleTextStyle"/>
@@ -68,7 +68,7 @@
         <attr name="composerTextStyle"/>
     </declare-styleable>
 
-    <declare-styleable name="AtlasMessageList">
+    <declare-styleable name="AtlasMessagesList">
         <attr name="myBubbleColor"/>
         <attr name="myTextColor"/>
         <attr name="myTextSize"/>

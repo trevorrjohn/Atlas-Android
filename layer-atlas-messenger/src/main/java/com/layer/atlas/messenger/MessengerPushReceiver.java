@@ -26,7 +26,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.layer.atlas.Utils;
+import com.layer.atlas.old.Utils;
 import com.layer.atlas.messenger.MessengerApp.keys;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;

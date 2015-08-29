@@ -24,44 +24,44 @@
     
     >
 
-    <com.layer.atlas.ShapedFrameLayout
+    <com.layer.atlas.old.ShapedFrameLayout
         android:id="@+id/atlas_view_messages_cell_image_container_my"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_horizontal"
         >
-        <com.layer.atlas.AtlasImageView
+        <com.layer.atlas.old.AtlasImageView
             android:id="@+id/atlas_view_messages_cell_image_my" 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/atlas_background_gray"
             />
-        <com.layer.atlas.AtlasProgressView 
+        <com.layer.atlas.old.AtlasProgressView 
             android:id="@+id/atlas_view_messages_cell_image_my_progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-    </com.layer.atlas.ShapedFrameLayout>
+    </com.layer.atlas.old.ShapedFrameLayout>
 
-    <com.layer.atlas.ShapedFrameLayout
+    <com.layer.atlas.old.ShapedFrameLayout
         android:id="@+id/atlas_view_messages_cell_image_container_their"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_horizontal"
         >
-        <com.layer.atlas.AtlasImageView
+        <com.layer.atlas.old.AtlasImageView
             android:id="@+id/atlas_view_messages_cell_image_their" 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_horizontal"
             android:background="@color/atlas_background_gray"
             />
-        <com.layer.atlas.AtlasProgressView 
+        <com.layer.atlas.old.AtlasProgressView 
             android:id="@+id/atlas_view_messages_cell_image_their_progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-    </com.layer.atlas.ShapedFrameLayout>
+    </com.layer.atlas.old.ShapedFrameLayout>
     
 </FrameLayout>
 

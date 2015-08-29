@@ -8,11 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Space;
+import android.widget.TextView;
 
+import com.layer.atlas.AtlasCellFactory;
 import com.layer.atlas.Participant;
 import com.layer.atlas.ParticipantProvider;
 import com.layer.atlas.R;
-import com.layer.atlas.Utils;
+import com.layer.atlas.old.Utils;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Actor;
 import com.layer.sdk.messaging.Message;
@@ -48,23 +51,25 @@ import java.util.Set;
  * CellFactory.createCellHolder().  After creating a new CellHolder (or reusing an available one),
  * the CellHolder is rendered in the UI with Message data via CellFactory.bindCellHolder().
  *
- * @see CellFactory
+ * @see AtlasCellFactory
  */
-public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageViewHolder> implements RecyclerViewController.Callback, CellHolder.OnClickListener {
+public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdapter.ViewHolder> implements RecyclerViewController.Callback {
     protected final LayerClient mLayerClient;
     protected final ParticipantProvider mParticipantProvider;
     private final RecyclerViewController<Message> mQueryController;
     protected final LayoutInflater mLayoutInflater;
     protected final Handler mUiThreadHandler;
-    protected OnItemAppendListener mAppendListener;
-    protected OnItemClickListener mClickListener;
+    protected OnMessageAppendListener mAppendListener;
+
+    protected OnMessageClickListener mMessageClickListener;
+    protected AtlasCellFactory.CellHolder.OnClickListener mCellHolderClickListener;
 
     // Cells
     protected int mViewTypeCount = 0;
-    protected final Set<CellFactory> mCellFactories = new LinkedHashSet<CellFactory>();
+    protected final Set<AtlasCellFactory> mCellFactories = new LinkedHashSet<AtlasCellFactory>();
     protected final Map<Integer, CellType> mCellTypesByViewType = new HashMap<Integer, CellType>();
-    protected final Map<CellFactory, Integer> mMyViewTypesByCell = new HashMap<CellFactory, Integer>();
-    protected final Map<CellFactory, Integer> mTheirViewTypesByCell = new HashMap<CellFactory, Integer>();
+    protected final Map<AtlasCellFactory, Integer> mMyViewTypesByCell = new HashMap<AtlasCellFactory, Integer>();
+    protected final Map<AtlasCellFactory, Integer> mTheirViewTypesByCell = new HashMap<AtlasCellFactory, Integer>();
 
     // Dates and Clustering
     private final Map<Uri, Cluster> mClusterCache = new HashMap<Uri, Cluster>();
@@ -78,35 +83,25 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         mQueryController = client.newRecyclerViewController(null, null, this);
         mLayoutInflater = LayoutInflater.from(context);
         mUiThreadHandler = new Handler(Looper.getMainLooper());
-        setHasStableIds(false);
-
         mDateFormat = android.text.format.DateFormat.getDateFormat(context);
         mTimeFormat = android.text.format.DateFormat.getTimeFormat(context);
+        setHasStableIds(false);
+
+        mCellHolderClickListener = new AtlasCellFactory.CellHolder.OnClickListener() {
+            @Override
+            public void onClick(AtlasCellFactory.CellHolder cellHolder) {
+                if (mMessageClickListener == null) return;
+                mMessageClickListener.onMessageClick(AtlasMessagesAdapter.this, cellHolder.getMessage());
+            }
+
+            @Override
+            public boolean onLongClick(AtlasCellFactory.CellHolder cellHolder) {
+                if (mMessageClickListener == null) return false;
+                return mMessageClickListener.onMessageLongClick(AtlasMessagesAdapter.this, cellHolder.getMessage());
+            }
+        };
     }
 
-    /**
-     * Registers one or more CellFactories for the AtlasMessagesAdapter to manage.  CellFactories
-     * know which Messages they can render, and handle View caching, creation, and binding.
-     *
-     * @param cellFactories Cells to register.
-     * @return This AtlasMessagesAdapter.
-     */
-    public AtlasMessagesAdapter registerCellFactories(CellFactory... cellFactories) {
-        for (CellFactory CellFactory : cellFactories) {
-            mCellFactories.add(CellFactory);
-
-            mViewTypeCount++;
-            CellType me = new CellType(true, CellFactory);
-            mCellTypesByViewType.put(mViewTypeCount, me);
-            mMyViewTypesByCell.put(CellFactory, mViewTypeCount);
-
-            mViewTypeCount++;
-            CellType notMe = new CellType(false, CellFactory);
-            mCellTypesByViewType.put(mViewTypeCount, notMe);
-            mTheirViewTypesByCell.put(CellFactory, mViewTypeCount);
-        }
-        return this;
-    }
 
     /**
      * Sets this AtlasMessagesAdapter's Message Query.
@@ -126,32 +121,72 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         mQueryController.execute();
     }
 
-    public Integer getPosition(Message queryable) {
-        return mQueryController.getPosition(queryable);
+
+    //==============================================================================================
+    // Listeners
+    //==============================================================================================
+
+    /**
+     * Sets the OnAppendListener for this AtlasQueryAdapter.  The listener will be called when items
+     * are appended to the end of this adapter.  This is useful for implementing a scroll-to-bottom
+     * feature.
+     *
+     * @param listener The OnAppendListener to notify about appended items.
+     * @return This AtlasQueryAdapter.
+     */
+    public AtlasMessagesAdapter setOnMessageAppendListener(OnMessageAppendListener listener) {
+        mAppendListener = listener;
+        return this;
     }
 
-    public Integer getPosition(Message queryable, int lastPosition) {
-        return mQueryController.getPosition(queryable, lastPosition);
+    public AtlasMessagesAdapter setOnItemClickListener(OnMessageClickListener listener) {
+        mMessageClickListener = listener;
+        return this;
     }
 
-    public Message getItem(int position) {
-        return mQueryController.getItem(position);
+
+    //==============================================================================================
+    // Adapter and Cells
+    //==============================================================================================
+
+    /**
+     * Registers one or more CellFactories for the AtlasMessagesAdapter to manage.  CellFactories
+     * know which Messages they can render, and handle View caching, creation, and binding.
+     *
+     * @param cellFactories Cells to register.
+     * @return This AtlasMessagesAdapter.
+     */
+    public AtlasMessagesAdapter registerCellFactories(AtlasCellFactory... cellFactories) {
+        for (AtlasCellFactory CellFactory : cellFactories) {
+            mCellFactories.add(CellFactory);
+
+            mViewTypeCount++;
+            CellType me = new CellType(true, CellFactory);
+            mCellTypesByViewType.put(mViewTypeCount, me);
+            mMyViewTypesByCell.put(CellFactory, mViewTypeCount);
+
+            mViewTypeCount++;
+            CellType notMe = new CellType(false, CellFactory);
+            mCellTypesByViewType.put(mViewTypeCount, notMe);
+            mTheirViewTypesByCell.put(CellFactory, mViewTypeCount);
+        }
+        return this;
     }
 
     @Override
-    public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CellType cellType = mCellTypesByViewType.get(viewType);
-        int rootResId = cellType.mMe ? R.layout.atlas_message_item_me : R.layout.atlas_message_item_them;
-        MessageViewHolder rootViewHolder = new MessageViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
-        CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCellView, mLayoutInflater);
+        int rootResId = cellType.mMe ? ViewHolder.RESOURCE_ID_ME : ViewHolder.RESOURCE_ID_THEM;
+        ViewHolder rootViewHolder = new ViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
+        AtlasCellFactory.CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCellView, mLayoutInflater);
         cellHolder.setClickableView(rootViewHolder.itemView);
-        cellHolder.setClickListener(this);
+        cellHolder.setClickListener(mCellHolderClickListener);
         rootViewHolder.mCellHolder = cellHolder;
         return rootViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(MessageViewHolder viewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Message message = getItem(position);
         CellType cellType = mCellTypesByViewType.get(viewHolder.getItemViewType());
 
@@ -206,7 +241,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         }
 
         // CellHolder
-        CellHolder cellHolder = viewHolder.mCellHolder;
+        AtlasCellFactory.CellHolder cellHolder = viewHolder.mCellHolder;
         cellHolder.setMessage(message);
         cellType.mCellFactory.bindCellHolder(cellHolder, message, cellType.mMe, position);
     }
@@ -215,14 +250,9 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     public int getItemViewType(int position) {
         Message message = getItem(position);
         boolean isMe = mLayerClient.getAuthenticatedUserId().equals(message.getSender().getUserId());
-        for (CellFactory CellFactory : mCellFactories) {
-            if (CellFactory.isBindable(message)) {
-                if (isMe) {
-                    return mMyViewTypesByCell.get(CellFactory);
-                } else {
-                    return mTheirViewTypesByCell.get(CellFactory);
-                }
-            }
+        for (AtlasCellFactory factory : mCellFactories) {
+            if (!factory.isBindable(message)) continue;
+            return isMe ? mMyViewTypesByCell.get(factory) : mTheirViewTypesByCell.get(factory);
         }
         return -1;
     }
@@ -232,23 +262,18 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         return mQueryController.getItemCount();
     }
 
-    /**
-     * Sets the OnAppendListener for this AtlasQueryAdapter.  The listener will be called when items
-     * are appended to the end of this adapter.  This is useful for implementing a scroll-to-bottom
-     * feature.
-     *
-     * @param listener The OnAppendListener to notify about appended items.
-     * @return This AtlasQueryAdapter.
-     */
-    public AtlasMessagesAdapter setOnItemAppendListener(OnItemAppendListener listener) {
-        mAppendListener = listener;
-        return this;
+    public Integer getPosition(Message message) {
+        return mQueryController.getPosition(message);
     }
 
-    public AtlasMessagesAdapter setOnItemClickListener(OnItemClickListener listener) {
-        mClickListener = listener;
-        return this;
+    public Integer getPosition(Message message, int lastPosition) {
+        return mQueryController.getPosition(message, lastPosition);
     }
+
+    public Message getItem(int position) {
+        return mQueryController.getItem(position);
+    }
+
 
     //==============================================================================================
     // Clustering
@@ -306,6 +331,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         return result;
     }
 
+    private static boolean isDateBoundary(Date d1, Date d2) {
+        if (d1 == null || d2 == null) return false;
+        return (d1.getYear() != d2.getYear()) || (d1.getMonth() != d2.getMonth()) || (d1.getDay() != d2.getDay());
+    }
+
     private void requestUpdate(final Message message, final int lastPosition) {
         mUiThreadHandler.post(new Runnable() {
             @Override
@@ -315,9 +345,91 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         });
     }
 
-    private static boolean isDateBoundary(Date d1, Date d2) {
-        if (d1 == null || d2 == null) return false;
-        return (d1.getYear() != d2.getYear()) || (d1.getMonth() != d2.getMonth()) || (d1.getDay() != d2.getDay());
+
+    //==============================================================================================
+    // UI update callbacks
+    //==============================================================================================
+
+    @Override
+    public void onQueryDataSetChanged(RecyclerViewController controller) {
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onQueryItemChanged(RecyclerViewController controller, int position) {
+        notifyItemChanged(position);
+    }
+
+    @Override
+    public void onQueryItemRangeChanged(RecyclerViewController controller, int positionStart, int itemCount) {
+        notifyItemRangeChanged(positionStart, itemCount);
+    }
+
+    @Override
+    public void onQueryItemInserted(RecyclerViewController controller, int position) {
+        notifyItemInserted(position);
+        if (mAppendListener != null && (position + 1) == getItemCount()) {
+            mAppendListener.onMessageAppend(this, getItem(position));
+        }
+    }
+
+    @Override
+    public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
+        notifyItemRangeInserted(positionStart, itemCount);
+        int positionEnd = positionStart + itemCount;
+        if (mAppendListener != null && (positionEnd + 1) == getItemCount()) {
+            mAppendListener.onMessageAppend(this, getItem(positionEnd));
+        }
+    }
+
+    @Override
+    public void onQueryItemRemoved(RecyclerViewController controller, int position) {
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onQueryItemRangeRemoved(RecyclerViewController controller, int positionStart, int itemCount) {
+        notifyItemRangeRemoved(positionStart, itemCount);
+    }
+
+    @Override
+    public void onQueryItemMoved(RecyclerViewController controller, int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+
+    //==============================================================================================
+    // Inner classes
+    //==============================================================================================
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        // Layouts to inflate
+        public final static int RESOURCE_ID_ME = R.layout.atlas_message_item_me;
+        public final static int RESOURCE_ID_THEM = R.layout.atlas_message_item_them;
+
+        // View cache
+        protected TextView mUserNameHeader;
+        protected View mTimeBar;
+        protected TextView mTimeBarDay;
+        protected TextView mTimeBarTime;
+        protected Space mSpaceMinute;
+        protected Space mSpaceHour;
+        protected ViewGroup mCellView;
+
+        // Cell
+        protected AtlasCellFactory.CellHolder mCellHolder;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            mUserNameHeader = (TextView) itemView.findViewById(R.id.atlas_view_messages_convert_user_name);
+            mTimeBar = itemView.findViewById(R.id.atlas_view_messages_convert_timebar);
+            mTimeBarDay = (TextView) itemView.findViewById(R.id.atlas_view_messages_convert_timebar_day);
+            mTimeBarTime = (TextView) itemView.findViewById(R.id.atlas_view_messages_convert_timebar_time);
+            mSpaceMinute = (Space) itemView.findViewById(R.id.atlas_view_messages_convert_spacer_top_1);
+            mSpaceHour = (Space) itemView.findViewById(R.id.atlas_view_messages_convert_spacer_top_2);
+            mCellView = (ViewGroup) itemView.findViewById(R.id.atlas_view_messages_cell_container);
+        }
     }
 
     private enum ClusterType {
@@ -352,85 +464,11 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
         public ClusterType mClusterWithNext;
     }
 
-
-    //==============================================================================================
-    // Click listener
-    //==============================================================================================
-
-    @Override
-    public void onClick(CellHolder cellHolder) {
-        if (mClickListener == null) return;
-        mClickListener.onItemClick(this, cellHolder.getMessage());
-    }
-
-    @Override
-    public boolean onLongClick(CellHolder cellHolder) {
-        if (mClickListener == null) return false;
-        return mClickListener.onItemLongClick(this, cellHolder.getMessage());
-    }
-
-
-    //==============================================================================================
-    // UI update callbacks
-    //==============================================================================================
-
-    @Override
-    public void onQueryDataSetChanged(RecyclerViewController controller) {
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onQueryItemChanged(RecyclerViewController controller, int position) {
-        notifyItemChanged(position);
-    }
-
-    @Override
-    public void onQueryItemRangeChanged(RecyclerViewController controller, int positionStart, int itemCount) {
-        notifyItemRangeChanged(positionStart, itemCount);
-    }
-
-    @Override
-    public void onQueryItemInserted(RecyclerViewController controller, int position) {
-        notifyItemInserted(position);
-        if (mAppendListener != null && (position + 1) == getItemCount()) {
-            mAppendListener.onItemAppended(this, getItem(position));
-        }
-    }
-
-    @Override
-    public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
-        notifyItemRangeInserted(positionStart, itemCount);
-        int positionEnd = positionStart + itemCount;
-        if (mAppendListener != null && (positionEnd + 1) == getItemCount()) {
-            mAppendListener.onItemAppended(this, getItem(positionEnd));
-        }
-    }
-
-    @Override
-    public void onQueryItemRemoved(RecyclerViewController controller, int position) {
-        notifyItemRemoved(position);
-    }
-
-    @Override
-    public void onQueryItemRangeRemoved(RecyclerViewController controller, int positionStart, int itemCount) {
-        notifyItemRangeRemoved(positionStart, itemCount);
-    }
-
-    @Override
-    public void onQueryItemMoved(RecyclerViewController controller, int fromPosition, int toPosition) {
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
-
-    //==============================================================================================
-    // Inner classes
-    //==============================================================================================
-
     private static class CellType {
         protected final boolean mMe;
-        protected final CellFactory mCellFactory;
+        protected final AtlasCellFactory mCellFactory;
 
-        public CellType(boolean me, CellFactory CellFactory) {
+        public CellType(boolean me, AtlasCellFactory CellFactory) {
             mMe = me;
             mCellFactory = CellFactory;
         }
@@ -458,7 +496,7 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
     /**
      * Listens inserts to the end of an AtlasQueryAdapter.
      */
-    public interface OnItemAppendListener {
+    public interface OnMessageAppendListener {
         /**
          * Alerts the listener to inserts at the end of an AtlasQueryAdapter.  If a batch of items
          * were appended, only the last one will be alerted here.
@@ -466,13 +504,13 @@ public abstract class AtlasMessagesAdapter extends RecyclerView.Adapter<MessageV
          * @param adapter The AtlasQueryAdapter which had an item appended.
          * @param message The item appended to the AtlasQueryAdapter.
          */
-        void onItemAppended(AtlasMessagesAdapter adapter, Message message);
+        void onMessageAppend(AtlasMessagesAdapter adapter, Message message);
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(AtlasMessagesAdapter adapter, Message message);
+    public interface OnMessageClickListener {
+        void onMessageClick(AtlasMessagesAdapter adapter, Message message);
 
-        boolean onItemLongClick(AtlasMessagesAdapter adapter, Message message);
+        boolean onMessageLongClick(AtlasMessagesAdapter adapter, Message message);
     }
 
 }

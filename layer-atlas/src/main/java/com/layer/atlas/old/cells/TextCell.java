@@ -1,4 +1,4 @@
-package com.layer.atlas.cells;
+package com.layer.atlas.old.cells;
 
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.layer.atlas.old.AtlasMessageListOld;
 import com.layer.atlas.R;
-import com.layer.atlas.Utils;
+import com.layer.atlas.old.Utils;
 import com.layer.sdk.messaging.MessagePart;
 
 public class TextCell extends Cell {
@@ -33,7 +33,7 @@ public class TextCell extends Cell {
 
         View cellText = Utils.Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_text);
         if (cellText == null) {
-            cellText = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_text, cellContainer, false);
+            cellText = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.old_atlas_view_messages_cell_text, cellContainer, false);
         }
 
         if (text == null) {

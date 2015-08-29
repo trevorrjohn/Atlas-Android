@@ -54,8 +54,7 @@ import android.widget.TextView;
 import com.layer.atlas.Participant;
 import com.layer.atlas.ParticipantProvider;
 import com.layer.atlas.R;
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.old.Utils.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChangeEvent;
@@ -133,7 +132,7 @@ public class AtlasConversationsListOld extends FrameLayout implements LayerChang
         this.layerClient = layerClient;
         
         // inflate children:
-        LayoutInflater.from(getContext()).inflate(R.layout.atlas_conversations_list, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.old_atlas_conversations_list, this);
         
         this.conversationsList = (ListView) findViewById(R.id.atlas_conversations_view);
         this.conversationsList.setAdapter(conversationsAdapter = new BaseAdapter() {
@@ -185,7 +184,7 @@ public class AtlasConversationsListOld extends FrameLayout implements LayerChang
             
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
-                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.atlas_view_conversations_list_convert, parent, false);
+                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.old_atlas_view_conversations_list_convert, parent, false);
                 }
                 
                 Uri convId = conversations.get(position).getId();
@@ -413,32 +412,32 @@ public class AtlasConversationsListOld extends FrameLayout implements LayerChang
     }
 
     private void parseStyle(Context context, AttributeSet attrs, int defStyle) {
-        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasConversationList, R.attr.AtlasConversationList, defStyle);
-        this.titleTextColor = ta.getColor(R.styleable.AtlasConversationList_cellTitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.titleTextStyle = ta.getInt(R.styleable.AtlasConversationList_cellTitleTextStyle, Typeface.NORMAL);
-        String titleTextTypefaceName = ta.getString(R.styleable.AtlasConversationList_cellTitleTextTypeface);
+        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasConversationsList, R.attr.AtlasConversationList, defStyle);
+        this.titleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.titleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleTextStyle, Typeface.NORMAL);
+        String titleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleTextTypeface);
         this.titleTextTypeface = titleTextTypefaceName != null ? Typeface.create(titleTextTypefaceName, titleTextStyle) : null;
 
-        this.titleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationList_cellTitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.titleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationList_cellTitleUnreadTextStyle, Typeface.BOLD);
-        String titleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationList_cellTitleUnreadTextTypeface);
+        this.titleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.titleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleUnreadTextStyle, Typeface.BOLD);
+        String titleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleUnreadTextTypeface);
         this.titleUnreadTextTypeface = titleUnreadTextTypefaceName != null ? Typeface.create(titleUnreadTextTypefaceName, titleUnreadTextStyle) : null;
 
-        this.subtitleTextColor = ta.getColor(R.styleable.AtlasConversationList_cellSubtitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.subtitleTextStyle = ta.getInt(R.styleable.AtlasConversationList_cellSubtitleTextStyle, Typeface.NORMAL);
-        String subtitleTextTypefaceName = ta.getString(R.styleable.AtlasConversationList_cellSubtitleTextTypeface);
+        this.subtitleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.subtitleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleTextStyle, Typeface.NORMAL);
+        String subtitleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleTextTypeface);
         this.subtitleTextTypeface = subtitleTextTypefaceName != null ? Typeface.create(subtitleTextTypefaceName, subtitleTextStyle) : null;
 
-        this.subtitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationList_cellSubtitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.subtitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationList_cellSubtitleUnreadTextStyle, Typeface.NORMAL);
-        String subtitleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationList_cellSubtitleUnreadTextTypeface);
+        this.subtitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.subtitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextStyle, Typeface.NORMAL);
+        String subtitleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextTypeface);
         this.subtitleUnreadTextTypeface = subtitleUnreadTextTypefaceName != null ? Typeface.create(subtitleUnreadTextTypefaceName, subtitleUnreadTextStyle) : null;
 
-        this.cellBackgroundColor = ta.getColor(R.styleable.AtlasConversationList_cellBackgroundColor, Color.TRANSPARENT);
-        this.cellUnreadBackgroundColor = ta.getColor(R.styleable.AtlasConversationList_cellUnreadBackgroundColor, Color.TRANSPARENT);
-        this.dateTextColor = ta.getColor(R.styleable.AtlasConversationList_dateTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.avatarTextColor = ta.getColor(R.styleable.AtlasConversationList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasConversationList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_shape_avatar_gray));
+        this.cellBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellBackgroundColor, Color.TRANSPARENT);
+        this.cellUnreadBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellUnreadBackgroundColor, Color.TRANSPARENT);
+        this.dateTextColor = ta.getColor(R.styleable.AtlasConversationsList_dateTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.avatarTextColor = ta.getColor(R.styleable.AtlasConversationsList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_shape_avatar_gray));
         ta.recycle();
     }
     

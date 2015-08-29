@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.old.Utils.Tools;
 
 
 /**

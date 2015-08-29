@@ -24,7 +24,7 @@
     
     >
 
-    <com.layer.atlas.ShapedFrameLayout
+    <com.layer.atlas.old.ShapedFrameLayout
         android:id="@+id/atlas_view_messages_cell_geo_container_their"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,9 +37,9 @@
             android:layout_gravity="left|center_horizontal"
             android:background="@color/atlas_background_gray"
             />
-    </com.layer.atlas.ShapedFrameLayout>
+    </com.layer.atlas.old.ShapedFrameLayout>
     
-    <com.layer.atlas.ShapedFrameLayout
+    <com.layer.atlas.old.ShapedFrameLayout
         android:id="@+id/atlas_view_messages_cell_geo_container_my"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             android:layout_height="150dp"
             android:background="@color/atlas_background_gray"
             />    
-    </com.layer.atlas.ShapedFrameLayout>
+    </com.layer.atlas.old.ShapedFrameLayout>
 
 </FrameLayout>
 

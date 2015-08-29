@@ -56,13 +56,12 @@ import android.widget.TextView;
 import com.layer.atlas.Participant;
 import com.layer.atlas.ParticipantProvider;
 import com.layer.atlas.R;
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.Tools;
-import com.layer.atlas.cells.Cell;
-import com.layer.atlas.cells.GIFCell;
-import com.layer.atlas.cells.GeoCell;
-import com.layer.atlas.cells.ImageCell;
-import com.layer.atlas.cells.TextCell;
+import com.layer.atlas.old.Utils.Tools;
+import com.layer.atlas.old.cells.Cell;
+import com.layer.atlas.old.cells.GIFCell;
+import com.layer.atlas.old.cells.GeoCell;
+import com.layer.atlas.old.cells.ImageCell;
+import com.layer.atlas.old.cells.TextCell;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.changes.LayerChange;
 import com.layer.sdk.changes.LayerChange.Type;
@@ -185,7 +184,7 @@ public class AtlasMessageListOld extends FrameLayout implements LayerChangeEvent
         
         this.client = layerClient;
         this.cellFactory = cellFactory;
-        LayoutInflater.from(getContext()).inflate(R.layout.atlas_messages_list, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.old_atlas_messages_list, this);
         
         // --- message view
         messagesList = (ListView) findViewById(R.id.atlas_messages_list);
@@ -200,7 +199,7 @@ public class AtlasMessageListOld extends FrameLayout implements LayerChangeEvent
                 boolean showTheirDecor = participants.size() > 2;
 
                 if (convertView == null) { 
-                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.atlas_view_messages_convert, parent, false);
+                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.old_atlas_view_messages_convert, parent, false);
                 }
                 
                 View spacerTop = convertView.findViewById(R.id.atlas_view_messages_convert_spacer_top);
@@ -378,25 +377,25 @@ public class AtlasMessageListOld extends FrameLayout implements LayerChangeEvent
     }
 
     public void parseStyle(Context context, AttributeSet attrs, int defStyle) {
-        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasMessageList, R.attr.AtlasMessageList, defStyle);
-        this.myTextColor = ta.getColor(R.styleable.AtlasMessageList_myTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.myTextStyle = ta.getInt(R.styleable.AtlasMessageList_myTextStyle, Typeface.NORMAL);
-        String myTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_myTextTypeface); 
+        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasMessagesList, R.attr.AtlasMessageList, defStyle);
+        this.myTextColor = ta.getColor(R.styleable.AtlasMessagesList_myTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.myTextStyle = ta.getInt(R.styleable.AtlasMessagesList_myTextStyle, Typeface.NORMAL);
+        String myTextTypefaceName = ta.getString(R.styleable.AtlasMessagesList_myTextTypeface); 
         this.myTextTypeface  = myTextTypefaceName != null ? Typeface.create(myTextTypefaceName, myTextStyle) : null;
         //this.myTextSize = ta.getDimension(R.styleable.AtlasMessageList_myTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
 
-        this.otherTextColor = ta.getColor(R.styleable.AtlasMessageList_theirTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        this.otherTextStyle = ta.getInt(R.styleable.AtlasMessageList_theirTextStyle, Typeface.NORMAL);
-        String otherTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_theirTextTypeface); 
+        this.otherTextColor = ta.getColor(R.styleable.AtlasMessagesList_theirTextColor, context.getResources().getColor(R.color.atlas_text_black));
+        this.otherTextStyle = ta.getInt(R.styleable.AtlasMessagesList_theirTextStyle, Typeface.NORMAL);
+        String otherTextTypefaceName = ta.getString(R.styleable.AtlasMessagesList_theirTextTypeface); 
         this.otherTextTypeface  = otherTextTypefaceName != null ? Typeface.create(otherTextTypefaceName, otherTextStyle) : null;
         //this.otherTextSize = ta.getDimension(R.styleable.AtlasMessageList_theirTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
         
-        this.myBubbleColor  = ta.getColor(R.styleable.AtlasMessageList_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
-        this.otherBubbleColor = ta.getColor(R.styleable.AtlasMessageList_theirBubbleColor, context.getResources().getColor(R.color.atlas_background_gray));
+        this.myBubbleColor  = ta.getColor(R.styleable.AtlasMessagesList_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
+        this.otherBubbleColor = ta.getColor(R.styleable.AtlasMessagesList_theirBubbleColor, context.getResources().getColor(R.color.atlas_background_gray));
 
-        this.dateTextColor = ta.getColor(R.styleable.AtlasMessageList_dateTextColor, context.getResources().getColor(R.color.atlas_text_gray)); 
-        this.avatarTextColor = ta.getColor(R.styleable.AtlasMessageList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black)); 
-        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasMessageList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
+        this.dateTextColor = ta.getColor(R.styleable.AtlasMessagesList_dateTextColor, context.getResources().getColor(R.color.atlas_text_gray)); 
+        this.avatarTextColor = ta.getColor(R.styleable.AtlasMessagesList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black)); 
+        this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasMessagesList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
         ta.recycle();
     }
     

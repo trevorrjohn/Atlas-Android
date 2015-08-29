@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas.cells;
+package com.layer.atlas.old.cells;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -24,16 +24,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.ImageLoader;
-import com.layer.atlas.Utils.ImageLoader.ImageSpec;
-import com.layer.atlas.Utils.MessagePartStreamProvider;
-import com.layer.atlas.Utils.Tools;
-import com.layer.atlas.AtlasImageView;
+import com.layer.atlas.old.Utils;
+import com.layer.atlas.old.Utils.ImageLoader;
+import com.layer.atlas.old.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.old.Utils.MessagePartStreamProvider;
+import com.layer.atlas.old.Utils.Tools;
+import com.layer.atlas.old.AtlasImageView;
 import com.layer.atlas.old.AtlasMessageListOld;
-import com.layer.atlas.AtlasProgressView;
+import com.layer.atlas.old.AtlasProgressView;
 import com.layer.atlas.R;
-import com.layer.atlas.ShapedFrameLayout;
+import com.layer.atlas.old.ShapedFrameLayout;
 import com.layer.sdk.listeners.LayerProgressListener;
 import com.layer.sdk.messaging.MessagePart;
 
@@ -84,7 +84,7 @@ public class ImageCell extends Cell implements LayerProgressListener, ImageLoade
     public View onBind(final ViewGroup cellContainer) {
         View rootView = Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_image);
         if (rootView == null) {
-            rootView = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_image, cellContainer, false); 
+            rootView = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.old_atlas_view_messages_cell_image, cellContainer, false); 
         }
         
         boolean myMessage = messagesList.getLayerClient().getAuthenticatedUserId().equals(messagePart.getMessage().getSender().getUserId());

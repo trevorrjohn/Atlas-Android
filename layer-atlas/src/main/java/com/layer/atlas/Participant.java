@@ -2,6 +2,8 @@ package com.layer.atlas;
 
 import android.graphics.drawable.Drawable;
 
+import com.layer.atlas.old.Utils;
+
 import java.util.Comparator;
 
 /**

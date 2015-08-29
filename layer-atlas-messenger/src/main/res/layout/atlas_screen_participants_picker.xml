@@ -30,7 +30,7 @@
             android:layout_weight="1"
             >
             
-            <com.layer.atlas.AtlasParticipantPicker
+            <com.layer.atlas.old.AtlasParticipantPicker
                 android:id="@+id/atlas_screen_participants_picker_picker"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

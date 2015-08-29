@@ -42,7 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.layer.atlas.Participant;
-import com.layer.atlas.Utils;
+import com.layer.atlas.old.Utils;
 import com.layer.sdk.messaging.Conversation;
 
 /**

@@ -27,13 +27,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.ImageLoader.ImageSpec;
-import com.layer.atlas.Utils.Tools;
-import com.layer.atlas.AtlasLightboxView;
-import com.layer.atlas.AtlasProgressView;
-import com.layer.atlas.GIFDrawable;
-import com.layer.atlas.cells.ImageCell;
+import com.layer.atlas.old.Utils;
+import com.layer.atlas.old.Utils.ImageLoader.ImageSpec;
+import com.layer.atlas.old.Utils.Tools;
+import com.layer.atlas.old.AtlasLightboxView;
+import com.layer.atlas.old.AtlasProgressView;
+import com.layer.atlas.old.GIFDrawable;
+import com.layer.atlas.old.cells.ImageCell;
 import com.layer.sdk.listeners.LayerProgressListener;
 import com.layer.sdk.messaging.MessagePart;
 

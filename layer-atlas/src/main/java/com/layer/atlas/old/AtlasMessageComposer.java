@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import java.util.ArrayList;
 
@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.layer.atlas.R;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
 import com.layer.sdk.listeners.LayerTypingIndicatorListener;
@@ -102,7 +103,7 @@ public class AtlasMessageComposer extends FrameLayout {
         
         this.layerClient = client;
         
-        LayoutInflater.from(getContext()).inflate(R.layout.atlas_message_composer, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.old_atlas_message_composer, this);
         
         btnUpload = findViewById(R.id.atlas_message_composer_upload);
         btnUpload.setOnClickListener(new OnClickListener() {
@@ -110,11 +111,11 @@ public class AtlasMessageComposer extends FrameLayout {
                 final PopupWindow popupWindow = new PopupWindow(v.getContext());
                 popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 LayoutInflater inflater = LayoutInflater.from(v.getContext());
-                LinearLayout menu = (LinearLayout) inflater.inflate(R.layout.atlas_view_message_composer_menu, null);
+                LinearLayout menu = (LinearLayout) inflater.inflate(R.layout.old_atlas_view_message_composer_menu, null);
                 popupWindow.setContentView(menu);
 
                 for (MenuItem item : menuItems) {
-                    View itemConvert = inflater.inflate(R.layout.atlas_view_message_composer_menu_convert, menu, false);
+                    View itemConvert = inflater.inflate(R.layout.old_atlas_view_message_composer_menu_convert, menu, false);
                     TextView titleText = ((TextView) itemConvert.findViewById(R.id.altas_view_message_composer_convert_text));
                     titleText.setText(item.title);
                     itemConvert.setTag(item);

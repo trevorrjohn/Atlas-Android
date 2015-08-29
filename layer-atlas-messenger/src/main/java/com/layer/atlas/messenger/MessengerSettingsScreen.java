@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.layer.atlas.Participant;
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.old.Utils.Tools;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
 import com.layer.sdk.listeners.LayerAuthenticationListener;

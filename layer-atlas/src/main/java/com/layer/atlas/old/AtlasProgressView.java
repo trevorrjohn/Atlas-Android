@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -25,7 +25,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.old.Utils.Tools;
 
 /**
  * @author Oleg Orlov

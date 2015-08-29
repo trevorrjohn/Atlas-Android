@@ -40,14 +40,14 @@
                 android:layout_height="match_parent"
                 />
             
-            <com.layer.atlas.AtlasTypingIndicator 
+            <com.layer.atlas.old.AtlasTypingIndicator 
                 android:id="@+id/atlas_screen_messages_typing_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
                 />
             
-            <com.layer.atlas.AtlasParticipantPicker
+            <com.layer.atlas.old.AtlasParticipantPicker
             	android:id="@+id/atlas_screen_messages_participants_picker"
             	android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -59,7 +59,7 @@
         <!-- separator: 1px line -->
         <View android:layout_width="match_parent" android:layout_height="1px" android:background="@color/atlas_background_gray"/>
         
-        <com.layer.atlas.AtlasMessageComposer
+        <com.layer.atlas.old.AtlasMessageComposer
             android:id="@+id/atlas_screen_messages_message_composer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

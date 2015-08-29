@@ -32,7 +32,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.layer.atlas.old.AtlasConversationsListOld;
 import com.layer.atlas.old.AtlasConversationsListOld.ConversationClickListener;
 import com.layer.atlas.old.AtlasConversationsListOld.ConversationLongClickListener;
-import com.layer.atlas.Utils;
+import com.layer.atlas.old.Utils;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;

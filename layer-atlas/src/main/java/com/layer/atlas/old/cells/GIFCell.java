@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas.cells;
+package com.layer.atlas.old.cells;
 
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 
-import com.layer.atlas.Utils;
-import com.layer.atlas.Utils.ImageLoader.InputStreamProvider;
+import com.layer.atlas.old.Utils;
+import com.layer.atlas.old.Utils.ImageLoader.InputStreamProvider;
 import com.layer.atlas.old.AtlasMessageListOld;
-import com.layer.atlas.GIFDrawable;
+import com.layer.atlas.old.GIFDrawable;
 import com.layer.sdk.messaging.MessagePart;
 
 /**

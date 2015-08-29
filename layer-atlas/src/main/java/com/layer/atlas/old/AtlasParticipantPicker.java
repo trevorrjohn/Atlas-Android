@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.layer.atlas;
+package com.layer.atlas.old;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,7 +54,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.layer.atlas.Utils.Tools;
+import com.layer.atlas.Participant;
+import com.layer.atlas.ParticipantProvider;
+import com.layer.atlas.R;
+import com.layer.atlas.old.Utils.Tools;
 
 /**
  * @author Oleg Orlov
@@ -118,7 +120,7 @@ public class AtlasParticipantPicker extends FrameLayout {
         if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
         if (participantsList != null) throw new IllegalStateException("AtlasParticipantPicker is already initialized!");
         
-        LayoutInflater.from(getContext()).inflate(R.layout.atlas_participants_picker, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.old_atlas_participants_picker, this);
 
         this.participantProvider = participantProvider;
         if (userIdToSkip != null) {
@@ -192,7 +194,7 @@ public class AtlasParticipantPicker extends FrameLayout {
         participantsList.setAdapter(participantsAdapter = new BaseAdapter() {
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
-                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.atlas_view_participants_picker_convert, parent, false);
+                    convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.old_atlas_view_participants_picker_convert, parent, false);
                 }
 
                 TextView name = (TextView) convertView.findViewById(R.id.atlas_view_participants_picker_convert_name);
@@ -314,7 +316,7 @@ public class AtlasParticipantPicker extends FrameLayout {
         if (debug) Log.w(TAG, "refreshParticipants() childs left: " + selectedParticipantsContainer.getChildCount());
         for (String id : selectedParticipantIds) {
             Participant participant = participantProvider.getParticipant(id);
-            View participantView = LayoutInflater.from(selectedParticipantsContainer.getContext()).inflate(R.layout.atlas_view_participants_picker_name_convert, selectedParticipantsContainer, false);
+            View participantView = LayoutInflater.from(selectedParticipantsContainer.getContext()).inflate(R.layout.old_atlas_view_participants_picker_name_convert, selectedParticipantsContainer, false);
 
             TextView avaText = (TextView) participantView.findViewById(R.id.atlas_view_participants_picker_name_convert_ava);
 //            ImageView avatarImgView = (ImageView) participantView.findViewById(R.id.atlas_view_participants_picker_name_convert_avatar_img);
