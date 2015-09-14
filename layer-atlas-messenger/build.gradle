@@ -3,7 +3,7 @@ apply plugin: 'git-repo'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.layer.atlas.messenger"
@@ -32,7 +32,7 @@ repositories {
 dependencies {
     compile project(':layer-atlas')
 
-    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:support-v4:22.+'
     compile files('src/main/libs/zxing-core-3.2.0.jar')
     compile files('src/main/libs/zxing-android-embedded-3.0.0.jar')
 }
