@@ -68,7 +68,7 @@ public class AtlasHistoricSyncLayout extends SwipeRefreshLayout implements Layer
      * @param syncAmount Number of historic Messages to synchronize.
      * @return This `AtlasMessagesSwipeSyncLayout`.
      */
-    public AtlasHistoricSyncLayout setSyncAmount(int syncAmount) {
+    public AtlasHistoricSyncLayout setHistoryPerSync(int syncAmount) {
         mSyncAmount = syncAmount;
         return this;
     }
