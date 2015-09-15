@@ -178,7 +178,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         CellType cellType = mCellTypesByViewType.get(viewType);
         int rootResId = cellType.mMe ? ViewHolder.RESOURCE_ID_ME : ViewHolder.RESOURCE_ID_THEM;
         ViewHolder rootViewHolder = new ViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
-        AtlasCellFactory.CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCellView, mLayoutInflater);
+        AtlasCellFactory.CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCellView, cellType.mMe, mLayoutInflater);
         cellHolder.setClickableView(rootViewHolder.itemView);
         cellHolder.setClickListener(mCellHolderClickListener);
         rootViewHolder.mCellHolder = cellHolder;

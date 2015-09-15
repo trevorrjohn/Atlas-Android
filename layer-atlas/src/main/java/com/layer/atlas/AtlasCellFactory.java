@@ -27,10 +27,11 @@ public interface AtlasCellFactory<T extends AtlasCellFactory.CellHolder> {
      * a Message and should contain all View references necessary for rendering the Message there.
      *
      * @param cellView       ViewGroup to add necessary Message Views to.
+     * @param isMe`true`     if this Message was sent by the authenticated user, or `false`.
      * @param layoutInflater Convenience Inflater for inflating layouts.
      * @return CellHolder with all View references required for binding Messages to Views.
      */
-    T createCellHolder(ViewGroup cellView, LayoutInflater layoutInflater);
+    T createCellHolder(ViewGroup cellView, boolean isMe, LayoutInflater layoutInflater);
 
     /**
      * Renders a Message by applying data to the provided CellHolder.  The CellHolder was previously

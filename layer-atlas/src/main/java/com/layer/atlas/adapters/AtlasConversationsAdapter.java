@@ -13,6 +13,7 @@ import com.layer.atlas.old.Utils;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
+import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
 import com.layer.sdk.query.RecyclerViewController;
 import com.layer.sdk.query.SortDescriptor;
@@ -24,10 +25,11 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
     protected final ParticipantProvider mParticipantProvider;
     private final RecyclerViewController<Conversation> mQueryController;
     private final LayoutInflater mInflater;
+    private long mInitialHistory = 0;
 
     private OnConversationClickListener mConversationClickListener;
     private ViewHolder.OnClickListener mViewHolderClickListener;
-    
+
     private final DateFormat mDateFormat;
     private final DateFormat mTimeFormat;
 
@@ -65,6 +67,40 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
         mQueryController.execute();
     }
 
+
+    //==============================================================================================
+    // Initial message history
+    //==============================================================================================
+
+    public AtlasConversationsAdapter setInitialMessageHistory(long initialHistory) {
+        mInitialHistory = initialHistory;
+        return this;
+    }
+
+    private void syncInitialMessages(final int start, final int length) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long desiredHistory = mInitialHistory;
+                if (desiredHistory <= 0) return;
+                for (int i = start; i < start + length; i++) {
+                    try {
+                        final Conversation conversation = getItem(i);
+                        if (conversation == null || conversation.getHistoricSyncStatus() != Conversation.HistoricSyncStatus.MORE_AVAILABLE) {
+                            continue;
+                        }
+                        Query<Message> localCountQuery = Query.builder(Message.class)
+                                .predicate(new Predicate(Message.Property.CONVERSATION, Predicate.Operator.EQUAL_TO, conversation))
+                                .build();
+                        long delta = desiredHistory - mLayerClient.executeQueryForCount(localCountQuery);
+                        if (delta > 0) conversation.syncMoreHistoricMessages((int) delta);
+                    } catch (IndexOutOfBoundsException e) {
+                        // Concurrent modification
+                    }
+                }
+            }
+        }).start();
+    }
 
     //==============================================================================================
     // Listeners
@@ -134,6 +170,7 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
 
     @Override
     public void onQueryDataSetChanged(RecyclerViewController controller) {
+        syncInitialMessages(0, getItemCount());
         notifyDataSetChanged();
     }
 
@@ -149,11 +186,13 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
 
     @Override
     public void onQueryItemInserted(RecyclerViewController controller, int position) {
+        syncInitialMessages(position, 1);
         notifyItemInserted(position);
     }
 
     @Override
     public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
+        syncInitialMessages(positionStart, itemCount);
         notifyItemRangeInserted(positionStart, itemCount);
     }
 

@@ -31,6 +31,7 @@ public class AtlasConversationsList extends RecyclerView {
     private static final String TAG = AtlasConversationsList.class.getSimpleName();
 
     AtlasConversationsAdapter mAdapter;
+    private long mInitialMessageHistory = 0;
 
     //styles
     private int mTitleTextColor;
@@ -97,6 +98,16 @@ public class AtlasConversationsList extends RecyclerView {
      */
     public AtlasConversationsList setOnConversationClickListener(AtlasConversationsAdapter.OnConversationClickListener listener) {
         mAdapter.setOnConversationClickListener(listener);
+        return this;
+    }
+
+    /**
+     * Convenience pass-through to this list's AtlasConversationsAdapter.
+     *
+     * @see AtlasConversationsAdapter#setInitialMessageHistory(long)
+     */
+    public AtlasConversationsList setInitialHistory(long initialHistory) {
+        mAdapter.setInitialMessageHistory(initialHistory);
         return this;
     }
 
