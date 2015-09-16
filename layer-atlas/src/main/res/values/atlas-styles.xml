@@ -38,7 +38,7 @@
 
         <item name="colorPrimary">@color/atlas_background_blue</item>  <!-- action bar -->
         <item name="colorPrimaryDark">@color/atlas_background_blue_dark</item>
-        <item name="colorAccent">@color/atlas</item>   <!-- EditText cursor -->
+        <item name="colorAccent">@color/atlas_background_blue</item>   <!-- EditText cursor -->
 
         <item name="android:windowBackground">@color/atlas_background_white</item>
     </style>

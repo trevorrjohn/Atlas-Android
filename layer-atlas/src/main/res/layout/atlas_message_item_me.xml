@@ -21,14 +21,14 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/atlas_view_messages_convert_timebar"
+        android:id="@+id/atlas_message_item_time_group"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:orientation="horizontal"
         >
 
         <TextView
-            android:id="@+id/atlas_view_messages_convert_timebar_day"
+            android:id="@+id/atlas_message_item_time_group_day"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginRight="2dp"
@@ -41,7 +41,7 @@
             />
 
         <TextView
-            android:id="@+id/atlas_view_messages_convert_timebar_time"
+            android:id="@+id/atlas_message_item_time_group_time"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginLeft="2dp"
@@ -54,19 +54,19 @@
     </LinearLayout>
 
     <Space
-        android:id="@+id/atlas_view_messages_convert_spacer_top_1"
+        android:id="@+id/atlas_message_item_space_minute"
         android:layout_width="match_parent"
         android:layout_height="7dp"
         />
 
     <Space
-        android:id="@+id/atlas_view_messages_convert_spacer_top_2"
+        android:id="@+id/atlas_message_item_space_hour"
         android:layout_width="match_parent"
         android:layout_height="7dp"
         />
 
     <TextView
-        android:id="@+id/atlas_view_messages_convert_user_name"
+        android:id="@+id/atlas_message_item_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -92,13 +92,13 @@
             android:layout_weight="1"/>
 
         <FrameLayout
-            android:id="@+id/atlas_view_messages_cell_container"
+            android:id="@+id/atlas_message_item_cell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <!-- avatar placeholder -->
         <FrameLayout
-            android:id="@+id/atlas_view_messages_convert_avatar_container"
+            android:id="@+id/atlas_message_item_avatar_group"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="bottom"
@@ -106,14 +106,14 @@
             >
 
             <ImageView
-                android:id="@+id/atlas_view_messages_convert_avatar_img"
+                android:id="@+id/atlas_message_item_avatar_group_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 />
 
             <TextView
-                android:id="@+id/atlas_view_messages_convert_initials"
+                android:id="@+id/atlas_message_item_avatar_group_initials"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -125,7 +125,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/atlas_view_messages_convert_delivery_receipt"
+        android:id="@+id/atlas_message_item_receipt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
