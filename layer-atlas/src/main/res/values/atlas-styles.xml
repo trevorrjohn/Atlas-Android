@@ -29,12 +29,18 @@
     <!-- ########### -->
     <!-- Atlas Style -->
     <!-- ########### -->
-    <style name="Theme.Atlas.Light" parent="android:Theme">
+    <style name="Theme.Atlas.Light" parent="Theme.AppCompat.Light">
         <item name="AtlasConversationList">@style/AtlasConversationList</item>
         <item name="AtlasMessageComposer">@style/AtlasMessageComposer</item>
         <item name="AtlasMessageList">@style/AtlasMessageList</item>
         <item name="AtlasParticipantPicker">@style/AtlasParticipantPicker</item>
         <item name="AtlasTypingIndicator">@style/AtlasTypingIndicator</item>
+
+        <item name="colorPrimary">@color/atlas_background_blue</item>  <!-- action bar -->
+        <item name="colorPrimaryDark">@color/atlas_background_blue_dark</item>
+        <item name="colorAccent">@color/atlas</item>   <!-- EditText cursor -->
+
+        <item name="android:windowBackground">@color/atlas_background_white</item>
     </style>
 
 

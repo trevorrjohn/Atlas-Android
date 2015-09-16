@@ -31,30 +31,11 @@ public class AtlasConversationsList extends RecyclerView {
     private static final String TAG = AtlasConversationsList.class.getSimpleName();
 
     AtlasConversationsAdapter mAdapter;
-    private long mInitialMessageHistory = 0;
-
-    //styles
-    private int mTitleTextColor;
-    private int mTitleTextStyle;
-    private Typeface mTitleTextTypeface;
-    private int mTitleUnreadTextColor;
-    private int mTitleUnreadTextStyle;
-    private Typeface mTitleUnreadTextTypeface;
-    private int mSubtitleTextColor;
-    private int mSubtitleTextStyle;
-    private Typeface mSubtitleTextTypeface;
-    private int mSubtitleUnreadTextColor;
-    private int mSubtitleUnreadTextStyle;
-    private Typeface mSubtitleUnreadTextTypeface;
-    private int mCellBackgroundColor;
-    private int mCellUnreadBackgroundColor;
-    private int mDateTextColor;
-    private int mAvatarTextColor;
-    private int mAvatarBackgroundColor;
+    private final Style mStyle;
 
     public AtlasConversationsList(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        parseStyle(context, attrs, defStyle);
+        mStyle = new Style(context, attrs, defStyle);
     }
 
     public AtlasConversationsList(Context context, AttributeSet attrs) {
@@ -63,6 +44,7 @@ public class AtlasConversationsList extends RecyclerView {
 
     public AtlasConversationsList(Context context) {
         super(context);
+        mStyle = new Style(context, null, 0);
     }
 
     public AtlasConversationsList init(LayerClient layerClient, ParticipantProvider participantProvider) {
@@ -111,33 +93,126 @@ public class AtlasConversationsList extends RecyclerView {
         return this;
     }
 
-    private void parseStyle(Context context, AttributeSet attrs, int defStyle) {
-        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasConversationsList, R.attr.AtlasConversationList, defStyle);
-        mTitleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mTitleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleTextStyle, Typeface.NORMAL);
-        String titleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleTextTypeface);
-        mTitleTextTypeface = titleTextTypefaceName != null ? Typeface.create(titleTextTypefaceName, mTitleTextStyle) : null;
+    public Style getStyle() {
+        return mStyle;
+    }
 
-        mTitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mTitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleUnreadTextStyle, Typeface.BOLD);
-        String titleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleUnreadTextTypeface);
-        mTitleUnreadTextTypeface = titleUnreadTextTypefaceName != null ? Typeface.create(titleUnreadTextTypefaceName, mTitleUnreadTextStyle) : null;
+    public static class Style {
+        private final int mTitleTextColor;
+        private final int mTitleTextStyle;
+        private final Typeface mTitleTextTypeface;
+        private final int mTitleUnreadTextColor;
+        private final int mTitleUnreadTextStyle;
+        private final Typeface mTitleUnreadTextTypeface;
+        private final int mSubtitleTextColor;
+        private final int mSubtitleTextStyle;
+        private final Typeface mSubtitleTextTypeface;
+        private final int mSubtitleUnreadTextColor;
+        private final int mSubtitleUnreadTextStyle;
+        private final Typeface mSubtitleUnreadTextTypeface;
+        private final int mCellBackgroundColor;
+        private final int mCellUnreadBackgroundColor;
+        private final int mDateTextColor;
+        private final int mAvatarTextColor;
+        private final int mAvatarBackgroundColor;
 
-        mSubtitleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mSubtitleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleTextStyle, Typeface.NORMAL);
-        String subtitleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleTextTypeface);
-        mSubtitleTextTypeface = subtitleTextTypefaceName != null ? Typeface.create(subtitleTextTypefaceName, mSubtitleTextStyle) : null;
+        public Style(Context context, AttributeSet attrs, int defStyle) {
+            TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasConversationsList, R.attr.AtlasConversationList, defStyle);
+            mTitleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mTitleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleTextStyle, Typeface.NORMAL);
+            String titleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleTextTypeface);
+            mTitleTextTypeface = titleTextTypefaceName != null ? Typeface.create(titleTextTypefaceName, mTitleTextStyle) : null;
 
-        mSubtitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mSubtitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextStyle, Typeface.NORMAL);
-        String subtitleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextTypeface);
-        mSubtitleUnreadTextTypeface = subtitleUnreadTextTypefaceName != null ? Typeface.create(subtitleUnreadTextTypefaceName, mSubtitleUnreadTextStyle) : null;
+            mTitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellTitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mTitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellTitleUnreadTextStyle, Typeface.BOLD);
+            String titleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellTitleUnreadTextTypeface);
+            mTitleUnreadTextTypeface = titleUnreadTextTypefaceName != null ? Typeface.create(titleUnreadTextTypefaceName, mTitleUnreadTextStyle) : null;
 
-        mCellBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellBackgroundColor, Color.TRANSPARENT);
-        mCellUnreadBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellUnreadBackgroundColor, Color.TRANSPARENT);
-        mDateTextColor = ta.getColor(R.styleable.AtlasConversationsList_dateTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mAvatarTextColor = ta.getColor(R.styleable.AtlasConversationsList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
-        mAvatarBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_shape_avatar_gray));
-        ta.recycle();
+            mSubtitleTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mSubtitleTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleTextStyle, Typeface.NORMAL);
+            String subtitleTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleTextTypeface);
+            mSubtitleTextTypeface = subtitleTextTypefaceName != null ? Typeface.create(subtitleTextTypefaceName, mSubtitleTextStyle) : null;
+
+            mSubtitleUnreadTextColor = ta.getColor(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mSubtitleUnreadTextStyle = ta.getInt(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextStyle, Typeface.NORMAL);
+            String subtitleUnreadTextTypefaceName = ta.getString(R.styleable.AtlasConversationsList_cellSubtitleUnreadTextTypeface);
+            mSubtitleUnreadTextTypeface = subtitleUnreadTextTypefaceName != null ? Typeface.create(subtitleUnreadTextTypefaceName, mSubtitleUnreadTextStyle) : null;
+
+            mCellBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellBackgroundColor, Color.TRANSPARENT);
+            mCellUnreadBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_cellUnreadBackgroundColor, Color.TRANSPARENT);
+            mDateTextColor = ta.getColor(R.styleable.AtlasConversationsList_dateTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mAvatarTextColor = ta.getColor(R.styleable.AtlasConversationsList_avatarTextColor, context.getResources().getColor(R.color.atlas_text_black));
+            mAvatarBackgroundColor = ta.getColor(R.styleable.AtlasConversationsList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_shape_avatar_gray));
+
+            ta.recycle();
+        }
+
+        public int getTitleTextColor() {
+            return mTitleTextColor;
+        }
+
+        public int getTitleTextStyle() {
+            return mTitleTextStyle;
+        }
+
+        public Typeface getTitleTextTypeface() {
+            return mTitleTextTypeface;
+        }
+
+        public int getTitleUnreadTextColor() {
+            return mTitleUnreadTextColor;
+        }
+
+        public int getTitleUnreadTextStyle() {
+            return mTitleUnreadTextStyle;
+        }
+
+        public Typeface getTitleUnreadTextTypeface() {
+            return mTitleUnreadTextTypeface;
+        }
+
+        public int getSubtitleTextColor() {
+            return mSubtitleTextColor;
+        }
+
+        public int getSubtitleTextStyle() {
+            return mSubtitleTextStyle;
+        }
+
+        public Typeface getSubtitleTextTypeface() {
+            return mSubtitleTextTypeface;
+        }
+
+        public int getSubtitleUnreadTextColor() {
+            return mSubtitleUnreadTextColor;
+        }
+
+        public int getSubtitleUnreadTextStyle() {
+            return mSubtitleUnreadTextStyle;
+        }
+
+        public Typeface getSubtitleUnreadTextTypeface() {
+            return mSubtitleUnreadTextTypeface;
+        }
+
+        public int getCellBackgroundColor() {
+            return mCellBackgroundColor;
+        }
+
+        public int getCellUnreadBackgroundColor() {
+            return mCellUnreadBackgroundColor;
+        }
+
+        public int getDateTextColor() {
+            return mDateTextColor;
+        }
+
+        public int getAvatarTextColor() {
+            return mAvatarTextColor;
+        }
+
+        public int getAvatarBackgroundColor() {
+            return mAvatarBackgroundColor;
+        }
     }
 }

@@ -20,8 +20,8 @@ public class SimpleTextCellFactory implements AtlasCellFactory<SimpleTextCellFac
     public TextCellHolder createCellHolder(ViewGroup cellView, boolean isMe, LayoutInflater layoutInflater) {
         Context context = cellView.getContext();
 
-        View v = layoutInflater.inflate(R.layout.simple_cell_text, cellView);
-        int padding = dpsPixels(context, 8f);
+        View v = layoutInflater.inflate(R.layout.simple_cell_text, cellView, true);
+        int padding = dpPixels(context, 8f);
         v.setPadding(padding, padding, padding, padding);
         v.setBackgroundResource(isMe ? R.drawable.atlas_shape_rounded16_blue : R.drawable.atlas_shape_rounded16_gray);
 
@@ -36,7 +36,7 @@ public class SimpleTextCellFactory implements AtlasCellFactory<SimpleTextCellFac
         cellHolder.mTextView.setText(text);
     }
 
-    private static int dpsPixels(Context context, float dps) {
+    private static int dpPixels(Context context, float dps) {
         return (int) (dps * context.getResources().getDisplayMetrics().density + 0.5f);
     }
 

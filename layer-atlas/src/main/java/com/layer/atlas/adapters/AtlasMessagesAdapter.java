@@ -76,6 +76,9 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
     private final DateFormat mDateFormat;
     private final DateFormat mTimeFormat;
 
+    // Read and delivery receipts
+    private Map<Message.RecipientStatus, Message> mReceiptMap = new HashMap<Message.RecipientStatus, Message>();
+
 
     public AtlasMessagesAdapter(Context context, LayerClient client, ParticipantProvider participantProvider) {
         mLayerClient = client;
@@ -190,16 +193,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         Message message = getItem(position);
         CellType cellType = mCellTypesByViewType.get(viewHolder.getItemViewType());
 
-        // Name
-        Actor sender = message.getSender();
-        if (sender.getName() != null) {
-            viewHolder.mUserNameHeader.setText(sender.getName());
-        } else {
-            Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
-            viewHolder.mUserNameHeader.setText(participant != null ? participant.getName() : "...");
-        }
-
-        // Clustering and Dates
+        // Clustering and dates
         Cluster cluster = getClustering(message, position);
         if (cluster.mDateBoundaryWithPrevious) {
             Date sentAt = message.getSentAt();
@@ -238,6 +232,38 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
                 viewHolder.mSpaceMinute.setVisibility(View.GONE);
                 viewHolder.mSpaceHour.setVisibility(View.GONE);
             }
+        }
+
+        // Name (only if it's not mine and it's the first message in a cluster from a new sender)
+        if (!cellType.mMe && (cluster.mClusterWithPrevious == null || cluster.mClusterWithPrevious == ClusterType.NEW_SENDER)) {
+            Actor sender = message.getSender();
+            if (sender.getName() != null) {
+                viewHolder.mUserNameHeader.setText(sender.getName());
+            } else {
+                Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
+                viewHolder.mUserNameHeader.setText(participant != null ? participant.getName() : "...");
+            }
+            viewHolder.mUserNameHeader.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.mUserNameHeader.setVisibility(View.GONE);
+        }
+
+        // Read and delivery receipts
+        if (message == mReceiptMap.get(Message.RecipientStatus.READ)) {
+            viewHolder.mReceipt.setVisibility(View.VISIBLE);
+            viewHolder.mReceipt.setText("Read"); // TODO: add read-at time once available
+        } else if (message == mReceiptMap.get(Message.RecipientStatus.DELIVERED)) {
+            viewHolder.mReceipt.setVisibility(View.VISIBLE);
+            viewHolder.mReceipt.setText("Delivered");
+        } else {
+            viewHolder.mReceipt.setVisibility(View.GONE);
+        }
+
+        // Unsent and sent
+        if (message.isSent()) {
+            viewHolder.mCellView.setAlpha(1.0f);
+        } else {
+            viewHolder.mCellView.setAlpha(0.5f);
         }
 
         // CellHolder
@@ -279,6 +305,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
     // Clustering
     //==============================================================================================
 
+    // TODO: limit only to visible positions and positions just-outside the visible range?
     private Cluster getClustering(Message message, int position) {
         Cluster result = mClusterCache.get(message.getId());
         if (result == null) {
@@ -347,26 +374,63 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
 
 
     //==============================================================================================
+    // Read and delivery receipts
+    //==============================================================================================
+
+    // TODO: find clever way to prevent worst-case O(n) -- perhaps based on visible positions?
+    private void updateReceipts() {
+        final String userId = mLayerClient.getAuthenticatedUserId();
+        Map<Message.RecipientStatus, Message> receiptMap = new HashMap<Message.RecipientStatus, Message>();
+        for (int position = getItemCount(); position >= 0; position--) {
+            Message message = getItem(position);
+            if (message == null) continue;
+
+            // Only display receipts for our own messages
+            if (!userId.equals(message.getSender().getUserId())) continue;
+
+            for (Map.Entry<String, Message.RecipientStatus> entry : message.getRecipientStatus().entrySet()) {
+                // Only show receipts for other members
+                if (entry.getKey().equals(userId)) continue;
+
+                // Only the latest entry for this RecipientStatus matters
+                if (receiptMap.containsKey(entry.getValue())) continue;
+
+                // Found the latest entry for this RecipientStatus
+                receiptMap.put(entry.getValue(), message);
+            }
+            if (receiptMap.containsKey(Message.RecipientStatus.READ) && receiptMap.containsKey(Message.RecipientStatus.DELIVERED)) {
+                break;
+            }
+        }
+        mReceiptMap = receiptMap;
+    }
+
+
+    //==============================================================================================
     // UI update callbacks
     //==============================================================================================
 
     @Override
     public void onQueryDataSetChanged(RecyclerViewController controller) {
+        updateReceipts();
         notifyDataSetChanged();
     }
 
     @Override
     public void onQueryItemChanged(RecyclerViewController controller, int position) {
+        updateReceipts();
         notifyItemChanged(position);
     }
 
     @Override
     public void onQueryItemRangeChanged(RecyclerViewController controller, int positionStart, int itemCount) {
+        updateReceipts();
         notifyItemRangeChanged(positionStart, itemCount);
     }
 
     @Override
     public void onQueryItemInserted(RecyclerViewController controller, int position) {
+        updateReceipts();
         notifyItemInserted(position);
         if (mAppendListener != null && (position + 1) == getItemCount()) {
             mAppendListener.onMessageAppend(this, getItem(position));
@@ -375,6 +439,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
 
     @Override
     public void onQueryItemRangeInserted(RecyclerViewController controller, int positionStart, int itemCount) {
+        updateReceipts();
         notifyItemRangeInserted(positionStart, itemCount);
         int positionEnd = positionStart + itemCount;
         if (mAppendListener != null && (positionEnd + 1) == getItemCount()) {
@@ -384,16 +449,19 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
 
     @Override
     public void onQueryItemRemoved(RecyclerViewController controller, int position) {
+        updateReceipts();
         notifyItemRemoved(position);
     }
 
     @Override
     public void onQueryItemRangeRemoved(RecyclerViewController controller, int positionStart, int itemCount) {
+        updateReceipts();
         notifyItemRangeRemoved(positionStart, itemCount);
     }
 
     @Override
     public void onQueryItemMoved(RecyclerViewController controller, int fromPosition, int toPosition) {
+        updateReceipts();
         notifyItemMoved(fromPosition, toPosition);
     }
 
@@ -415,6 +483,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         protected Space mSpaceMinute;
         protected Space mSpaceHour;
         protected ViewGroup mCellView;
+        protected TextView mReceipt;
 
         // Cell
         protected AtlasCellFactory.CellHolder mCellHolder;
@@ -429,6 +498,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             mSpaceMinute = (Space) itemView.findViewById(R.id.atlas_view_messages_convert_spacer_top_1);
             mSpaceHour = (Space) itemView.findViewById(R.id.atlas_view_messages_convert_spacer_top_2);
             mCellView = (ViewGroup) itemView.findViewById(R.id.atlas_view_messages_cell_container);
+            mReceipt = (TextView) itemView.findViewById(R.id.atlas_view_messages_convert_delivery_receipt);
         }
     }
 
@@ -494,7 +564,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
     }
 
     /**
-     * Listens inserts to the end of an AtlasQueryAdapter.
+     * Listens for inserts to the end of an AtlasQueryAdapter.
      */
     public interface OnMessageAppendListener {
         /**
