@@ -267,6 +267,22 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             viewHolder.mCell.setAlpha(1.0f);
         }
 
+        // Avatar
+        if (cellType.mMe) {
+            viewHolder.mAvatarGroup.setVisibility(View.GONE);
+        } else {
+            Actor sender = message.getSender();
+            final String initials;
+            if (sender.getName() != null) {
+                initials = ("" + sender.getName().charAt(0)).toUpperCase();
+            } else {
+                Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
+                initials = Utils.getInitials(participant);
+            }
+            viewHolder.mAvatarGroupInitials.setText(initials);
+            viewHolder.mAvatarGroup.setVisibility(View.VISIBLE);
+        }
+        
         // CellHolder
         AtlasCellFactory.CellHolder cellHolder = viewHolder.mCellHolder;
         cellHolder.setMessage(message);

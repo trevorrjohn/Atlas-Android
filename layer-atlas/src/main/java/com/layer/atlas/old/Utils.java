@@ -94,7 +94,7 @@ public class Utils {
 
     public static String getInitials(Participant p) {
         StringBuilder sb = new StringBuilder();
-        sb.append(p.getName() != null && p.getName().trim().length() > 0 ? p.getName().trim().charAt(0) : "");
+        sb.append(p.getName() != null && p.getName().trim().length() > 0 ? ("" + p.getName().trim().charAt(0)).toUpperCase() : "");
         return sb.toString();
     }
 
