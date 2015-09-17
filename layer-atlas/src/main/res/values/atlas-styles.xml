@@ -15,30 +15,20 @@
 -->
 <resources>
 
-
-    <!-- ###################### -->
-    <!-- Atlas Component Styles -->
-    <!-- ###################### -->
-    <attr name="AtlasConversationList" format="reference"/>
-    <attr name="AtlasMessageComposer" format="reference"/>
-    <attr name="AtlasMessageList" format="reference"/>
-    <attr name="AtlasParticipantPicker" format="reference"/>
-    <attr name="AtlasTypingIndicator" format="reference"/>
-
-
     <!-- ########### -->
     <!-- Atlas Style -->
     <!-- ########### -->
-    <style name="Theme.Atlas.Light" parent="Theme.AppCompat.Light">
+    <style name="Theme.Atlas.Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="AtlasConversationList">@style/AtlasConversationList</item>
         <item name="AtlasMessageComposer">@style/AtlasMessageComposer</item>
         <item name="AtlasMessageList">@style/AtlasMessageList</item>
         <item name="AtlasParticipantPicker">@style/AtlasParticipantPicker</item>
         <item name="AtlasTypingIndicator">@style/AtlasTypingIndicator</item>
 
-        <item name="colorPrimary">@color/atlas_background_blue</item>  <!-- action bar -->
+        <item name="colorPrimary">@color/atlas_background_blue</item>
         <item name="colorPrimaryDark">@color/atlas_background_blue_dark</item>
-        <item name="colorAccent">@color/atlas_background_blue</item>   <!-- EditText cursor -->
+        <item name="colorAccent">@color/atlas_background_blue</item>
+        <item name="actionBarStyle">@style/AtlasActionBar</item>
 
         <item name="android:windowBackground">@color/atlas_background_white</item>
     </style>
@@ -182,108 +172,17 @@
     </style>
 
 
-    <!-- ####################### -->
-    <!-- Atlas Attribute Formats -->
-    <!-- ####################### -->
+    <!-- ########## -->
+    <!-- Action Bar -->
+    <!-- ########## -->
+    <style name="AtlasActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/AtlasActionBarTextStyle</item>
+        <item name="background">@color/atlas_background_blue</item>
+    </style>
 
-    <!-- conversations list -->
-    <attr name="cellTitleTextColor" format="color|reference"/>
-    <attr name="cellTitleTextTypeface" format="string|reference"/>
-    <attr name="cellTitleTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="cellTitleUnreadTextColor" format="color|reference"/>
-    <attr name="cellTitleUnreadTextTypeface" format="string|reference"/>
-    <attr name="cellTitleUnreadTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="cellSubtitleTextColor" format="color|reference"/>
-    <attr name="cellSubtitleTextTypeface" format="string|reference"/>
-    <attr name="cellSubtitleTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="cellSubtitleUnreadTextColor" format="color|reference"/>
-    <attr name="cellSubtitleUnreadTextTypeface" format="string|reference"/>
-    <attr name="cellSubtitleUnreadTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="cellBackgroundColor" format="color|reference"/>
-    <attr name="cellUnreadBackgroundColor" format="color|reference"/>
-    <attr name="dateTextColor" format="color|reference"/>
-    <attr name="avatarTextColor" format="color|reference"/>
-    <attr name="avatarBackgroundColor" format="color|reference"/>
-
-    <!-- message composer -->
-    <attr name="composerTextColor" format="color|reference"/>
-    <attr name="composerTextSize" format="dimension|reference"/>
-    <attr name="composerTextTypeface" format="string|reference"/>
-    <attr name="composerTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-
-    <!-- messages list -->
-    <attr name="myBubbleColor" format="color|reference"/>
-    <attr name="myTextColor" format="color|reference"/>
-    <attr name="myTextSize" format="dimension|reference"/>
-    <attr name="myTextTypeface" format="string|reference"/>
-    <attr name="myTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="theirBubbleColor" format="color|reference"/>
-    <attr name="theirTextColor" format="color|reference"/>
-    <attr name="theirTextSize" format="dimension|reference"/>
-    <attr name="theirTextTypeface" format="string|reference"/>
-    <attr name="theirTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-
-    <!-- participants picker -->
-    <attr name="inputTextColor" format="color|reference"/>
-    <attr name="inputTextTypeface" format="string|reference"/>
-    <attr name="inputTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="listTextColor" format="color|reference"/>
-    <attr name="listTextTypeface" format="string|reference"/>
-    <attr name="listTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-    <attr name="chipBackgroundColor" format="color|reference"/>
-    <attr name="chipTextColor" format="color|reference"/>
-    <attr name="chipTextTypeface" format="string|reference"/>
-    <attr name="chipTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
-
-    <!-- typing indicator -->
-    <attr name="indicatorTextColor" format="color|reference"/>
-    <attr name="indicatorTextSize" format="dimension|reference"/>
-    <attr name="indicatorTextTypeface" format="string|reference"/>
-    <attr name="indicatorTextStyle">
-        <flag name="normal" value="0"/>
-        <flag name="bold" value="1"/>
-        <flag name="italic" value="2"/>
-    </attr>
+    <style name="AtlasActionBarTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/atlas_text_white</item>
+    </style>
 
 
 </resources>

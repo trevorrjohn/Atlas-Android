@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 Layer. All rights reserved.
+    
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+          
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.    
+-->
+<resources>
+
+    <!-- ########### -->
+    <!-- Atlas Style -->
+    <!-- ########### -->
+    <style name="Theme.Atlas.Light" parent="Theme.AppCompat.Light">
+        <item name="AtlasConversationList">@style/AtlasConversationList</item>
+        <item name="AtlasMessageComposer">@style/AtlasMessageComposer</item>
+        <item name="AtlasMessageList">@style/AtlasMessageList</item>
+        <item name="AtlasParticipantPicker">@style/AtlasParticipantPicker</item>
+        <item name="AtlasTypingIndicator">@style/AtlasTypingIndicator</item>
+
+        <item name="colorPrimary">@color/atlas_background_blue</item>
+        <item name="colorPrimaryDark">@color/atlas_background_blue_dark</item>
+        <item name="colorAccent">@color/atlas_background_blue</item>
+        <item name="actionBarStyle">@style/AtlasActionBar</item>
+
+        <item name="android:windowBackground">@color/atlas_background_white</item>
+
+        <!-- v21 -->
+        <item name="android:statusBarColor">@color/atlas_background_blue_dark</item>
+    </style>
+
+</resources>
