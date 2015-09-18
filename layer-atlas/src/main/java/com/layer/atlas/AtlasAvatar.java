@@ -30,25 +30,20 @@ public class AtlasAvatar implements Target {
     }
 
     public void setActor(final Actor actor) {
-        final String initials;
-        final Participant participant;
-        if (actor.getUserId() == null) {
-            participant = null;
-            initials = ("" + actor.getName().charAt(0)).toUpperCase();
-        } else {
-            participant = mParticipantProvider.getParticipant(actor.getUserId());
-            initials = ("" + participant.getName().charAt(0)).toUpperCase();
-        }
-        mInitials.setText(initials);
         mImage.setVisibility(View.GONE);
         mInitials.setVisibility(View.VISIBLE);
 
-        if (participant != null) {
+        if (actor.getUserId() == null) {
+            mInitials.setText(("" + actor.getName().charAt(0)).toUpperCase());
             Picasso.with(mContext)
-                    .load(participant.getAvatarUrl()) // use HTTP cache
+                    .cancelRequest(this); // Cancel previous request from this recycled view
+        } else {
+            Participant participant = mParticipantProvider.getParticipant(actor.getUserId());
+            mInitials.setText(("" + participant.getName().charAt(0)).toUpperCase());
+            Picasso.with(mContext)
+                    .load(participant.getAvatarUrl())
                     .resizeDimen(R.dimen.atlas_message_item_avatar, R.dimen.atlas_message_item_avatar)
                     .centerInside()
-                    .placeholder(R.drawable.atlas_shape_circle_gray)
                     .transform(sCircleCrop)
                     .into(this);
         }
