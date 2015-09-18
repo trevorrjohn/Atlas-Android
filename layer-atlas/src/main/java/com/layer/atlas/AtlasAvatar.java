@@ -35,18 +35,15 @@ public class AtlasAvatar implements Target {
 
         if (actor.getUserId() == null) {
             mInitials.setText(("" + actor.getName().charAt(0)).toUpperCase());
-            Picasso.with(mContext)
-                    .cancelRequest(this); // Cancel previous request from this recycled view
-        } else {
-            Participant participant = mParticipantProvider.getParticipant(actor.getUserId());
-            mInitials.setText(("" + participant.getName().charAt(0)).toUpperCase());
-            Picasso.with(mContext)
-                    .load(participant.getAvatarUrl())
-                    .resizeDimen(R.dimen.atlas_message_item_avatar, R.dimen.atlas_message_item_avatar)
-                    .centerInside()
-                    .transform(sCircleCrop)
-                    .into(this);
+            Picasso.with(mContext).cancelRequest(this); // Cancel previous request from this recycled view
+            return;
         }
+
+        Participant participant = mParticipantProvider.getParticipant(actor.getUserId());
+        mInitials.setText(("" + participant.getName().charAt(0)).toUpperCase());
+        Picasso.with(mContext).load(participant.getAvatarUrl())
+                .resizeDimen(R.dimen.atlas_message_item_avatar, R.dimen.atlas_message_item_avatar)
+                .transform(sCircleCrop).noPlaceholder().noFade().into(this);
     }
 
     @Override

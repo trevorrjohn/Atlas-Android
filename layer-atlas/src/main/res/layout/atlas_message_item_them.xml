@@ -74,7 +74,6 @@
         android:orientation="horizontal"
         >
 
-        <!-- avatar placeholder -->
         <FrameLayout
             android:id="@+id/atlas_message_item_avatar_group"
             android:layout_width="@dimen/atlas_message_item_avatar"
