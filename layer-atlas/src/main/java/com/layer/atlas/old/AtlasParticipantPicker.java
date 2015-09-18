@@ -215,15 +215,15 @@ public class AtlasParticipantPicker extends FrameLayout {
 
                 if (entry != null) {
                     name.setText(entry.participant.getName());
-                    Drawable avatarDrawable = entry.participant.getAvatarDrawable();
-                    if (entry.participant != null && avatarDrawable != null) {
-                        avatarDrawable.setBounds(0, 0, avatarBmp.getWidth(), avatarBmp.getHeight());
-                        avatarDrawable.draw(avatarCanvas);
-                        avatarText.setVisibility(View.INVISIBLE);
-                    } else {
+//                    Drawable avatarDrawable = entry.participant.getAvatarDrawable();
+//                    if (entry.participant != null && avatarDrawable != null) {
+//                        avatarDrawable.setBounds(0, 0, avatarBmp.getWidth(), avatarBmp.getHeight());
+//                        avatarDrawable.draw(avatarCanvas);
+//                        avatarText.setVisibility(View.INVISIBLE);
+//                    } else {
                         avatarText.setVisibility(View.VISIBLE);
                         avatarText.setText(Utils.getInitials(entry.participant));
-                    }
+//                    }
                 } else {
                     name.setText("Unknown user");
                     avatarText.setText("?");

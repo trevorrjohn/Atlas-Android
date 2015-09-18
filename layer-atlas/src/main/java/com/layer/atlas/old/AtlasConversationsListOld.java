@@ -215,16 +215,16 @@ public class AtlasConversationsListOld extends FrameLayout implements LayerChang
                 if (allButMe.size() < 2) {
                     String conterpartyUserId = allButMe.get(0);
                     Participant participant = participantProvider.getParticipant(conterpartyUserId);
-                    if (participant == null || participant.getAvatarDrawable() == null) {
-                        textInitials.setText(participant == null ? "?" : Utils.getInitials(participant));
-                        textInitials.setTextColor(avatarTextColor);
-                        avatarSingle.setVisibility(View.VISIBLE);
-                    } else {
-                        Drawable drawable = participant.getAvatarDrawable();
-                        drawable.setBounds(0, 0, (int)Tools.getPxFromDp(40, getContext()), (int)Tools.getPxFromDp(40, getContext()));
-                        drawable.draw(canvas);
-                        avatarSingle.setVisibility(View.GONE);
-                    }
+//                    if (participant == null || participant.getAvatarDrawable() == null) {
+//                        textInitials.setText(participant == null ? "?" : Utils.getInitials(participant));
+//                        textInitials.setTextColor(avatarTextColor);
+//                        avatarSingle.setVisibility(View.VISIBLE);
+//                    } else {
+//                        Drawable drawable = participant.getAvatarDrawable();
+//                        drawable.setBounds(0, 0, (int)Tools.getPxFromDp(40, getContext()), (int)Tools.getPxFromDp(40, getContext()));
+//                        drawable.draw(canvas);
+//                        avatarSingle.setVisibility(View.GONE);
+//                    }
                     canvas.drawBitmap(maskSingleBmp, 0, 0, maskPaint);
                     avatarMulti.setVisibility(View.GONE);
                 } else {
@@ -246,32 +246,32 @@ public class AtlasConversationsListOld extends FrameLayout implements LayerChang
                     TextView textInitialsLeft  = (TextView) convertView.findViewById(R.id.atlas_view_conversations_list_convert_avatar_multi_left);
                     TextView textInitialsRight = (TextView) convertView.findViewById(R.id.atlas_view_conversations_list_convert_avatar_multi_right);
                     Canvas tmpCanvas = new Canvas(tmpBmp);
-                    if (leftParticipant == null || leftParticipant.getAvatarDrawable() == null) {
-                        textInitialsLeft.setText(leftParticipant == null ? "?" : Utils.getInitials(leftParticipant));
-                        textInitialsLeft.setTextColor(avatarTextColor);
-                        textInitialsLeft.setVisibility(View.VISIBLE);
-                    } else {
-                        tmpCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
-                        Drawable leftDrawable = leftParticipant.getAvatarDrawable();
-                        leftDrawable.setBounds(0, 0, (int)Tools.getPxFromDp(26, getContext()), (int)Tools.getPxFromDp(26, getContext()));
-                        leftDrawable.draw(tmpCanvas);
-                        tmpCanvas.drawBitmap(maskMultiLeftBmp, 0, 0, maskPaint);
-                        canvas.drawBitmap(tmpBmp, 0, 0, avatarPaint);
-                        textInitialsLeft.setVisibility(View.GONE);
-                    }
-                    if (rightParticipant == null || rightParticipant.getAvatarDrawable() == null) {
-                        textInitialsRight.setText(rightParticipant == null ? "?" : Utils.getInitials(rightParticipant));
-                        textInitialsRight.setTextColor(avatarTextColor);
-                        textInitialsRight.setVisibility(View.VISIBLE);
-                    } else {
-                        tmpCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
-                        Drawable drawable = rightParticipant.getAvatarDrawable();
-                        drawable.setBounds((int)Tools.getPxFromDp(14, getContext()), (int)Tools.getPxFromDp(14, getContext()), (int)Tools.getPxFromDp(40, getContext()), (int)Tools.getPxFromDp(40, getContext()));
-                        drawable.draw(tmpCanvas);
-                        tmpCanvas.drawBitmap(maskMultiRightBmp, 0, 0, maskPaint);
-                        canvas.drawBitmap(tmpBmp, 0, 0, avatarPaint);
-                        textInitialsRight.setVisibility(View.GONE);
-                    }
+//                    if (leftParticipant == null || leftParticipant.getAvatarDrawable() == null) {
+//                        textInitialsLeft.setText(leftParticipant == null ? "?" : Utils.getInitials(leftParticipant));
+//                        textInitialsLeft.setTextColor(avatarTextColor);
+//                        textInitialsLeft.setVisibility(View.VISIBLE);
+//                    } else {
+//                        tmpCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+//                        Drawable leftDrawable = leftParticipant.getAvatarDrawable();
+//                        leftDrawable.setBounds(0, 0, (int)Tools.getPxFromDp(26, getContext()), (int)Tools.getPxFromDp(26, getContext()));
+//                        leftDrawable.draw(tmpCanvas);
+//                        tmpCanvas.drawBitmap(maskMultiLeftBmp, 0, 0, maskPaint);
+//                        canvas.drawBitmap(tmpBmp, 0, 0, avatarPaint);
+//                        textInitialsLeft.setVisibility(View.GONE);
+//                    }
+//                    if (rightParticipant == null || rightParticipant.getAvatarDrawable() == null) {
+//                        textInitialsRight.setText(rightParticipant == null ? "?" : Utils.getInitials(rightParticipant));
+//                        textInitialsRight.setTextColor(avatarTextColor);
+//                        textInitialsRight.setVisibility(View.VISIBLE);
+//                    } else {
+//                        tmpCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+//                        Drawable drawable = rightParticipant.getAvatarDrawable();
+//                        drawable.setBounds((int)Tools.getPxFromDp(14, getContext()), (int)Tools.getPxFromDp(14, getContext()), (int)Tools.getPxFromDp(40, getContext()), (int)Tools.getPxFromDp(40, getContext()));
+//                        drawable.draw(tmpCanvas);
+//                        tmpCanvas.drawBitmap(maskMultiRightBmp, 0, 0, maskPaint);
+//                        canvas.drawBitmap(tmpBmp, 0, 0, avatarPaint);
+//                        textInitialsRight.setVisibility(View.GONE);
+//                    }
                     
                     canvas.drawBitmap(maskMultiBmp, 0, 0, maskPaint);               // always apply mask 
                     avatarSingle.setVisibility(View.GONE);

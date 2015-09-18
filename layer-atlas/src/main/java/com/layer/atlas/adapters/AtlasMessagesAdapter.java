@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 
+import com.layer.atlas.AtlasAvatar;
 import com.layer.atlas.AtlasCellFactory;
 import com.layer.atlas.Participant;
 import com.layer.atlas.ParticipantProvider;
@@ -181,7 +182,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CellType cellType = mCellTypesByViewType.get(viewType);
         int rootResId = cellType.mMe ? ViewHolder.RESOURCE_ID_ME : ViewHolder.RESOURCE_ID_THEM;
-        ViewHolder rootViewHolder = new ViewHolder(mLayoutInflater.inflate(rootResId, parent, false));
+        ViewHolder rootViewHolder = new ViewHolder(mLayoutInflater.inflate(rootResId, parent, false), mParticipantProvider);
         AtlasCellFactory.CellHolder cellHolder = cellType.mCellFactory.createCellHolder(rootViewHolder.mCell, cellType.mMe, mLayoutInflater);
         cellHolder.setClickableView(rootViewHolder.itemView);
         cellHolder.setClickListener(mCellHolderClickListener);
@@ -268,21 +269,13 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         }
 
         // Avatar
-        if (cellType.mMe) {
-            viewHolder.mAvatarGroup.setVisibility(View.GONE);
-        } else {
-            Actor sender = message.getSender();
-            final String initials;
-            if (sender.getName() != null) {
-                initials = ("" + sender.getName().charAt(0)).toUpperCase();
-            } else {
-                Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
-                initials = Utils.getInitials(participant);
-            }
-            viewHolder.mAvatarGroupInitials.setText(initials);
+//        if (cellType.mMe) {
+//            viewHolder.mAvatarGroup.setVisibility(View.GONE);
+//        } else {
             viewHolder.mAvatarGroup.setVisibility(View.VISIBLE);
-        }
-        
+            viewHolder.mAvatar.setActor(message.getSender());
+//        }
+
         // CellHolder
         AtlasCellFactory.CellHolder cellHolder = viewHolder.mCellHolder;
         cellHolder.setMessage(message);
@@ -500,15 +493,14 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         protected Space mSpaceMinute;
         protected Space mSpaceHour;
         protected ViewGroup mAvatarGroup;
-        protected TextView mAvatarGroupInitials;
-        protected ImageView mAvatarGroupImage;
+        protected AtlasAvatar mAvatar;
         protected ViewGroup mCell;
         protected TextView mReceipt;
 
         // Cell
         protected AtlasCellFactory.CellHolder mCellHolder;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, ParticipantProvider participantProvider) {
             super(itemView);
             mUserName = (TextView) itemView.findViewById(R.id.atlas_message_item_username);
             mTimeGroup = itemView.findViewById(R.id.atlas_message_item_time_group);
@@ -517,8 +509,9 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             mSpaceMinute = (Space) itemView.findViewById(R.id.atlas_message_item_space_minute);
             mSpaceHour = (Space) itemView.findViewById(R.id.atlas_message_item_space_hour);
             mAvatarGroup = (ViewGroup) itemView.findViewById(R.id.atlas_message_item_avatar_group);
-            mAvatarGroupInitials = (TextView) itemView.findViewById(R.id.atlas_message_item_avatar_group_initials);
-            mAvatarGroupImage = (ImageView) itemView.findViewById(R.id.atlas_message_item_avatar_group_image);
+            mAvatar = new AtlasAvatar(itemView.getContext(), participantProvider,
+                    (TextView) itemView.findViewById(R.id.atlas_message_item_avatar_group_initials),
+                    (ImageView) itemView.findViewById(R.id.atlas_message_item_avatar_group_image));
             mCell = (ViewGroup) itemView.findViewById(R.id.atlas_message_item_cell);
             mReceipt = (TextView) itemView.findViewById(R.id.atlas_message_item_receipt);
         }

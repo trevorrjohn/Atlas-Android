@@ -1,7 +1,5 @@
 package com.layer.atlas;
 
-import android.graphics.drawable.Drawable;
-
 import com.layer.atlas.old.Utils;
 
 import java.util.Comparator;
@@ -18,13 +16,7 @@ public interface Participant {
      */
     String getName();
 
-    /**
-     * Returns drawable to be used as paprticipant's avatar in Atlas Views.
-     * If undefined, initials would be used instead.
-     *
-     * @return drawable, or null
-     */
-    Drawable getAvatarDrawable();
+    String getAvatarUrl();
 
     Comparator<Participant> COMPARATOR = new Utils.FilteringComparator("");
 }

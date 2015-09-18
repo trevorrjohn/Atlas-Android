@@ -21,4 +21,6 @@
     <dimen name="atlas_text_size_smaller2">12sp</dimen>
     <dimen name="atlas_text_size_tiny">8sp</dimen>
 
+    <dimen name="atlas_message_item_avatar">24dp</dimen>
+    
 </resources>

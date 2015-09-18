@@ -265,15 +265,15 @@ public class AtlasMessageListOld extends FrameLayout implements LayerChangeEvent
                         textAvatar.setVisibility(View.INVISIBLE);
                         avatarImgView.setVisibility(View.INVISIBLE);
                         if (cell.lastUserMsg && participant != null) {
-                            Drawable avatarDrawable = participant.getAvatarDrawable();
-                            avatarImgView.setVisibility(View.VISIBLE);
-                            if (avatarDrawable != null) {
-                                avatarDrawable.setBounds(0, 0, avatarBmp.getWidth(), avatarBmp.getHeight());
-                                avatarDrawable.draw(avatarCanvas);
-                            } else {
-                                textAvatar.setVisibility(View.VISIBLE);
-                                textAvatar.setText(Utils.getInitials(participant));
-                            }
+//                            Drawable avatarDrawable = participant.getAvatarDrawable();
+//                            avatarImgView.setVisibility(View.VISIBLE);
+//                            if (avatarDrawable != null) {
+//                                avatarDrawable.setBounds(0, 0, avatarBmp.getWidth(), avatarBmp.getHeight());
+//                                avatarDrawable.draw(avatarCanvas);
+//                            } else {
+//                                textAvatar.setVisibility(View.VISIBLE);
+//                                textAvatar.setText(Utils.getInitials(participant));
+//                            }
                         }
                         avatarCanvas.drawBitmap(maskSingleBmp, 0, 0, maskPaint);
                         avatarContainer.setVisibility(showTheirDecor ? View.VISIBLE : View.GONE);

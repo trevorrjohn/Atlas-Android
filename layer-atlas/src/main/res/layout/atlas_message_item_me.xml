@@ -99,18 +99,11 @@
         <!-- avatar placeholder -->
         <FrameLayout
             android:id="@+id/atlas_message_item_avatar_group"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="@dimen/atlas_message_item_avatar"
+            android:layout_height="@dimen/atlas_message_item_avatar"
             android:layout_gravity="bottom"
             android:layout_marginRight="8dp"
             >
-
-            <ImageView
-                android:id="@+id/atlas_message_item_avatar_group_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                />
 
             <TextView
                 android:id="@+id/atlas_message_item_avatar_group_initials"
@@ -119,6 +112,13 @@
                 android:gravity="center"
                 android:text="TS"
                 android:textSize="@dimen/atlas_text_size_smaller2"/>
+
+            <ImageView
+                android:id="@+id/atlas_message_item_avatar_group_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                />
 
         </FrameLayout>
 

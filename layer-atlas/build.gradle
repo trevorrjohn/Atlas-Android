@@ -24,6 +24,8 @@ dependencies {
     compile(group: 'com.layer.sdk', name: 'layer-sdk', version: "0.17.2") {
     }
 
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
     compile 'org.slf4j:slf4j-nop:1.5.8'
     compile 'com.android.support:recyclerview-v7:22.+'
     compile 'com.android.support:appcompat-v7:22.+'
