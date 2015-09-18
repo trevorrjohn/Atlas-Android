@@ -21,6 +21,32 @@
     <dimen name="atlas_text_size_smaller2">12sp</dimen>
     <dimen name="atlas_text_size_tiny">8sp</dimen>
 
+    <!-- Message "bubbles" -->
+    <dimen name="atlas_message_item_cell_min_width">30dp</dimen>
+    <dimen name="atlas_message_item_cell_min_height">30dp</dimen>
+    <dimen name="atlas_message_item_cell_radius">15dp</dimen>
+    <dimen name="atlas_message_item_cell_padding_top">4dp</dimen>
+    <dimen name="atlas_message_item_cell_padding_bottom">6dp</dimen>
+    <dimen name="atlas_message_item_cell_padding_near">8dp</dimen>
+    <dimen name="atlas_message_item_cell_padding_far">9dp</dimen>
+
+    <!-- Message time spacing -->
+    <dimen name="atlas_message_item_time_group_padding_top">5dp</dimen>
+    <dimen name="atlas_message_item_time_group_padding_bottom">11dp</dimen>
+
+    <!-- Cluster dims are additive -->
+    <dimen name="atlas_message_cluster_space">2dp</dimen>
+    <dimen name="atlas_message_cluster_space_gap">16dp</dimen>
+
+    <!-- Avatar -->
+    <dimen name="atlas_message_item_avatar_margin">2dp</dimen>
     <dimen name="atlas_message_item_avatar">24dp</dimen>
-    
+
+    <!-- Receipt -->
+    <dimen name="atlas_message_item_receipt">12dp</dimen>
+
+    <!-- Sender name -->
+    <dimen name="atlas_message_item_sender_name_margin_left">36dp</dimen> <!-- change once bubbles have tails -->
+    <dimen name="atlas_message_item_sender_name_margin_bottom">1dp</dimen>
+
 </resources>

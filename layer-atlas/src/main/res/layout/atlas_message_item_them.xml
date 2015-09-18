@@ -18,22 +18,23 @@
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/atlas_message_cluster_space"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/atlas_message_item_time_group"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal"
+        android:paddingBottom="@dimen/atlas_message_item_time_group_padding_bottom"
+        android:paddingTop="@dimen/atlas_message_item_time_group_padding_top"
         >
 
         <TextView
             android:id="@+id/atlas_message_item_time_group_day"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginRight="2dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical|right"
+            android:layout_height="wrap_content"
             android:text="Yesterday"
             android:textColor="@color/atlas_text_gray"
             android:textSize="@dimen/atlas_text_size_smaller2"
@@ -43,10 +44,7 @@
         <TextView
             android:id="@+id/atlas_message_item_time_group_time"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginLeft="2dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical|left"
+            android:layout_height="wrap_content"
             android:text="09:08"
             android:textColor="@color/atlas_text_gray"
             android:textSize="@dimen/atlas_text_size_smaller2"
@@ -54,23 +52,17 @@
     </LinearLayout>
 
     <Space
-        android:id="@+id/atlas_message_item_space_minute"
+        android:id="@+id/atlas_message_item_cluster_space_gap"
         android:layout_width="match_parent"
-        android:layout_height="7dp"
-        />
-
-    <Space
-        android:id="@+id/atlas_message_item_space_hour"
-        android:layout_width="match_parent"
-        android:layout_height="7dp"
+        android:layout_height="@dimen/atlas_message_cluster_space_gap"
         />
 
     <TextView
-        android:id="@+id/atlas_message_item_username"
+        android:id="@+id/atlas_message_item_sender_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="48dp"
+        android:layout_marginBottom="@dimen/atlas_message_item_sender_name_margin_bottom"
+        android:layout_marginLeft="@dimen/atlas_message_item_sender_name_margin_left"
         android:text="Tomaz Stolfa"
         android:textColor="@color/atlas_text_gray"
         android:textSize="@dimen/atlas_text_size_smaller2"
@@ -80,9 +72,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="1dp"
-
-        android:paddingTop="1dp"
         >
 
         <!-- avatar placeholder -->
@@ -91,7 +80,7 @@
             android:layout_width="@dimen/atlas_message_item_avatar"
             android:layout_height="@dimen/atlas_message_item_avatar"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="8dp"
+            android:layout_marginRight="@dimen/atlas_message_item_avatar_margin"
             >
 
             <TextView
@@ -114,19 +103,10 @@
         <FrameLayout
             android:id="@+id/atlas_message_item_cell"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/atlas_message_item_cell_min_height"
+            android:minWidth="@dimen/atlas_message_item_cell_min_width"/>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/atlas_message_item_receipt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="12dp"
-        android:text="Read at 10:12 AM"
-        android:textColor="@color/atlas_text_gray"
-        android:textSize="@dimen/atlas_text_size_smaller2"
-        />
 
 </LinearLayout>

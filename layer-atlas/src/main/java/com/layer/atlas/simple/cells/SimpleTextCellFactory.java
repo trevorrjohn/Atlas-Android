@@ -21,9 +21,9 @@ public class SimpleTextCellFactory implements AtlasCellFactory<SimpleTextCellFac
         Context context = cellView.getContext();
 
         View v = layoutInflater.inflate(R.layout.simple_cell_text, cellView, true);
-        int padding = dpPixels(context, 8f);
-        v.setPadding(padding, padding, padding, padding);
-        v.setBackgroundResource(isMe ? R.drawable.atlas_shape_rounded16_blue : R.drawable.atlas_shape_rounded16_gray);
+        //int padding = dpPixels(context, 8f);
+        //v.setPadding(padding, padding, padding, padding);
+        v.setBackgroundResource(isMe ? R.drawable.atlas_message_item_cell_me : R.drawable.atlas_message_item_cell_them);
 
         TextView t = (TextView) v.findViewById(R.id.cell_text);
         t.setTextColor(context.getResources().getColor(isMe ? R.color.atlas_text_white : R.color.atlas_text_black));

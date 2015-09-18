@@ -52,16 +52,16 @@ public class TextCell extends Cell {
             textMy.setText(text);
             textOther.setVisibility(View.GONE);
 
-            textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue);
+            textMy.setBackgroundResource(R.drawable.atlas_message_item_cell_me);
 
             if (CLUSTERED_BUBBLES) {
-                if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
-                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_bottom_right);
-                } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
-                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_top_right);
-                } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
-                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_right);
-                }
+//                if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
+//                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_bottom_right);
+//                } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
+//                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_top_right);
+//                } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
+//                    textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_right);
+//                }
             }
             ((GradientDrawable) textMy.getBackground()).setColor(messagesList.myBubbleColor);
             textMy.setTextColor(messagesList.myTextColor);
@@ -72,15 +72,15 @@ public class TextCell extends Cell {
             textOther.setText(text);
             textMy.setVisibility(View.GONE);
 
-            textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray);
+            textOther.setBackgroundResource(R.drawable.atlas_message_item_cell_them);
             if (CLUSTERED_BUBBLES) {
-                if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
-                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_bottom_left);
-                } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
-                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_top_left);
-                } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
-                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_left);
-                }
+//                if (cell.clusterHeadItemId == cell.clusterItemId && !cell.clusterTail) {
+//                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_bottom_left);
+//                } else if (cell.clusterTail && cell.clusterHeadItemId != cell.clusterItemId) {
+//                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_top_left);
+//                } else if (cell.clusterHeadItemId != cell.clusterItemId && !cell.clusterTail) {
+//                    textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_left);
+//                }
             }
             ((GradientDrawable) textOther.getBackground()).setColor(messagesList.otherBubbleColor);
             textOther.setTextColor(messagesList.otherTextColor);

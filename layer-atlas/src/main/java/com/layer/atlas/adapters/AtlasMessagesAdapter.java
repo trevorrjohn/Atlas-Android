@@ -194,87 +194,81 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Message message = getItem(position);
         CellType cellType = mCellTypesByViewType.get(viewHolder.getItemViewType());
+        boolean oneOnOne = message.getConversation().getParticipants().size() == 2;
 
         // Clustering and dates
         Cluster cluster = getClustering(message, position);
-        if (cluster.mDateBoundaryWithPrevious) {
+        if (cluster.mClusterWithPrevious == null) {
+            // No previous message, so no gap
+            viewHolder.mClusterSpaceGap.setVisibility(View.GONE);
+            viewHolder.mTimeGroup.setVisibility(View.GONE);
+        } else if (cluster.mDateBoundaryWithPrevious || cluster.mClusterWithPrevious == ClusterType.MORE_THAN_HOUR) {
+            // Crossed into a new day, or > 1hr lull in conversation
             Date sentAt = message.getSentAt();
             if (sentAt == null) sentAt = new Date();
             String timeBarDayText = Utils.formatTimeDay(sentAt);
             viewHolder.mTimeGroupDay.setText(timeBarDayText);
             String timeBarTimeText = mTimeFormat.format(sentAt.getTime());
-            viewHolder.mTimeGroupTime.setText(timeBarTimeText);
-
+            viewHolder.mTimeGroupTime.setText(" " + timeBarTimeText);
             viewHolder.mTimeGroup.setVisibility(View.VISIBLE);
-            viewHolder.mSpaceMinute.setVisibility(View.GONE);
-            viewHolder.mSpaceHour.setVisibility(View.GONE);
-        } else {
+            viewHolder.mClusterSpaceGap.setVisibility(View.GONE);
+        } else if (cluster.mClusterWithPrevious == ClusterType.LESS_THAN_MINUTE) {
+            // Same sender with < 1m gap
+            viewHolder.mClusterSpaceGap.setVisibility(View.GONE);
             viewHolder.mTimeGroup.setVisibility(View.GONE);
-            if (cluster.mClusterWithPrevious == null) {
-                // No previous message
-                viewHolder.mSpaceMinute.setVisibility(View.GONE);
-                viewHolder.mSpaceHour.setVisibility(View.GONE);
+        } else if (cluster.mClusterWithPrevious == ClusterType.NEW_SENDER || cluster.mClusterWithPrevious == ClusterType.LESS_THAN_HOUR) {
+            // New sender or > 1m gap
+            viewHolder.mClusterSpaceGap.setVisibility(View.VISIBLE);
+            viewHolder.mTimeGroup.setVisibility(View.GONE);
+        }
+
+        // Sender-dependent elements
+        if (cellType.mMe) {
+            // Read and delivery receipts
+            if (message == mReceiptMap.get(Message.RecipientStatus.READ)) {
+                viewHolder.mReceipt.setVisibility(View.VISIBLE);
+                viewHolder.mReceipt.setText("Read"); // TODO: add read-at time once available
+            } else if (message == mReceiptMap.get(Message.RecipientStatus.DELIVERED)) {
+                viewHolder.mReceipt.setVisibility(View.VISIBLE);
+                viewHolder.mReceipt.setText("Delivered");
             } else {
-                switch (cluster.mClusterWithPrevious) {
-                    case MINUTE:
-                        viewHolder.mSpaceMinute.setVisibility(View.GONE);
-                        viewHolder.mSpaceHour.setVisibility(View.GONE);
-                        break;
-                    case HOUR:
-                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
-                        viewHolder.mSpaceHour.setVisibility(View.GONE);
-                        break;
-                    case MORE_THAN_HOUR:
-                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
-                        viewHolder.mSpaceHour.setVisibility(View.VISIBLE);
-                        break;
-                    case NEW_SENDER:
-                        viewHolder.mSpaceMinute.setVisibility(View.VISIBLE);
-                        viewHolder.mSpaceHour.setVisibility(View.VISIBLE);
-                        break;
+                viewHolder.mReceipt.setVisibility(View.GONE);
+            }
+
+            // Unsent and sent
+            if (!message.isSent()) {
+                viewHolder.mCell.setAlpha(0.5f);
+            } else {
+                viewHolder.mCell.setAlpha(1.0f);
+            }
+        } else {
+            // Sender name, only for first message in cluster
+            if (!oneOnOne && (cluster.mClusterWithPrevious == null || cluster.mClusterWithPrevious == ClusterType.NEW_SENDER)) {
+                Actor sender = message.getSender();
+                if (sender.getName() != null) {
+                    viewHolder.mUserName.setText(sender.getName());
+                } else {
+                    Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
+                    viewHolder.mUserName.setText(participant != null ? participant.getName() : "...");
                 }
-            }
-        }
-
-        // Name (only if it's not mine and it's the first message in a cluster from a new sender)
-        if (!cellType.mMe && (cluster.mClusterWithPrevious == null || cluster.mClusterWithPrevious == ClusterType.NEW_SENDER)) {
-            Actor sender = message.getSender();
-            if (sender.getName() != null) {
-                viewHolder.mUserName.setText(sender.getName());
+                viewHolder.mUserName.setVisibility(View.VISIBLE);
             } else {
-                Participant participant = mParticipantProvider.getParticipant(sender.getUserId());
-                viewHolder.mUserName.setText(participant != null ? participant.getName() : "...");
+                viewHolder.mUserName.setVisibility(View.GONE);
             }
-            viewHolder.mUserName.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.mUserName.setVisibility(View.GONE);
-        }
 
-        // Read and delivery receipts
-        if (message == mReceiptMap.get(Message.RecipientStatus.READ)) {
-            viewHolder.mReceipt.setVisibility(View.VISIBLE);
-            viewHolder.mReceipt.setText("Read"); // TODO: add read-at time once available
-        } else if (message == mReceiptMap.get(Message.RecipientStatus.DELIVERED)) {
-            viewHolder.mReceipt.setVisibility(View.VISIBLE);
-            viewHolder.mReceipt.setText("Delivered");
-        } else {
-            viewHolder.mReceipt.setVisibility(View.GONE);
+            // Avatars
+            if (oneOnOne) {
+                // Not in one-on-one conversations
+                viewHolder.mAvatarGroup.setVisibility(View.GONE);
+            } else if (cluster.mClusterWithNext == null || cluster.mClusterWithNext != ClusterType.LESS_THAN_MINUTE) {
+                // Last message in cluster
+                viewHolder.mAvatarGroup.setVisibility(View.VISIBLE);
+                viewHolder.mAvatar.setActor(message.getSender());
+            } else {
+                // Invisible for clustered messages to preserve proper spacing
+                viewHolder.mAvatarGroup.setVisibility(View.INVISIBLE);
+            }
         }
-
-        // Unsent and sent
-        if (cellType.mMe && !message.isSent()) {
-            viewHolder.mCell.setAlpha(0.5f);
-        } else {
-            viewHolder.mCell.setAlpha(1.0f);
-        }
-
-        // Avatar
-//        if (cellType.mMe) {
-//            viewHolder.mAvatarGroup.setVisibility(View.GONE);
-//        } else {
-            viewHolder.mAvatarGroup.setVisibility(View.VISIBLE);
-            viewHolder.mAvatar.setActor(message.getSender());
-//        }
 
         // CellHolder
         AtlasCellFactory.CellHolder cellHolder = viewHolder.mCellHolder;
@@ -490,8 +484,7 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         protected View mTimeGroup;
         protected TextView mTimeGroupDay;
         protected TextView mTimeGroupTime;
-        protected Space mSpaceMinute;
-        protected Space mSpaceHour;
+        protected Space mClusterSpaceGap;
         protected ViewGroup mAvatarGroup;
         protected AtlasAvatar mAvatar;
         protected ViewGroup mCell;
@@ -502,12 +495,11 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
 
         public ViewHolder(View itemView, ParticipantProvider participantProvider) {
             super(itemView);
-            mUserName = (TextView) itemView.findViewById(R.id.atlas_message_item_username);
+            mUserName = (TextView) itemView.findViewById(R.id.atlas_message_item_sender_name);
             mTimeGroup = itemView.findViewById(R.id.atlas_message_item_time_group);
             mTimeGroupDay = (TextView) itemView.findViewById(R.id.atlas_message_item_time_group_day);
             mTimeGroupTime = (TextView) itemView.findViewById(R.id.atlas_message_item_time_group_time);
-            mSpaceMinute = (Space) itemView.findViewById(R.id.atlas_message_item_space_minute);
-            mSpaceHour = (Space) itemView.findViewById(R.id.atlas_message_item_space_hour);
+            mClusterSpaceGap = (Space) itemView.findViewById(R.id.atlas_message_item_cluster_space_gap);
             mAvatarGroup = (ViewGroup) itemView.findViewById(R.id.atlas_message_item_avatar_group);
             mAvatar = new AtlasAvatar(itemView.getContext(), participantProvider,
                     (TextView) itemView.findViewById(R.id.atlas_message_item_avatar_group_initials),
@@ -519,8 +511,8 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
 
     private enum ClusterType {
         NEW_SENDER,
-        MINUTE,
-        HOUR,
+        LESS_THAN_MINUTE,
+        LESS_THAN_HOUR,
         MORE_THAN_HOUR;
 
         private static final long MILLIS_MINUTE = 60 * 1000;
@@ -533,10 +525,10 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             // Time clustering for same user?
             Date oldSentAt = older.getSentAt();
             Date newSentAt = newer.getSentAt();
-            if (oldSentAt == null || newSentAt == null) return MINUTE;
+            if (oldSentAt == null || newSentAt == null) return LESS_THAN_MINUTE;
             long delta = Math.abs(newSentAt.getTime() - oldSentAt.getTime());
-            if (delta <= MILLIS_MINUTE) return MINUTE;
-            if (delta <= MILLIS_HOUR) return HOUR;
+            if (delta <= MILLIS_MINUTE) return LESS_THAN_MINUTE;
+            if (delta <= MILLIS_HOUR) return LESS_THAN_HOUR;
             return MORE_THAN_HOUR;
         }
     }

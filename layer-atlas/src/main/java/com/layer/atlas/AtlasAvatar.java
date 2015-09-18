@@ -48,7 +48,7 @@ public class AtlasAvatar implements Target {
                     .load(participant.getAvatarUrl()) // use HTTP cache
                     .resizeDimen(R.dimen.atlas_message_item_avatar, R.dimen.atlas_message_item_avatar)
                     .centerInside()
-                    .placeholder(R.drawable.atlas_shape_circle_white)
+                    .placeholder(R.drawable.atlas_shape_circle_gray)
                     .transform(sCircleCrop)
                     .into(this);
         }

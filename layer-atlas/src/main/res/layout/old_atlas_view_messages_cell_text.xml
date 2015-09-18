@@ -34,7 +34,7 @@
         android:paddingRight="12dp"
         
         android:text="Sample Text Sample Text Very \nLong About 300 Symbols Like\n two full-sized Tweets"
-        android:background="@drawable/atlas_shape_rounded16_gray"
+        android:background="@drawable/atlas_message_item_cell_them"
         
         android:textSize="16sp"
         android:minHeight="34dp"
@@ -52,7 +52,7 @@
         android:paddingRight="12dp"
         
         android:text="attach, type: image/jpeg, size: 1071119\nSample Text Very \nLong About 300 Symbols Like\n two full-sized Tweets"
-        android:background="@drawable/atlas_shape_rounded16_blue"
+        android:background="@drawable/atlas_message_item_cell_me"
         android:gravity="right|center_vertical"
         
         android:textSize="16sp" 
