@@ -31,8 +31,8 @@
     <dimen name="atlas_message_item_cell_padding_far">9dp</dimen>
 
     <!-- Message time spacing -->
-    <dimen name="atlas_message_item_time_group_padding_top">5dp</dimen>
-    <dimen name="atlas_message_item_time_group_padding_bottom">11dp</dimen>
+    <dimen name="atlas_message_item_time_group_padding_top">14dp</dimen>
+    <dimen name="atlas_message_item_time_group_padding_bottom">7dp</dimen>
 
     <!-- Cluster dims are additive -->
     <dimen name="atlas_message_cluster_space">2dp</dimen>
