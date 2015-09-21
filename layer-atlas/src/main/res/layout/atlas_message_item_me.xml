@@ -18,8 +18,10 @@
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/atlas_message_cluster_space"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/atlas_message_item_margin_horizontal"
+    android:paddingRight="@dimen/atlas_message_item_margin_horizontal"
+    android:paddingTop="@dimen/atlas_message_cluster_space">
 
     <LinearLayout
         android:id="@+id/atlas_message_item_time_group"
@@ -72,9 +74,9 @@
         <FrameLayout
             android:id="@+id/atlas_message_item_cell"
             android:layout_width="wrap_content"
-            android:minWidth="@dimen/atlas_message_item_cell_min_width"
+            android:layout_height="wrap_content"
             android:minHeight="@dimen/atlas_message_item_cell_min_height"
-            android:layout_height="wrap_content"/>
+            android:minWidth="@dimen/atlas_message_item_cell_min_width"/>
 
     </LinearLayout>
 

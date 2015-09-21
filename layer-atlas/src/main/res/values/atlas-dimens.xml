@@ -21,6 +21,8 @@
     <dimen name="atlas_text_size_smaller2">12sp</dimen>
     <dimen name="atlas_text_size_tiny">8sp</dimen>
 
+    <dimen name="atlas_message_item_margin_horizontal">16dp</dimen>
+
     <!-- Message "bubbles" -->
     <dimen name="atlas_message_item_cell_min_width">30dp</dimen>
     <dimen name="atlas_message_item_cell_min_height">30dp</dimen>
@@ -34,7 +36,7 @@
     <dimen name="atlas_message_item_time_group_padding_top">14dp</dimen>
     <dimen name="atlas_message_item_time_group_padding_bottom">7dp</dimen>
 
-    <!-- Cluster dims are additive -->
+    <!-- Cluster dims (additive) -->
     <dimen name="atlas_message_cluster_space">2dp</dimen>
     <dimen name="atlas_message_cluster_space_gap">16dp</dimen>
 
