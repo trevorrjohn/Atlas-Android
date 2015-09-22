@@ -10,7 +10,7 @@ import android.graphics.Rect;
 
 import com.squareup.picasso.Transformation;
 
-public class SimpleCircleCrop implements Transformation {
+public class CircleCrop implements Transformation {
     @Override
     public Bitmap transform(Bitmap source) {
         int srcWidth = source.getWidth();
@@ -35,6 +35,6 @@ public class SimpleCircleCrop implements Transformation {
 
     @Override
     public String key() {
-        return SimpleCircleCrop.class.getSimpleName();
+        return CircleCrop.class.getSimpleName();
     }
 }
