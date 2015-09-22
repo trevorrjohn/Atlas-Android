@@ -9,8 +9,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.layer.atlas.simple.transformations.CircleCrop;
+import com.layer.atlas.simple.transformations.CircleTransform;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class AtlasAvatarCluster extends View {
     private static final String TAG = AtlasAvatarCluster.class.getSimpleName();
 
-    private final static CircleCrop TRANSFORMATION = new CircleCrop();
+    private final static CircleTransform TRANSFORM = new CircleTransform();
 
     private static final Paint PAINT_TRANSPARENT = new Paint();
     private static final Paint PAINT_BITMAP = new Paint();
@@ -32,18 +33,10 @@ public class AtlasAvatarCluster extends View {
     private static final Paint PAINT_BORDER = new Paint();
     private static final Paint PAINT_BACKGROUND = new Paint();
 
-    private static float mDensity;
-    
-    // TODO: make these stylable
-    private static final float SINGLE_SIZE_DP = 40f;
-    private static final float MULTI_SIZE_DP = 26f;
-    private static final float BORDER_SIZE_DP = 0.5f;
+    // TODO: make these styleable
+    private static final float BORDER_SIZE_DP = 1f;
     private static final float SINGLE_TEXT_SIZE_DP = 16f;
-    private static final float MULTI_TEXT_SIZE_DP = SINGLE_TEXT_SIZE_DP * (MULTI_SIZE_DP / SINGLE_SIZE_DP);
-
-    private float mInnerRadius;
-    private float mOuterRadius;
-    private float mTextSize;
+    private static final float MULTI_FRACTION = 26f / 40f;
 
     static {
         PAINT_TRANSPARENT.setARGB(0, 255, 255, 255);
@@ -63,14 +56,22 @@ public class AtlasAvatarCluster extends View {
         PAINT_BACKGROUND.setAntiAlias(true);
     }
 
+    private ParticipantProvider mParticipantProvider;
+
+    // Initials and Picasso image targets by user ID
     private final Map<String, ImageTarget> mImageTargets = new HashMap<String, ImageTarget>();
     private final Map<String, String> mInitials = new HashMap<String, String>();
 
-    private Rect mTextRect = new Rect();
-    private Rect mSourceRect = new Rect();
-    private RectF mDestRect = new RectF();
+    // Sizing set in setSize() and used in onDraw()
+    private float mOuterRadius;
+    private float mInnerRadius;
+    private float mCenterX;
+    private float mCenterY;
+    private float mDeltaX;
+    private float mDeltaY;
 
-    private ParticipantProvider mParticipantProvider;
+    private Rect mRect = new Rect();
+    private RectF mInnerRect = new RectF();
 
 
     public AtlasAvatarCluster(Context context) {
@@ -86,56 +87,10 @@ public class AtlasAvatarCluster extends View {
     }
 
     public AtlasAvatarCluster init(ParticipantProvider participantProvider) {
-        mDensity = getContext().getResources().getDisplayMetrics().density;
         mParticipantProvider = participantProvider;
         return this;
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        int totalWidth = canvas.getWidth();
-        int totalHeight = canvas.getHeight();
-
-        int avatarCount = mInitials.size();
-        canvas.drawRect(0f, 0f, totalWidth, totalHeight, PAINT_TRANSPARENT);
-        if (avatarCount == 0) return;
-
-        // Drawable size
-        float drawableWidth = totalWidth - (getPaddingLeft() + getPaddingRight());
-        float drawableHeight = totalHeight - (getPaddingTop() + getPaddingBottom());
-
-        // Avatar size
-        float outerWidth = mOuterRadius * 2;
-        float cx = getPaddingLeft() + mOuterRadius;
-        float cy = getPaddingTop() + mOuterRadius;
-        float dx = (drawableWidth - outerWidth) / (avatarCount - 1);
-        float dy = (drawableHeight - outerWidth) / (avatarCount - 1);
-
-        for (Map.Entry<String, String> entry : mInitials.entrySet()) {
-            ImageTarget imageTarget = mImageTargets.get(entry.getKey());
-            boolean isImage = false;
-            canvas.drawCircle(cx, cy, mOuterRadius, PAINT_BORDER);
-            if (imageTarget != null) {
-                Bitmap bitmap = imageTarget.getBitmap();
-                if (bitmap != null) {
-                    mSourceRect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                    mDestRect.set(cx - mInnerRadius, cy - mInnerRadius, cx + mInnerRadius, cy + mInnerRadius);
-                    canvas.drawBitmap(bitmap, mSourceRect, mDestRect, PAINT_BITMAP);
-                    isImage = true;
-                }
-            }
-            if (!isImage) {
-                String initials = entry.getValue();
-                PAINT_INITIALS.setTextSize(mTextSize);
-                PAINT_INITIALS.getTextBounds(initials, 0, initials.length(), mTextRect);
-                canvas.drawCircle(cx, cy, mInnerRadius, PAINT_BACKGROUND);
-                canvas.drawText(initials, cx - mTextRect.centerX(), cy - mTextRect.centerY() - 1f, PAINT_INITIALS);
-            }
-
-            cx += dx;
-            cy += dy;
-        }
-    }
 
     public AtlasAvatarCluster setParticipants(Set<String> participantIds) {
         List<String> addParticipants = new ArrayList<String>(participantIds.size());
@@ -179,21 +134,81 @@ public class AtlasAvatarCluster extends View {
             mImageTargets.remove(participantId);
         }
 
-        int avatarCount = mInitials.size();
-        if (avatarCount == 0) return this;
-        mOuterRadius = (mDensity * ((avatarCount == 1) ? SINGLE_SIZE_DP : MULTI_SIZE_DP)) / 2f;
-        mInnerRadius = mOuterRadius - 2f * mDensity * BORDER_SIZE_DP;
-        mTextSize = (avatarCount == 1) ? (mDensity * SINGLE_TEXT_SIZE_DP) : (mDensity * MULTI_TEXT_SIZE_DP);
+        // Set sizing
+        if (!setSize()) {
+            throw new IllegalStateException("Could not set avatar size; No layout params?");
+        }
 
+        // Fetch images
         Picasso picasso = Picasso.with(getContext());
         int size = (int) (mInnerRadius * 2f);
         for (ImageTarget imageTarget : toLoad) {
             picasso.load(imageTarget.getUrl()).centerCrop().resize(size, size)
-                    .transform(TRANSFORMATION).into(imageTarget);
+                    .transform(TRANSFORM).into(imageTarget);
         }
 
+        // Redraw
         invalidate();
         return this;
+    }
+
+    private boolean setSize() {
+        int avatarCount = mInitials.size();
+        if (avatarCount == 0) return false;
+
+        ViewGroup.LayoutParams params = getLayoutParams();
+        int drawableWidth = params.width - (getPaddingLeft() + getPaddingRight());
+        int drawableHeight = params.height - (getPaddingTop() + getPaddingBottom());
+        float dimension = Math.min(drawableWidth, drawableHeight);
+        float density = getContext().getResources().getDisplayMetrics().density;
+        float fraction = (avatarCount == 1) ? 1 : MULTI_FRACTION;
+
+        mOuterRadius = fraction * (dimension / 2f);
+        mInnerRadius = mOuterRadius - (density * BORDER_SIZE_DP);
+        mCenterX = getPaddingLeft() + mOuterRadius;
+        mCenterY = getPaddingTop() + mOuterRadius;
+        PAINT_INITIALS.setTextSize(fraction * density * SINGLE_TEXT_SIZE_DP);
+
+        float outerMultiSize = fraction * dimension;
+        mDeltaX = (drawableWidth - outerMultiSize) / (avatarCount - 1);
+        mDeltaY = (drawableHeight - outerMultiSize) / (avatarCount - 1);
+
+        return true;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        // Clear canvas
+        int avatarCount = mInitials.size();
+
+        canvas.drawRect(0f, 0f, canvas.getWidth(), canvas.getHeight(), PAINT_TRANSPARENT);
+        if (avatarCount == 0) return;
+
+        // Draw avatar cluster
+        float cx = mCenterX;
+        float cy = mCenterY;
+        mInnerRect.set(cx - mInnerRadius, cy - mInnerRadius, cx + mInnerRadius, cy + mInnerRadius);
+        for (Map.Entry<String, String> entry : mInitials.entrySet()) {
+            // Border and background
+            canvas.drawCircle(cx, cy, mOuterRadius, PAINT_BORDER);
+
+            // Initials or bitmap
+            ImageTarget imageTarget = mImageTargets.get(entry.getKey());
+            Bitmap bitmap = (imageTarget == null) ? null : imageTarget.getBitmap();
+            if (bitmap == null) {
+                String initials = entry.getValue();
+                PAINT_INITIALS.getTextBounds(initials, 0, initials.length(), mRect);
+                canvas.drawCircle(cx, cy, mInnerRadius, PAINT_BACKGROUND);
+                canvas.drawText(initials, cx - mRect.centerX(), cy - mRect.centerY() - 1f, PAINT_INITIALS);
+            } else {
+                canvas.drawBitmap(bitmap, mInnerRect.left, mInnerRect.top, PAINT_BITMAP);
+            }
+
+            // Translate for next avatar
+            cx += mDeltaX;
+            cy += mDeltaY;
+            mInnerRect.offset(mDeltaX, mDeltaY);
+        }
     }
 
     public static String initials(String s) {

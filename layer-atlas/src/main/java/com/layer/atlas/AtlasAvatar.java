@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.layer.atlas.simple.transformations.CircleCrop;
+import com.layer.atlas.simple.transformations.CircleTransform;
 import com.layer.sdk.messaging.Actor;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -15,7 +15,7 @@ import com.squareup.picasso.Target;
 public class AtlasAvatar implements Target {
     private static final String TAG = AtlasAvatar.class.getSimpleName();
 
-    private final static CircleCrop sCircleCrop = new CircleCrop();
+    private final static CircleTransform sCircleCrop = new CircleTransform();
 
     private final ParticipantProvider mParticipantProvider;
     private final Context mContext;
