@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 
@@ -259,14 +258,14 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             // Avatars
             if (oneOnOne) {
                 // Not in one-on-one conversations
-                viewHolder.mAvatarGroup.setVisibility(View.GONE);
+                viewHolder.mAvatar.setVisibility(View.GONE);
             } else if (cluster.mClusterWithNext == null || cluster.mClusterWithNext != ClusterType.LESS_THAN_MINUTE) {
                 // Last message in cluster
-                viewHolder.mAvatarGroup.setVisibility(View.VISIBLE);
-                viewHolder.mAvatar.setActor(message.getSender());
+                viewHolder.mAvatar.setVisibility(View.VISIBLE);
+                viewHolder.mAvatar.setParticipants(message.getSender().getUserId());
             } else {
                 // Invisible for clustered messages to preserve proper spacing
-                viewHolder.mAvatarGroup.setVisibility(View.INVISIBLE);
+                viewHolder.mAvatar.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -485,7 +484,6 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
         protected TextView mTimeGroupDay;
         protected TextView mTimeGroupTime;
         protected Space mClusterSpaceGap;
-        protected ViewGroup mAvatarGroup;
         protected AtlasAvatar mAvatar;
         protected ViewGroup mCell;
         protected TextView mReceipt;
@@ -500,12 +498,11 @@ public class AtlasMessagesAdapter extends RecyclerView.Adapter<AtlasMessagesAdap
             mTimeGroupDay = (TextView) itemView.findViewById(R.id.atlas_message_item_time_group_day);
             mTimeGroupTime = (TextView) itemView.findViewById(R.id.atlas_message_item_time_group_time);
             mClusterSpaceGap = (Space) itemView.findViewById(R.id.atlas_message_item_cluster_space_gap);
-            mAvatarGroup = (ViewGroup) itemView.findViewById(R.id.atlas_message_item_avatar_group);
-            mAvatar = new AtlasAvatar(itemView.getContext(), participantProvider,
-                    (TextView) itemView.findViewById(R.id.atlas_message_item_avatar_group_initials),
-                    (ImageView) itemView.findViewById(R.id.atlas_message_item_avatar_group_image));
             mCell = (ViewGroup) itemView.findViewById(R.id.atlas_message_item_cell);
             mReceipt = (TextView) itemView.findViewById(R.id.atlas_message_item_receipt);
+
+            mAvatar = ((AtlasAvatar) itemView.findViewById(R.id.atlas_message_item_avatar));
+            if (mAvatar != null) mAvatar.init(participantProvider);
         }
     }
 

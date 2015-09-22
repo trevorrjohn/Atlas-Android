@@ -13,17 +13,18 @@
      See the License for the specific language governing permissions and
      limitations under the License.    
 -->
-<LinearLayout android:id="@+id/atlas_view_conversations_list_convert"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="72dp"
-              android:orientation="horizontal">
+<LinearLayout
+    android:id="@+id/atlas_view_conversations_list_convert"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:orientation="horizontal">
 
-    <com.layer.atlas.AtlasAvatarCluster
+    <com.layer.atlas.AtlasAvatar
         android:id="@+id/atlas_conversation_item_avatar"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:padding="16dp"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"/>
 
     <!-- right content part -->
     <FrameLayout

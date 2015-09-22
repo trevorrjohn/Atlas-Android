@@ -7,12 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.layer.atlas.AtlasAvatarCluster;
+import com.layer.atlas.AtlasAvatar;
 import com.layer.atlas.ParticipantProvider;
 import com.layer.atlas.R;
 import com.layer.atlas.old.Utils;
 import com.layer.sdk.LayerClient;
-import com.layer.sdk.messaging.Actor;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.query.Predicate;
@@ -22,7 +21,6 @@ import com.layer.sdk.query.SortDescriptor;
 
 import java.text.DateFormat;
 import java.util.HashSet;
-import java.util.Set;
 
 public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConversationsAdapter.ViewHolder> implements RecyclerViewController.Callback {
     protected final LayerClient mLayerClient;
@@ -232,7 +230,7 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
 
         // View cache
         protected TextView mTitleView;
-        protected AtlasAvatarCluster mAvatarCluster;
+        protected AtlasAvatar mAvatarCluster;
         protected TextView mMessageView;
         protected TextView mTimeView;
 
@@ -244,7 +242,7 @@ public class AtlasConversationsAdapter extends RecyclerView.Adapter<AtlasConvers
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            mAvatarCluster = (AtlasAvatarCluster) itemView.findViewById(R.id.atlas_conversation_item_avatar);
+            mAvatarCluster = (AtlasAvatar) itemView.findViewById(R.id.atlas_conversation_item_avatar);
             mTitleView = (TextView) itemView.findViewById(R.id.atlas_conversation_view_convert_participant);
             mMessageView = (TextView) itemView.findViewById(R.id.atlas_conversation_view_last_message);
             mTimeView = (TextView) itemView.findViewById(R.id.atlas_conversation_view_convert_time);
