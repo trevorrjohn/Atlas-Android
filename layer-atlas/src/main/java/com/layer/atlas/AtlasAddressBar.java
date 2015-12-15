@@ -59,7 +59,7 @@ public class AtlasAddressBar extends LinearLayout {
     private AvailableConversationAdapter mAvailableConversationAdapter;
     private final Set<String> mSelectedParticipantIds = new LinkedHashSet<String>();
 
-    private boolean showConversations;
+    private boolean mShowConversations;
     // styles
     private int inputTextSize;
     private int inputTextColor;
@@ -182,11 +182,11 @@ public class AtlasAddressBar extends LinearLayout {
     }
 
     public AtlasAddressBar setShowConversations(boolean showConversations) {
-        this.showConversations = showConversations;
+        this.mShowConversations = showConversations;
         return this;
     }
 
-    public AtlasAddressBar setIgnoredParticipants(Set<String> ignoredParticipants) {
+    public AtlasAddressBar setSelectedParticipants(Set<String> ignoredParticipants) {
         mSelectedParticipantIds.addAll(ignoredParticipants);
         return this;
     }
@@ -452,7 +452,7 @@ public class AtlasAddressBar extends LinearLayout {
             // TODO: compute add/remove/move and notify those instead of complete notify
             notifyDataSetChanged();
 
-            if (showConversations) {
+            if (mShowConversations) {
                 queryConversations(selectedParticipantIds);
             }
         }
