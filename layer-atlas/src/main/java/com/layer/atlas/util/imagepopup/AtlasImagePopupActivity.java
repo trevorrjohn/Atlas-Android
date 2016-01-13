@@ -97,6 +97,13 @@ public class AtlasImagePopupActivity extends Activity implements LayerProgressLi
         sLayerClient.unregisterProgressListener(null, this);
     }
 
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        if (mImageView != null) {
+            mImageView.recycle();
+        }
+    }
+
     public static void init(LayerClient layerClient) {
         sLayerClient = layerClient;
         MessagePartDecoder.init(layerClient);
