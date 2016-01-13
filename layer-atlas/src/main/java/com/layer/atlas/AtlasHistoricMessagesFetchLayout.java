@@ -104,4 +104,11 @@ public class AtlasHistoricMessagesFetchLayout extends SwipeRefreshLayout impleme
             refresh();
         }
     }
+
+    @Override protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mConversation != null) {
+            mLayerClient.unregisterEventListener(this);
+        }
+    }
 }
