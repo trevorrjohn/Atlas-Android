@@ -94,6 +94,17 @@ public class AtlasMessageComposer extends FrameLayout {
         mParticipantProvider = participantProvider;
 
         mAttachButton = (ImageView) findViewById(R.id.attachment);
+        mAttachButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                if (mAttachmentMenu.isShowing()) {
+                    mAttachmentMenu.dismiss();
+                } else {
+                    LinearLayout menu = (LinearLayout) mAttachmentMenu.getContentView();
+                    menu.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                    mAttachmentMenu.showAsDropDown(v, 0, -menu.getMeasuredHeight() - v.getHeight());
+                }
+            }
+        });
 
         mMessageEditText = (EditText) findViewById(R.id.message_edit_text);
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -318,17 +329,6 @@ public class AtlasMessageComposer extends FrameLayout {
 
     @Override protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mAttachButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if (mAttachmentMenu.isShowing()) {
-                    mAttachmentMenu.dismiss();
-                } else {
-                    LinearLayout menu = (LinearLayout) mAttachmentMenu.getContentView();
-                    menu.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-                    mAttachmentMenu.showAsDropDown(v, 0, -menu.getMeasuredHeight() - v.getHeight());
-                }
-            }
-        });
     }
 
     @Override protected void onDetachedFromWindow() {

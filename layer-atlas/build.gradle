@@ -28,7 +28,9 @@ repositories {
 
 dependencies {
     // Layer SDK
-    compile 'com.layer.sdk:layer-sdk:0.19.0'
+    compile('com.layer.sdk:layer-sdk:0.19.5') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
     compile 'org.slf4j:slf4j-nop:1.7.2'
 
     // Image cache and loading
