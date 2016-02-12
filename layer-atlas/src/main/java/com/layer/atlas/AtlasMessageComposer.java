@@ -332,7 +332,9 @@ public class AtlasMessageComposer extends FrameLayout {
     }
 
     @Override protected void onDetachedFromWindow() {
-        mAttachButton.setOnClickListener(null);
+        if(mAttachButton!=null) {
+            mAttachButton.setOnClickListener(null);
+        }
 
         super.onDetachedFromWindow();
     }
