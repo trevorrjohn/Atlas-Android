@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     // Layer SDK
-    compile('com.layer.sdk:layer-sdk:0.19.5') {
+    compile('com.layer.sdk:layer-sdk:0.20.0') {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.android.gms', module: 'play-services-gcm'
     }
